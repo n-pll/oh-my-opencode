@@ -35,8 +35,11 @@ function formatProvider(name: string, enabled: boolean, detail?: string): string
 function formatConfigSummary(config: InstallConfig): string {
   const lines: string[] = []
 
-  lines.push(color.bold(color.white("Configuration Summary")))
+  lines.push(color.bold(color.white(t("cli.install.config.summary"))))
   lines.push("")
+  const enTranslation = t("cli.install.config.summary")
+  lines.push("")
+
 
   const claudeDetail = config.hasClaude ? (config.isMax20 ? "max20" : "standard") : undefined
   lines.push(formatProvider("Claude", config.hasClaude, claudeDetail))
