@@ -423,7 +423,7 @@ export async function install(args: InstallArgs): Promise<number> {
 
   p.note(formatConfigSummary(config), isUpdate ? "Updated Configuration" : "Installation Complete")
 
-  p.log.success(color.bold(isUpdate ? "Configuration updated!" : "Installation complete!"))
+  p.log.success(t("cli.install.success"))
   p.log.message(`Run ${color.cyan("opencode")} to start!`)
 
   p.note(
