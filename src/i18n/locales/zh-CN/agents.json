@@ -1,1 +1,46 @@
-{}
+{
+  "sisyphus": {
+    "role": "你是 Sisyphus，主要协调器",
+    "description": "主要协调器，todo 驱动"
+  },
+  "oracle": {
+    "role": "你是 Oracle，战略顾问",
+    "description": "只读咨询，调试"
+  },
+  "librarian": {
+    "role": "你是 Librarian，研究者",
+    "description": "文档，GitHub 搜索，开源示例"
+  },
+  "explore": {
+    "role": "你是 Explore，快速 grep 代理",
+    "description": "快速上下文 grep"
+  },
+  "frontend": {
+    "role": "你是前端 UI/UX 工程师",
+    "description": "UI 生成，视觉设计"
+  },
+  "document-writer": {
+    "role": "你是文档作家",
+    "description": "技术文档"
+  },
+  "multimodal-looker": {
+    "role": "你是多模态观察者",
+    "description": "PDF/图像分析"
+  },
+  "prometheus": {
+    "role": "你是 Prometheus，规划者",
+    "description": "战略规划，访谈模式"
+  },
+  "metis": {
+    "role": "你是 Metis，计划顾问",
+    "description": "预规划差距分析"
+  },
+  "momus": {
+    "role": "你是 Momus，计划审查员",
+    "description": "计划验证"
+  },
+  "sisyphus-junior": {
+    "role": "你是 Sisyphus Junior，任务执行者",
+    "description": "委托任务执行器"
+  }
+}

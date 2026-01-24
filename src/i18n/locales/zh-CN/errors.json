@@ -1,1 +1,16 @@
-{}
+{
+  "config": {
+    "invalid": "配置无效",
+    "missing": "配置缺失",
+    "parseError": "配置文件解析失败"
+  },
+  "doctor": {
+    "checkFailed": "检查失败",
+    "allPassed": "所有检查通过"
+  },
+  "common": {
+    "notFound": "未找到",
+    "permissionDenied": "权限拒绝",
+    "unknown": "未知错误"
+  }
+}

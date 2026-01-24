@@ -1,1 +1,26 @@
-{}
+{
+  "install": {
+    "success": "安装完成",
+    "config": {
+      "summary": "配置摘要",
+      "provider": {
+        "claude": "Claude",
+        "chatgpt": "ChatGPT",
+        "gemini": "Gemini",
+        "copilot": "GitHub Copilot"
+      }
+    }
+  },
+  "doctor": {
+    "summary": "摘要",
+    "passed": "通过 {{count}} 项",
+    "failed": "失败 {{count}} 项",
+    "warnings": "{{count}} 个警告"
+  },
+  "version": {
+    "info": "oh-my-opencode v{{version}}"
+  },
+  "run": {
+    "message": "运行 OpenCode 并强制完成 todo/后台任务"
+  }
+}

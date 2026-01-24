@@ -1,1 +1,6 @@
-{}
+{
+  "loading": "Loading...",
+  "done": "Done",
+  "error": "Error",
+  "warning": "Warning"
+}

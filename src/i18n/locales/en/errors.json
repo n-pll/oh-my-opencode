@@ -1,1 +1,16 @@
-{}
+{
+  "config": {
+    "invalid": "Invalid configuration",
+    "missing": "Missing configuration",
+    "parseError": "Failed to parse configuration file"
+  },
+  "doctor": {
+    "checkFailed": "Check failed",
+    "allPassed": "All checks passed"
+  },
+  "common": {
+    "notFound": "Not found",
+    "permissionDenied": "Permission denied",
+    "unknown": "Unknown error"
+  }
+}

@@ -1,1 +1,5 @@
-{}
+{
+  "language": "Language",
+  "languageSet": "Language set to {{language}}",
+  "reloadRequired": "Restart required for language changes to take effect"
+}
