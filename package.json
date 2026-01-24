@@ -29,7 +29,8 @@
     "postinstall": "node postinstall.mjs",
     "prepublishOnly": "bun run clean && bun run build",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "i18n:extract": "i18next-scanner"
   },
   "keywords": [
     "opencode",
@@ -60,6 +61,8 @@
     "@opencode-ai/sdk": "^1.1.19",
     "commander": "^14.0.2",
     "detect-libc": "^2.0.0",
+    "i18next": "^25.8.0",
+    "i18next-fs-backend": "^2.6.1",
     "js-yaml": "^4.1.1",
     "jsonc-parser": "^3.3.1",
     "picocolors": "^1.1.1",
