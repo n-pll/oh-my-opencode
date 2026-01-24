@@ -10,6 +10,7 @@ import {
   addProviderConfig,
   detectCurrentConfig,
 } from "./config-manager"
+import { t } from "../i18n"
 import packageJson from "../../package.json" with { type: "json" }
 
 const VERSION = packageJson.version
