@@ -1,6 +1,7 @@
 import color from "picocolors"
 import type { CheckResult, DoctorSummary, CheckCategory, DoctorResult } from "./types"
 import { SYMBOLS, STATUS_COLORS, CATEGORY_NAMES } from "./constants"
+import { t } from "../../i18n"
 
 export function formatStatusSymbol(status: CheckResult["status"]): string {
   switch (status) {
@@ -42,20 +43,20 @@ export function formatCategoryHeader(category: CheckCategory): string {
 export function formatSummary(summary: DoctorSummary): string {
   const lines: string[] = []
 
-  lines.push(color.bold(color.white("Summary")))
+  lines.push(color.bold(color.white(t("cli.doctor.summary"))))
   lines.push(color.dim("\u2500".repeat(40)))
   lines.push("")
 
-  const passText = summary.passed > 0 ? color.green(`${summary.passed} passed`) : color.dim("0 passed")
-  const failText = summary.failed > 0 ? color.red(`${summary.failed} failed`) : color.dim("0 failed")
-  const warnText = summary.warnings > 0 ? color.yellow(`${summary.warnings} warnings`) : color.dim("0 warnings")
-  const skipText = summary.skipped > 0 ? color.dim(`${summary.skipped} skipped`) : ""
+  const passText = summary.passed > 0 ? color.green(t("cli.doctor.passed", { count: summary.passed })) : color.dim(t("cli.doctor.passed", { count: 0 }))
+  const failText = summary.failed > 0 ? color.red(t("cli.doctor.failed", { count: summary.failed })) : color.dim(t("cli.doctor.failed", { count: 0 }))
+  const warnText = summary.warnings > 0 ? color.yellow(t("cli.doctor.warnings", { count: summary.warnings })) : color.dim(t("cli.doctor.warnings", { count: 0 }))
+  const skipText = summary.skipped > 0 ? color.dim(t("cli.doctor.skipped", { count: summary.skipped })) : ""
 
   const parts = [passText, failText, warnText]
   if (skipText) parts.push(skipText)
 
   lines.push(`  ${parts.join(", ")}`)
-  lines.push(`  ${color.dim(`Total: ${summary.total} checks in ${summary.duration}ms`)}`)
+  lines.push(`  ${color.dim(t("cli.doctor.total", { count: summary.total, duration: summary.duration }))}`)
 
   return lines.join("\n")
 }
@@ -66,17 +67,17 @@ export function formatHeader(): string {
 
 export function formatFooter(summary: DoctorSummary): string {
   if (summary.failed > 0) {
-    return `\n${SYMBOLS.cross} ${color.red("Issues detected. Please review the errors above.")}\n`
+    return `\n${SYMBOLS.cross} ${color.red(t("cli.doctor.issuesDetected"))}\n`
   }
   if (summary.warnings > 0) {
-    return `\n${SYMBOLS.warn} ${color.yellow("All systems operational with warnings.")}\n`
+    return `\n${SYMBOLS.warn} ${color.yellow(t("cli.doctor.allSystemsWithWarnings"))}\n`
   }
-  return `\n${SYMBOLS.check} ${color.green("All systems operational!")}\n`
+  return `\n${SYMBOLS.check} ${color.green(t("cli.doctor.allSystemsOperational"))}\n`
 }
 
 export function formatProgress(current: number, total: number, name: string): string {
   const progress = color.dim(`[${current}/${total}]`)
-  return `${progress} Checking ${name}...`
+  return `${progress} ${t("cli.doctor.checking", { name })}`
 }
 
 export function formatJsonOutput(result: DoctorResult): string {

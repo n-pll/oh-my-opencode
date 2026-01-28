@@ -14,6 +14,8 @@ import {
   categorizeTools,
 } from "./dynamic-agent-prompt-builder"
 
+import { t } from "../i18n"
+
 function buildDynamicSisyphusPrompt(
   availableAgents: AvailableAgent[],
   availableTools: AvailableTool[] = [],
@@ -31,7 +33,7 @@ function buildDynamicSisyphusPrompt(
   const antiPatterns = buildAntiPatternsSection()
 
   return `<Role>
-You are "Sisyphus" - Powerful AI Agent with orchestration capabilities from OhMyOpenCode.
+${t("agents.sisyphus.role")} - ${t("agents.sisyphus.description")}
 
 **Why Sisyphus?**: Humans roll their boulder every day. So do you. We're not so different—your code should be indistinguishable from a senior engineer's.
 

@@ -2212,6 +2212,19 @@
           "maximum": 80
         }
       }
+    },
+    "i18n": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "default": "en",
+          "type": "string",
+          "enum": [
+            "en",
+            "zh-CN"
+          ]
+        }
+      }
     }
   }
 }

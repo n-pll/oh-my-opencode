@@ -1,4 +1,5 @@
 import color from "picocolors"
+import { t } from "../../i18n"
 import type { VersionInfo } from "./types"
 
 const SYMBOLS = {
@@ -15,14 +16,19 @@ export function formatVersionOutput(info: VersionInfo): string {
   const lines: string[] = []
 
   lines.push("")
-  lines.push(color.bold(color.white("oh-my-opencode Version Information")))
+  const versionTitle = t("cli.version.info", { version: info.currentVersion || "unknown" })
+  lines.push(color.bold(color.white(versionTitle)))
   lines.push(color.dim("─".repeat(50)))
   lines.push("")
 
   if (info.currentVersion) {
-    lines.push(`  Current Version: ${color.cyan(info.currentVersion)}`)
+    lines.push(`  ${t("getLocalVersion.helpCurrentVersion")}: ${color.cyan(info.currentVersion)}`)
   } else {
-    lines.push(`  Current Version: ${color.dim("unknown")}`)
+    lines.push(`  ${t("getLocalVersion.helpCurrentVersion")}: ${color.dim("unknown")}`)
+  }
+
+  if (!info.isLocalDev && info.latestVersion) {
+    lines.push(`  ${t("getLocalVersion.helpLatestVersion")}: ${color.cyan(info.latestVersion)}`)
   }
 
   if (!info.isLocalDev && info.latestVersion) {
@@ -33,7 +39,7 @@ export function formatVersionOutput(info: VersionInfo): string {
 
   switch (info.status) {
     case "up-to-date":
-      lines.push(`  ${SYMBOLS.check} ${color.green("You're up to date!")}`)
+      lines.push(`  ${SYMBOLS.check} ${color.green(t("getLocalVersion.helpUpToDate"))}`)
       break
     case "outdated":
       lines.push(`  ${SYMBOLS.warn} ${color.yellow("Update available")}`)

@@ -1,4 +1,5 @@
 import type { Plugin } from "@opencode-ai/plugin";
+import { VERSION, BUILD_TIME } from "./version";
 import {
   createTodoContinuationEnforcer,
   createContextWindowMonitorHook,
@@ -82,7 +83,8 @@ import { createModelCacheState, getModelLimit } from "./plugin-state";
 import { createConfigHandler } from "./plugin-handlers";
 
 const OhMyOpenCodePlugin: Plugin = async (ctx) => {
-  log("[OhMyOpenCodePlugin] ENTRY - plugin loading", { directory: ctx.directory })
+  console.log(`\n[OhMyOpenCode] v${VERSION} (built: ${BUILD_TIME})`);
+  log("[OhMyOpenCodePlugin] ENTRY - plugin loading", { version: VERSION, buildTime: BUILD_TIME, directory: ctx.directory })
   // Start background tmux check immediately
   startTmuxCheck();
 
@@ -626,3 +628,7 @@ export type {
 // OpenCode treats ALL exports as plugin instances and calls them.
 // Config error utilities are available via "./shared/config-errors" for internal use only.
 export type { ConfigLoadError } from "./shared/config-errors";
+
+// Export version information for verification
+export { VERSION, BUILD_TIME } from "./version";
+

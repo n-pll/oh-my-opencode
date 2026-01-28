@@ -1,6 +1,7 @@
 {
   "install": {
     "success": "Installation complete",
+    "cancelled": "Installation cancelled.",
     "config": {
       "summary": "Configuration Summary",
       "provider": {
@@ -9,18 +10,86 @@
         "gemini": "Gemini",
         "copilot": "GitHub Copilot"
       }
+    },
+    "prompts": {
+      "claudeQuestion": "Do you have a Claude Pro/Max subscription?",
+      "claudeOptionNo": "No",
+      "claudeOptionStandard": "Yes (standard)",
+      "claudeOptionMax20": "Yes (max20 mode)",
+      "claudeHintStandard": "Claude Opus 4.5 for orchestration",
+      "claudeHintMax20": "Full power with Claude Sonnet 4.5 for Librarian",
+      "openaiQuestion": "Do you have an OpenAI/ChatGPT Plus subscription?",
+      "openaiOptionNo": "No",
+      "openaiOptionYes": "Yes",
+      "openaiHintNo": "Oracle will use fallback models",
+      "openaiHintYes": "GPT-5.2 for Oracle (high-IQ debugging)",
+      "geminiQuestion": "Will you integrate Google Gemini?",
+      "geminiOptionNo": "No",
+      "geminiOptionYes": "Yes",
+      "geminiHintNo": "Frontend/docs agents will use fallback",
+      "geminiHintYes": "Beautiful UI generation with Gemini 3 Pro",
+      "copilotQuestion": "Do you have a GitHub Copilot subscription?",
+      "copilotOptionNo": "No",
+      "copilotOptionYes": "Yes",
+      "copilotHintNo": "Only native providers will be used",
+      "copilotHintYes": "Fallback option when native providers unavailable"
+    },
+    "messages": {
+      "weakerToolSelection": "Weaker tool selection and delegation",
+      "opencodeAuthLogin": "Run {{command}} and select your provider",
+      "modelsAutoConfigured": "Models auto-configured based on provider priority",
+      "providerPriority": "Priority: Native > Copilot > OpenCode Zen > Z.ai",
+      "skippingAuth": "Skipping authentication setup..."
     }
   },
   "doctor": {
     "summary": "Summary",
     "passed": "{{count}} passed",
     "failed": "{{count}} failed",
-    "warnings": "{{count}} warnings"
+    "warnings": "{{count}} warnings",
+    "skipped": "{{count}} skipped",
+    "total": "Total: {{count}} checks in {{duration}}ms",
+    "issuesDetected": "Issues detected. Please review errors above.",
+    "allSystemsOperational": "All systems operational!",
+    "allSystemsWithWarnings": "All systems operational with warnings.",
+    "checking": "Checking {{name}}...",
+    "description": "Check oh-my-opencode installation health and diagnose issues",
+    "verboseOption": "Show detailed diagnostic information",
+    "jsonOption": "Output results in JSON format",
+    "categoryOption": "Run only specific category",
+    "categoriesInstallation": "installation     Check OpenCode and plugin installation",
+    "categoriesConfiguration": "configuration    Validate configuration files",
+    "categoriesAuthentication": "authentication   Check auth provider status",
+    "categoriesDependencies": "dependencies     Check external dependencies",
+    "categoriesTools": "tools            Check LSP and MCP servers",
+    "categoriesUpdates": "updates          Check for version updates"
   },
   "version": {
-    "info": "oh-my-opencode v{{version}}"
+    "info": "oh-my-opencode v{{version}}",
+    "description": "Show version information"
   },
   "run": {
-    "message": "Run opencode with todo/background task completion enforcement"
+    "message": "Run opencode with todo/background task completion enforcement",
+    "description": "Run opencode with todo/background task completion enforcement",
+    "agentOption": "Agent to use (default: Sisyphus)",
+    "directoryOption": "Working directory",
+    "timeoutOption": "Timeout in milliseconds (default: 30 minutes)",
+    "helpWaitMessage": "Unlike 'opencode run', this command waits until:",
+    "helpTodosCompleted": "- All todos are completed or cancelled",
+    "helpSessionsIdle": "- All child sessions (background tasks) are idle"
+  },
+  "getLocalVersion": {
+    "description": "Show current installed version and check for updates",
+    "directoryOption": "Working directory to check config from",
+    "jsonOption": "Output in JSON format for scripting",
+    "helpShows": "This command shows:",
+    "helpCurrentVersion": "- Current installed version",
+    "helpLatestVersion": "- Latest available version on npm",
+    "helpUpToDate": "- Whether you're up to date",
+    "helpSpecialModes": "- Special modes (local dev, pinned version)"
+  },
+  "common": {
+    "examples": "Examples:",
+    "showVersion": "Show version number"
   }
 }

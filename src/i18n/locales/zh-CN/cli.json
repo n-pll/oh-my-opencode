@@ -1,6 +1,7 @@
 {
   "install": {
     "success": "安装完成",
+    "cancelled": "安装已取消。",
     "config": {
       "summary": "配置摘要",
       "provider": {
@@ -9,18 +10,86 @@
         "gemini": "Gemini",
         "copilot": "GitHub Copilot"
       }
+    },
+    "prompts": {
+      "claudeQuestion": "你有 Claude Pro/Max 订阅吗？",
+      "claudeOptionNo": "否",
+      "claudeOptionStandard": "是（标准）",
+      "claudeOptionMax20": "是（max20 模式）",
+      "claudeHintStandard": "Claude Opus 4.5 用于编排",
+      "claudeHintMax20": "Claude Sonnet 4.5 全功能用于 Librarian",
+      "openaiQuestion": "你有 OpenAI/ChatGPT Plus 订阅吗？",
+      "openaiOptionNo": "否",
+      "openaiOptionYes": "是",
+      "openaiHintNo": "Oracle 将使用备用模型",
+      "openaiHintYes": "GPT-5.2 用于 Oracle（高智商调试）",
+      "geminiQuestion": "是否集成 Google Gemini？",
+      "geminiOptionNo": "否",
+      "geminiOptionYes": "是",
+      "geminiHintNo": "前端/文档代理将使用备用",
+      "geminiHintYes": "使用 Gemini 3 Pro 美观生成 UI",
+      "copilotQuestion": "你有 GitHub Copilot 订阅吗？",
+      "copilotOptionNo": "否",
+      "copilotOptionYes": "是",
+      "copilotHintNo": "将仅使用原生提供商",
+      "copilotHintYes": "原生提供商不可用时的备用选项"
+    },
+    "messages": {
+      "weakerToolSelection": "工具选择和委托较弱",
+      "opencodeAuthLogin": "运行 {{command}} 并选择提供商：",
+      "modelsAutoConfigured": "根据提供商优先级自动配置模型",
+      "providerPriority": "优先级：原生 > Copilot > OpenCode Zen > Z.ai",
+      "skippingAuth": "跳过身份验证设置..."
     }
   },
   "doctor": {
     "summary": "摘要",
     "passed": "通过 {{count}} 项",
     "failed": "失败 {{count}} 项",
-    "warnings": "{{count}} 个警告"
+    "warnings": "{{count}} 个警告",
+    "skipped": "跳过 {{count}} 项",
+    "total": "总计：{{count}} 项检查，耗时 {{duration}}ms",
+    "issuesDetected": "检测到问题。请查看上方的错误信息。",
+    "allSystemsOperational": "所有系统运行正常！",
+    "allSystemsWithWarnings": "所有系统运行正常，但有警告。",
+    "checking": "正在检查 {{name}}...",
+    "description": "检查 oh-my-opencode 安装状况并诊断问题",
+    "verboseOption": "显示详细诊断信息",
+    "jsonOption": "以 JSON 格式输出结果",
+    "categoryOption": "仅运行特定类别",
+    "categoriesInstallation": "installation     检查 OpenCode 和插件安装",
+    "categoriesConfiguration": "configuration    验证配置文件",
+    "categoriesAuthentication": "authentication   检查身份验证状态",
+    "categoriesDependencies": "dependencies     检查外部依赖",
+    "categoriesTools": "tools            检查 LSP 和 MCP 服务器",
+    "categoriesUpdates": "updates          检查版本更新"
   },
   "version": {
-    "info": "oh-my-opencode v{{version}}"
+    "info": "oh-my-opencode v{{version}}",
+    "description": "显示版本信息"
   },
   "run": {
-    "message": "运行 OpenCode 并强制完成 todo/后台任务"
+    "message": "运行 OpenCode 并强制完成 todo/后台任务",
+    "description": "运行 OpenCode 并强制完成 todo/后台任务",
+    "agentOption": "使用的代理（默认：Sisyphus）",
+    "directoryOption": "工作目录",
+    "timeoutOption": "超时时间，以毫秒为单位（默认：30分钟）",
+    "helpWaitMessage": "与 'opencode run' 不同，此命令会等待直到：",
+    "helpTodosCompleted": "- 所有 todo 已完成或取消",
+    "helpSessionsIdle": "- 所有子会话（后台任务）处于空闲状态"
+  },
+  "getLocalVersion": {
+    "description": "显示当前已安装版本并检查更新",
+    "directoryOption": "要检查配置的工作目录",
+    "jsonOption": "以 JSON 格式输出，便于脚本使用",
+    "helpShows": "此命令显示：",
+    "helpCurrentVersion": "- 当前已安装版本",
+    "helpLatestVersion": "- npm 上最新可用版本",
+    "helpUpToDate": "- 是否为最新版本",
+    "helpSpecialModes": "- 特殊模式（本地开发、固定版本）"
+  },
+  "common": {
+    "examples": "示例：",
+    "showVersion": "显示版本号"
   }
 }

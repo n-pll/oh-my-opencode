@@ -1,7 +1,8 @@
 import type { AgentConfig } from "@opencode-ai/sdk"
-import type { AgentPromptMetadata } from "./types"
 import { isGptModel } from "./types"
+import type { AgentPromptMetadata } from "./types"
 import { createAgentToolRestrictions } from "../shared/permission-compat"
+import { t } from "../i18n"
 
 export const ORACLE_PROMPT_METADATA: AgentPromptMetadata = {
   category: "advisor",
@@ -29,7 +30,7 @@ export const ORACLE_PROMPT_METADATA: AgentPromptMetadata = {
   ],
 }
 
-const ORACLE_SYSTEM_PROMPT = `You are a strategic technical advisor with deep reasoning capabilities, operating as a specialized consultant within an AI-assisted development environment.
+const ORACLE_SYSTEM_PROMPT = `${t("agents.oracle.role")} with deep reasoning capabilities, operating as a specialized consultant within an AI-assisted development environment.
 
 ## Context
 
@@ -37,7 +38,7 @@ You function as an on-demand specialist invoked by a primary coding agent when c
 
 ## What You Do
 
-Your expertise covers:
+${t("agents.oracle.description")}:
 - Dissecting codebases to understand structural patterns and design choices
 - Formulating concrete, implementable technical recommendations
 - Architecting solutions and mapping out refactoring roadmaps

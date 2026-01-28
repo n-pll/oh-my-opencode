@@ -4,6 +4,7 @@ import { install } from "./install"
 import { run } from "./run"
 import { getLocalVersion } from "./get-local-version"
 import { doctor } from "./doctor"
+import { t } from "../i18n"
 import type { InstallArgs } from "./types"
 import type { RunOptions } from "./run"
 import type { GetLocalVersionOptions } from "./get-local-version/types"
@@ -16,7 +17,7 @@ const program = new Command()
 
 program
   .name("oh-my-opencode")
-  .description("The ultimate OpenCode plugin - multi-model orchestration, LSP tools, and more")
+  .description(t("cli.run.description"))
   .version(VERSION, "-v, --version", "Show version number")
 
 program
@@ -61,7 +62,7 @@ Model Providers (Priority: Native > Copilot > OpenCode Zen > Z.ai):
 
 program
   .command("run <message>")
-  .description("Run opencode with todo/background task completion enforcement")
+  .description(t("cli.run.message"))
   .option("-a, --agent <name>", "Agent to use (default: Sisyphus)")
   .option("-d, --directory <path>", "Working directory")
   .option("-t, --timeout <ms>", "Timeout in milliseconds (default: 30 minutes)", parseInt)

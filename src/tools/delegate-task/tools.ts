@@ -472,7 +472,7 @@ To continue this session: session_id="${args.session_id}"`
        let systemDefaultModel: string | undefined
        try {
          const openCodeConfig = await client.config.get()
-         systemDefaultModel = (openCodeConfig as { data?: { model?: string } })?.data?.model
+         systemDefaultModel = openCodeConfig.data?.model
        } catch {
          // Config fetch failed, proceed without system default
          systemDefaultModel = undefined
@@ -545,7 +545,7 @@ To continue this session: session_id="${args.session_id}"`
            }
 
            modelInfo = { model: actualModel, type, source }
-           
+
            const parsedModel = parseModelString(actualModel)
            const variantToUse = userCategories?.[args.category]?.variant ?? resolvedVariant
            categoryModel = parsedModel
