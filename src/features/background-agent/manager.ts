@@ -5,21 +5,25 @@ import type {
   LaunchInput,
   ResumeInput,
 } from "./types"
-import { log, getAgentToolRestrictions } from "../../shared"
+import { log, getAgentToolRestrictions, promptWithModelSuggestionRetry } from "../../shared"
 import { ConcurrencyManager } from "./concurrency"
 import type { BackgroundTaskConfig, TmuxConfig } from "../../config/schema"
 import { isInsideTmux } from "../../shared/tmux"
+import {
+  DEFAULT_STALE_TIMEOUT_MS,
+  MIN_IDLE_TIME_MS,
+  MIN_RUNTIME_BEFORE_STALE_MS,
+  MIN_STABILITY_TIME_MS,
+  POLLING_INTERVAL_MS,
+  TASK_CLEANUP_DELAY_MS,
+  TASK_TTL_MS,
+} from "./constants"
 
 import { subagentSessions } from "../claude-code-session-state"
 import { getTaskToastManager } from "../task-toast-manager"
 import { findNearestMessageWithFields, MESSAGE_STORAGE } from "../hook-message-injector"
 import { existsSync, readdirSync } from "node:fs"
 import { join } from "node:path"
-
-const TASK_TTL_MS = 30 * 60 * 1000
-const MIN_STABILITY_TIME_MS = 10 * 1000  // Must run at least 10s before stability detection kicks in
-const DEFAULT_STALE_TIMEOUT_MS = 180_000  // 3 minutes
-const MIN_RUNTIME_BEFORE_STALE_MS = 30_000  // 30 seconds
 
 type ProcessCleanupEvent = NodeJS.Signals | "beforeExit" | "exit"
 
@@ -55,6 +59,14 @@ interface QueueItem {
   input: LaunchInput
 }
 
+export interface SubagentSessionCreatedEvent {
+  sessionID: string
+  parentID: string
+  title: string
+}
+
+export type OnSubagentSessionCreated = (event: SubagentSessionCreatedEvent) => Promise<void>
+
 export class BackgroundManager {
   private static cleanupManagers = new Set<BackgroundManager>()
   private static cleanupRegistered = false
@@ -70,14 +82,21 @@ export class BackgroundManager {
   private shutdownTriggered = false
   private config?: BackgroundTaskConfig
   private tmuxEnabled: boolean
+  private onSubagentSessionCreated?: OnSubagentSessionCreated
+  private onShutdown?: () => void
 
   private queuesByKey: Map<string, QueueItem[]> = new Map()
   private processingKeys: Set<string> = new Set()
+  private completionTimers: Map<string, ReturnType<typeof setTimeout>> = new Map()
 
   constructor(
     ctx: PluginInput,
     config?: BackgroundTaskConfig,
-    tmuxConfig?: TmuxConfig
+    options?: {
+      tmuxConfig?: TmuxConfig
+      onSubagentSessionCreated?: OnSubagentSessionCreated
+      onShutdown?: () => void
+    }
   ) {
     this.tasks = new Map()
     this.notifications = new Map()
@@ -86,7 +105,9 @@ export class BackgroundManager {
     this.directory = ctx.directory
     this.concurrencyManager = new ConcurrencyManager(config)
     this.config = config
-    this.tmuxEnabled = tmuxConfig?.enabled ?? false
+    this.tmuxEnabled = options?.tmuxConfig?.enabled ?? false
+    this.onSubagentSessionCreated = options?.onSubagentSessionCreated
+    this.onShutdown = options?.onShutdown
     this.registerProcessCleanup()
   }
 
@@ -117,6 +138,7 @@ export class BackgroundManager {
       parentModel: input.parentModel,
       parentAgent: input.parentAgent,
       model: input.model,
+      category: input.category,
     }
 
     this.tasks.set(task.id, task)
@@ -178,6 +200,11 @@ export class BackgroundManager {
           await this.startTask(item)
         } catch (error) {
           log("[background-agent] Error starting task:", error)
+          // Release concurrency slot if startTask failed and didn't release it itself
+          // This prevents slot leaks when errors occur after acquire but before task.concurrencyKey is set
+          if (!item.task.concurrencyKey) {
+            this.concurrencyManager.release(key)
+          }
         }
 
         queue.shift()
@@ -210,27 +237,48 @@ export class BackgroundManager {
     const createResult = await this.client.session.create({
       body: {
         parentID: input.parentSessionID,
-        title: `Background: ${input.description}`,
-      },
+        title: `${input.description} (@${input.agent} subagent)`,
+        permission: [
+          { permission: "question", action: "deny" as const, pattern: "*" },
+        ],
+      } as any,
       query: {
         directory: parentDirectory,
       },
-    }).catch((error) => {
-      this.concurrencyManager.release(concurrencyKey)
-      throw error
     })
 
     if (createResult.error) {
-      this.concurrencyManager.release(concurrencyKey)
       throw new Error(`Failed to create background session: ${createResult.error}`)
+    }
+
+    if (!createResult.data?.id) {
+      throw new Error("Failed to create background session: API returned no session ID")
     }
 
     const sessionID = createResult.data.id
     subagentSessions.add(sessionID)
 
-    // Wait for TmuxSessionManager to spawn pane via event hook
-    if (this.tmuxEnabled && isInsideTmux()) {
-      await new Promise(r => setTimeout(r, 500))
+    log("[background-agent] tmux callback check", {
+      hasCallback: !!this.onSubagentSessionCreated,
+      tmuxEnabled: this.tmuxEnabled,
+      isInsideTmux: isInsideTmux(),
+      sessionID,
+      parentID: input.parentSessionID,
+    })
+
+    if (this.onSubagentSessionCreated && this.tmuxEnabled && isInsideTmux()) {
+      log("[background-agent] Invoking tmux callback NOW", { sessionID })
+      await this.onSubagentSessionCreated({
+        sessionID,
+        parentID: input.parentSessionID,
+        title: input.description,
+      }).catch((err) => {
+        log("[background-agent] Failed to spawn tmux pane:", err)
+      })
+      log("[background-agent] tmux callback completed, waiting 200ms")
+      await new Promise(r => setTimeout(r, 200))
+    } else {
+      log("[background-agent] SKIP tmux callback - conditions not met")
     }
 
     // Update task to running state
@@ -263,17 +311,26 @@ export class BackgroundManager {
 
     // Use prompt() instead of promptAsync() to properly initialize agent loop (fire-and-forget)
     // Include model if caller provided one (e.g., from Sisyphus category configs)
-    this.client.session.prompt({
+    // IMPORTANT: variant must be a top-level field in the body, NOT nested inside model
+    // OpenCode's PromptInput schema expects: { model: { providerID, modelID }, variant: "max" }
+    const launchModel = input.model
+      ? { providerID: input.model.providerID, modelID: input.model.modelID }
+      : undefined
+    const launchVariant = input.model?.variant
+
+    promptWithModelSuggestionRetry(this.client, {
       path: { id: sessionID },
       body: {
         agent: input.agent,
-        ...(input.model ? { model: input.model } : {}),
+        ...(launchModel ? { model: launchModel } : {}),
+        ...(launchVariant ? { variant: launchVariant } : {}),
         system: input.skillContent,
         tools: {
           ...getAgentToolRestrictions(input.agent),
           task: false,
           delegate_task: false,
           call_omo_agent: true,
+          question: false,
         },
         parts: [{ type: "text", text: input.prompt }],
       },
@@ -510,16 +567,24 @@ export class BackgroundManager {
 
     // Use prompt() instead of promptAsync() to properly initialize agent loop
     // Include model if task has one (preserved from original launch with category config)
+    // variant must be top-level in body, not nested inside model (OpenCode PromptInput schema)
+    const resumeModel = existingTask.model
+      ? { providerID: existingTask.model.providerID, modelID: existingTask.model.modelID }
+      : undefined
+    const resumeVariant = existingTask.model?.variant
+
     this.client.session.prompt({
       path: { id: existingTask.sessionID },
       body: {
         agent: existingTask.agent,
-        ...(existingTask.model ? { model: existingTask.model } : {}),
+        ...(resumeModel ? { model: resumeModel } : {}),
+        ...(resumeVariant ? { variant: resumeVariant } : {}),
         tools: {
           ...getAgentToolRestrictions(existingTask.agent),
           task: false,
           delegate_task: false,
           call_omo_agent: true,
+          question: false,
         },
         parts: [{ type: "text", text: input.prompt }],
       },
@@ -598,7 +663,6 @@ export class BackgroundManager {
 
       // Edge guard: Require minimum elapsed time (5 seconds) before accepting idle
       const elapsedMs = Date.now() - startedAt.getTime()
-      const MIN_IDLE_TIME_MS = 5000
       if (elapsedMs < MIN_IDLE_TIME_MS) {
         log("[background-agent] Ignoring early session.idle, elapsed:", { elapsedMs, taskId: task.id })
         return
@@ -654,7 +718,11 @@ export class BackgroundManager {
          this.concurrencyManager.release(task.concurrencyKey)
          task.concurrencyKey = undefined
        }
-      // Clean up pendingByParent to prevent stale entries
+      const existingTimer = this.completionTimers.get(task.id)
+      if (existingTimer) {
+        clearTimeout(existingTimer)
+        this.completionTimers.delete(task.id)
+      }
       this.cleanupPendingByParent(task)
       this.tasks.delete(task.id)
       this.clearNotificationsForTask(task.id)
@@ -803,7 +871,7 @@ export class BackgroundManager {
 
     this.pollingInterval = setInterval(() => {
       this.pollRunningTasks()
-    }, 2000)
+    }, POLLING_INTERVAL_MS)
     this.pollingInterval.unref()
   }
 
@@ -893,6 +961,12 @@ export class BackgroundManager {
     }
 
     this.markForNotification(task)
+
+    if (task.sessionID) {
+      this.client.session.abort({
+        path: { id: task.sessionID },
+      }).catch(() => {})
+    }
 
     try {
       await this.notifyParentSession(task)
@@ -1019,14 +1093,15 @@ Use \`background_output(task_id="${task.id}")\` to retrieve this result when rea
     }
 
     const taskId = task.id
-    setTimeout(() => {
-      // Guard: Only delete if task still exists (could have been deleted by session.deleted event)
+    const timer = setTimeout(() => {
+      this.completionTimers.delete(taskId)
       if (this.tasks.has(taskId)) {
         this.clearNotificationsForTask(taskId)
         this.tasks.delete(taskId)
         log("[background-agent] Removed completed task from memory:", taskId)
       }
-    }, 5 * 60 * 1000)
+    }, TASK_CLEANUP_DELAY_MS)
+    this.completionTimers.set(taskId, timer)
   }
 
   private formatDuration(start: Date, end?: Date): string {
@@ -1295,7 +1370,25 @@ Use \`background_output(task_id="${task.id}")\` to retrieve this result when rea
     log("[background-agent] Shutting down BackgroundManager")
     this.stopPolling()
 
-    // Release concurrency for all running tasks first
+    // Abort all running sessions to prevent zombie processes (#1240)
+    for (const task of this.tasks.values()) {
+      if (task.status === "running" && task.sessionID) {
+        this.client.session.abort({
+          path: { id: task.sessionID },
+        }).catch(() => {})
+      }
+    }
+
+    // Notify shutdown listeners (e.g., tmux cleanup)
+    if (this.onShutdown) {
+      try {
+        this.onShutdown()
+      } catch (error) {
+        log("[background-agent] Error in onShutdown callback:", error)
+      }
+    }
+
+    // Release concurrency for all running tasks
     for (const task of this.tasks.values()) {
       if (task.concurrencyKey) {
         this.concurrencyManager.release(task.concurrencyKey)
@@ -1303,7 +1396,11 @@ Use \`background_output(task_id="${task.id}")\` to retrieve this result when rea
       }
     }
 
-    // Then clear all state (cancels any remaining waiters)
+    for (const timer of this.completionTimers.values()) {
+      clearTimeout(timer)
+    }
+    this.completionTimers.clear()
+
     this.concurrencyManager.clear()
     this.tasks.clear()
     this.notifications.clear()
@@ -1324,7 +1421,10 @@ function registerProcessSignal(
   const listener = () => {
     handler()
     if (exitAfter) {
-      process.exit(0)
+      // Set exitCode and schedule exit after delay to allow other handlers to complete async cleanup
+      // Use 6s delay to accommodate LSP cleanup (5s timeout + 1s SIGKILL wait)
+      process.exitCode = 0
+      setTimeout(() => process.exit(), 6000)
     }
   }
   process.on(signal, listener)
