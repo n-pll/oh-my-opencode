@@ -1,8 +1,9 @@
 import type { AgentConfig } from "@opencode-ai/sdk"
+import type { AgentMode, AgentPromptMetadata } from "./types"
 import { isGptModel } from "./types"
-import type { AgentPromptMetadata } from "./types"
 import { createAgentToolRestrictions } from "../shared/permission-compat"
-import { t } from "../i18n"
+
+const MODE: AgentMode = "subagent"
 
 export const ORACLE_PROMPT_METADATA: AgentPromptMetadata = {
   category: "advisor",
@@ -30,7 +31,7 @@ export const ORACLE_PROMPT_METADATA: AgentPromptMetadata = {
   ],
 }
 
-const ORACLE_SYSTEM_PROMPT = `${t("agents.oracle.role")} with deep reasoning capabilities, operating as a specialized consultant within an AI-assisted development environment.
+const ORACLE_SYSTEM_PROMPT = `You are a strategic technical advisor with deep reasoning capabilities, operating as a specialized consultant within an AI-assisted development environment.
 
 ## Context
 
@@ -38,7 +39,7 @@ You function as an on-demand specialist invoked by a primary coding agent when c
 
 ## What You Do
 
-${t("agents.oracle.description")}:
+Your expertise covers:
 - Dissecting codebases to understand structural patterns and design choices
 - Formulating concrete, implementable technical recommendations
 - Architecting solutions and mapping out refactoring roadmaps
@@ -106,8 +107,8 @@ export function createOracleAgent(model: string): AgentConfig {
 
   const base = {
     description:
-      "Read-only consultation agent. High-IQ reasoning specialist for debugging hard problems and high-difficulty architecture design.",
-    mode: "subagent" as const,
+      "Read-only consultation agent. High-IQ reasoning specialist for debugging hard problems and high-difficulty architecture design. (Oracle - OhMyOpenCode)",
+    mode: MODE,
     model,
     temperature: 0.1,
     ...restrictions,
@@ -120,4 +121,5 @@ export function createOracleAgent(model: string): AgentConfig {
 
   return { ...base, thinking: { type: "enabled", budgetTokens: 32000 } } as AgentConfig
 }
+createOracleAgent.mode = MODE
 
