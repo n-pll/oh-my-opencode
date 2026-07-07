@@ -1,4 +1,5 @@
-import { HYPERPLAN_MODE_PROMPT } from "@oh-my-opencode/prompts-core"
+import { getHyperplanModePrompt } from "@oh-my-opencode/prompts-core"
+import { getLocale } from "../../../shared/i18n"
 
 /**
  * Hyperplan keyword detector.
@@ -19,4 +20,4 @@ import { HYPERPLAN_MODE_PROMPT } from "@oh-my-opencode/prompts-core"
 
 export const HYPERPLAN_PATTERN = /\bhyperplan\b|(?<![\w.])hpp\b/i
 
-export const HYPERPLAN_MESSAGE = HYPERPLAN_MODE_PROMPT
+export const HYPERPLAN_MESSAGE = () => getHyperplanModePrompt(getLocale())

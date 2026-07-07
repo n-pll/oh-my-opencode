@@ -1,4 +1,5 @@
-import { TEAM_MODE_PROMPT } from "@oh-my-opencode/prompts-core"
+import { getTeamModePrompt } from "@oh-my-opencode/prompts-core"
+import { getLocale } from "../../../shared/i18n"
 
 /**
  * Team mode keyword detector.
@@ -9,4 +10,4 @@ import { TEAM_MODE_PROMPT } from "@oh-my-opencode/prompts-core"
 
 export const TEAM_PATTERN = /\bteam[\s_-]?mode\b/i
 
-export const TEAM_MESSAGE = TEAM_MODE_PROMPT
+export const TEAM_MESSAGE = () => getTeamModePrompt(getLocale())

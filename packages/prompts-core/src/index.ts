@@ -29,4 +29,6 @@ export { loadPrompt, loadPromptSync, PromptFileNotFoundError, PromptPathTraversa
 export {
   HYPERPLAN_MODE_PROMPT,
   TEAM_MODE_PROMPT,
+  getHyperplanModePrompt,
+  getTeamModePrompt,
 } from "./mode-prompts"
