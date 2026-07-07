@@ -4,6 +4,7 @@ import { getInstalledLspServers } from "./tools-lsp"
 import { getBuiltinMcpInfo, getUserMcpInfo } from "./tools-mcp"
 import { CHECK_IDS, CHECK_NAMES } from "../framework/constants"
 import type { CheckResult, DoctorIssue, ToolsSummary } from "../framework/types"
+import { t } from "../../../shared/i18n"
 
 export async function gatherToolsSummary(): Promise<ToolsSummary> {
   const [astGrepCliInfo, commentCheckerInfo, ghInfo] = await Promise.all([
@@ -35,9 +36,9 @@ export function buildToolIssues(summary: ToolsSummary): DoctorIssue[] {
 
   if (!summary.astGrepCli) {
     issues.push({
-      title: "AST-Grep unavailable",
-      description: "AST-Grep CLI is not available.",
-      fix: "The ast-grep skill resolves sg automatically; run omo doctor or lazycodex-ai doctor to check provisioning.",
+      title: t("cli.doctor.tools.astGrep.title"),
+      description: t("cli.doctor.tools.astGrep.description"),
+      fix: t("cli.doctor.tools.astGrep.fix"),
       severity: "warning",
       affects: ["ast-grep skill"],
     })
@@ -45,9 +46,9 @@ export function buildToolIssues(summary: ToolsSummary): DoctorIssue[] {
 
   if (!summary.commentChecker) {
     issues.push({
-      title: "Comment checker unavailable",
-      description: "Comment checker binary is not installed.",
-      fix: "Install @code-yeongyu/comment-checker",
+      title: t("cli.doctor.tools.commentChecker.title"),
+      description: t("cli.doctor.tools.commentChecker.description"),
+      fix: t("cli.doctor.tools.commentChecker.fix"),
       severity: "warning",
       affects: ["comment-checker hook"],
     })
@@ -55,8 +56,8 @@ export function buildToolIssues(summary: ToolsSummary): DoctorIssue[] {
 
   if (summary.lspServers.length === 0) {
     issues.push({
-      title: "No LSP servers detected",
-      description: "LSP-dependent tools will be limited until at least one server is installed.",
+      title: t("cli.doctor.tools.lsp.title"),
+      description: t("cli.doctor.tools.lsp.description"),
       severity: "warning",
       affects: ["lsp diagnostics", "rename", "references"],
     })
@@ -64,17 +65,17 @@ export function buildToolIssues(summary: ToolsSummary): DoctorIssue[] {
 
   if (!summary.ghCli.installed) {
     issues.push({
-      title: "GitHub CLI missing",
-      description: "gh CLI is not installed.",
-      fix: "Install from https://cli.github.com/",
+      title: t("cli.doctor.tools.ghMissing.title"),
+      description: t("cli.doctor.tools.ghMissing.description"),
+      fix: t("cli.doctor.tools.ghMissing.fix"),
       severity: "warning",
       affects: ["GitHub automation"],
     })
   } else if (!summary.ghCli.authenticated) {
     issues.push({
-      title: "GitHub CLI not authenticated",
-      description: "gh CLI is installed but not logged in.",
-      fix: "Run: gh auth login",
+      title: t("cli.doctor.tools.ghNotAuth.title"),
+      description: t("cli.doctor.tools.ghNotAuth.description"),
+      fix: t("cli.doctor.tools.ghNotAuth.fix"),
       severity: "warning",
       affects: ["GitHub automation"],
     })
@@ -91,8 +92,8 @@ export async function checkTools(): Promise<CheckResult> {
 
   if (invalidUserMcpServers.length > 0) {
     issues.push({
-      title: "Invalid MCP server configuration",
-      description: `${invalidUserMcpServers.length} user MCP server(s) have invalid config format.`,
+      title: t("cli.doctor.tools.invalidMcp.title"),
+      description: t("cli.doctor.tools.invalidMcp.description", { count: invalidUserMcpServers.length }),
       severity: "warning",
       affects: ["custom MCP tools"],
     })
@@ -101,13 +102,13 @@ export async function checkTools(): Promise<CheckResult> {
   return {
     name: CHECK_NAMES[CHECK_IDS.TOOLS],
     status: issues.length === 0 ? "pass" : "warn",
-    message: issues.length === 0 ? "All tools checks passed" : `${issues.length} tools issue(s) detected`,
+    message: issues.length === 0 ? t("cli.doctor.tools.passed") : t("cli.doctor.tools.issueDetected", { count: issues.length }),
     details: [
-      `AST-Grep CLI: ${summary.astGrepCli ? "yes" : "no"}`,
-      `Comment checker: ${summary.commentChecker ? "yes" : "no"}`,
-      `LSP: ${summary.lspServers.length > 0 ? `${summary.lspServers.length} server(s)` : "none"}`,
-      `GH CLI: ${summary.ghCli.installed ? "installed" : "missing"}${summary.ghCli.authenticated ? " (authenticated)" : ""}`,
-      `MCP: builtin=${summary.mcpBuiltin.length}, user=${summary.mcpUser.length}`,
+      t("cli.doctor.tools.detail.astGrep", { value: summary.astGrepCli ? t("common.yes") : t("common.no") }),
+      t("cli.doctor.tools.detail.commentChecker", { value: summary.commentChecker ? t("common.yes") : t("common.no") }),
+      t("cli.doctor.tools.detail.lsp", { value: summary.lspServers.length > 0 ? t("cli.doctor.tools.detail.lspServers", { count: summary.lspServers.length }) : t("common.none") }),
+      t("cli.doctor.tools.detail.gh", { status: summary.ghCli.installed ? t("cli.doctor.tools.detail.ghInstalled") : t("cli.doctor.tools.detail.ghMissing"), suffix: summary.ghCli.authenticated ? t("cli.doctor.tools.detail.ghAuthenticated") : "" }),
+      t("cli.doctor.tools.detail.mcp", { builtin: summary.mcpBuiltin.length, user: summary.mcpUser.length }),
     ],
     issues,
   }

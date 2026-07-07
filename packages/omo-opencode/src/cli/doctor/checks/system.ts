@@ -7,6 +7,7 @@ import { getPluginInfo } from "./system-plugin"
 import { getLatestPluginVersion, getLoadedPluginVersion, getSuggestedInstallTag } from "./system-loaded-version"
 import { parseJsonc } from "../../../shared/jsonc-parser"
 import { ACCEPTED_PACKAGE_NAMES, PUBLISHED_PACKAGE_NAME, PLUGIN_NAME, LEGACY_PLUGIN_NAME } from "../../../shared/plugin-identity"
+import { t } from "../../../shared/i18n"
 
 const runtime = globalThis as typeof globalThis & { Bun?: { version?: string } }
 
@@ -61,9 +62,9 @@ function getResultStatus(issues: DoctorIssue[]): CheckResult["status"] {
 }
 
 function buildMessage(status: CheckResult["status"], issues: DoctorIssue[]): string {
-  if (status === "pass") return "System checks passed"
-  if (status === "fail") return `${issues.length} system issue(s) detected`
-  return `${issues.length} system warning(s) detected`
+  if (status === "pass") return t("cli.doctor.system.passed")
+  if (status === "fail") return t("cli.doctor.system.issueDetected", { count: issues.length })
+  return t("cli.doctor.system.warningDetected", { count: issues.length })
 }
 
 function getLoadedPackageName(installedPackagePath: string): string {
@@ -109,9 +110,9 @@ export async function checkSystem(deps: SystemCheckDeps = defaultDeps): Promise<
 
   if (!systemInfo.opencodePath) {
     issues.push({
-      title: "OpenCode binary not found",
-      description: "Install OpenCode CLI or desktop and ensure the binary is available.",
-      fix: "Install from https://opencode.ai/docs",
+      title: t("cli.doctor.system.opencodeNotFound.title"),
+      description: t("cli.doctor.system.opencodeNotFound.description"),
+      fix: t("cli.doctor.system.opencodeNotFound.fix"),
       severity: "error",
       affects: ["doctor", "run"],
     })
@@ -122,9 +123,9 @@ export async function checkSystem(deps: SystemCheckDeps = defaultDeps): Promise<
     !deps.compareVersions(systemInfo.opencodeVersion, MIN_OPENCODE_VERSION)
   ) {
     issues.push({
-      title: "OpenCode version below minimum",
-      description: `Detected ${systemInfo.opencodeVersion}; required >= ${MIN_OPENCODE_VERSION}.`,
-      fix: "Update OpenCode to the latest stable release",
+      title: t("cli.doctor.system.opencodeBelowMin.title"),
+      description: t("cli.doctor.system.opencodeBelowMin.description", { detected: systemInfo.opencodeVersion, required: MIN_OPENCODE_VERSION }),
+      fix: t("cli.doctor.system.opencodeBelowMin.fix"),
       severity: "warning",
       affects: ["tooling", "doctor"],
     })
@@ -132,9 +133,9 @@ export async function checkSystem(deps: SystemCheckDeps = defaultDeps): Promise<
 
   if (!pluginInfo.registered) {
     issues.push({
-      title: `${PLUGIN_NAME} is not registered`,
-      description: "Plugin entry is missing from OpenCode configuration.",
-      fix: `Run: bunx ${PUBLISHED_PACKAGE_NAME} install`,
+      title: t("cli.doctor.system.pluginNotRegistered.title", { pluginName: PLUGIN_NAME }),
+      description: t("cli.doctor.system.pluginNotRegistered.description"),
+      fix: t("cli.doctor.system.pluginNotRegistered.fix", { packageName: PUBLISHED_PACKAGE_NAME }),
       severity: "error",
       affects: ["all agents"],
     })
@@ -147,9 +148,9 @@ export async function checkSystem(deps: SystemCheckDeps = defaultDeps): Promise<
     if (isLegacyName) {
       const suggestedEntry = pluginInfo.entry.replace(LEGACY_PLUGIN_NAME, PLUGIN_NAME)
       issues.push({
-        title: "Using legacy package name",
-        description: `Your opencode.json references "${LEGACY_PLUGIN_NAME}" which has been renamed to "${PLUGIN_NAME}". The old name may stop working in a future release.`,
-        fix: `Update your opencode.json plugin entry: "${pluginInfo.entry}" → "${suggestedEntry}"`,
+        title: t("cli.doctor.system.legacyName.title"),
+        description: t("cli.doctor.system.legacyName.description", { legacyName: LEGACY_PLUGIN_NAME, pluginName: PLUGIN_NAME }),
+        fix: t("cli.doctor.system.legacyName.fix", { entry: pluginInfo.entry, suggested: suggestedEntry }),
         severity: "warning",
         affects: ["plugin loading"],
       })
@@ -158,9 +159,9 @@ export async function checkSystem(deps: SystemCheckDeps = defaultDeps): Promise<
 
   if (loadedInfo.expectedVersion && loadedInfo.loadedVersion && loadedInfo.expectedVersion !== loadedInfo.loadedVersion) {
     issues.push({
-      title: "Loaded plugin version mismatch",
-      description: `Cache expects ${loadedInfo.expectedVersion} but loaded ${loadedInfo.loadedVersion}.`,
-      fix: `Reinstall: cd "${loadedInfo.cacheDir}" && bun install`,
+      title: t("cli.doctor.system.versionMismatch.title"),
+      description: t("cli.doctor.system.versionMismatch.description", { expected: loadedInfo.expectedVersion, loaded: loadedInfo.loadedVersion }),
+      fix: t("cli.doctor.system.versionMismatch.fix", { cacheDir: loadedInfo.cacheDir }),
       severity: "warning",
       affects: ["plugin loading"],
     })
@@ -173,11 +174,9 @@ export async function checkSystem(deps: SystemCheckDeps = defaultDeps): Promise<
   ) {
     const loadedPackageName = getLoadedPackageName(loadedInfo.installedPackagePath)
     issues.push({
-      title: "Loaded plugin is outdated",
-      description: `Loaded ${systemInfo.loadedVersion}, latest ${latestVersion}.`,
-      fix: `Update: cd "${loadedInfo.cacheDir}" && bun add ${loadedPackageName}@${installTag}\n` +
-        `If Bun reports blocked postinstalls, inspect them: cd "${loadedInfo.cacheDir}" && bun pm untrusted\n` +
-        `Then trust only OMO-related packages from that list: cd "${loadedInfo.cacheDir}" && bun pm trust ${loadedPackageName} ${BUN_POSTINSTALL_HELPER_PACKAGE_NAME}`,
+      title: t("cli.doctor.system.outdated.title"),
+      description: t("cli.doctor.system.outdated.description", { loaded: systemInfo.loadedVersion, latest: latestVersion }),
+      fix: t("cli.doctor.system.outdated.fix", { cacheDir: loadedInfo.cacheDir, packageName: loadedPackageName, installTag, helperPackage: BUN_POSTINSTALL_HELPER_PACKAGE_NAME }),
       severity: "warning",
       affects: ["plugin features"],
     })
@@ -189,10 +188,10 @@ export async function checkSystem(deps: SystemCheckDeps = defaultDeps): Promise<
     status,
     message: buildMessage(status, issues),
     details: [
-      systemInfo.opencodeVersion ? `OpenCode: ${systemInfo.opencodeVersion}` : "OpenCode: not detected",
-      `Plugin expected: ${systemInfo.pluginVersion ?? "unknown"}`,
-      `Plugin loaded: ${systemInfo.loadedVersion ?? "unknown"}`,
-      `Bun: ${systemInfo.bunVersion ?? "unknown"}`,
+      systemInfo.opencodeVersion ? t("cli.doctor.system.detail.opencode", { version: systemInfo.opencodeVersion }) : t("cli.doctor.system.detail.opencodeNotDetected"),
+      t("cli.doctor.system.detail.pluginExpected", { version: systemInfo.pluginVersion ?? t("common.unknown") }),
+      t("cli.doctor.system.detail.pluginLoaded", { version: systemInfo.loadedVersion ?? t("common.unknown") }),
+      t("cli.doctor.system.detail.bun", { version: systemInfo.bunVersion ?? t("common.unknown") }),
     ],
     issues,
   }
