@@ -4,6 +4,7 @@ import { homedir } from "node:os"
 import { join, resolve } from "node:path"
 import { resolveCodexInstallerBinDir } from "../../install-codex/install-codex"
 import type { CheckResult, DoctorIssue } from "../framework/types"
+import { t } from "../../../shared/i18n"
 
 const RUNTIME_WRAPPER_MARKER = "OMO_GENERATED_RUNTIME_WRAPPER"
 const CHECK_NAME = "codex-runtime-wrapper"
@@ -27,9 +28,9 @@ export async function checkCodexRuntimeWrapper(deps: CodexRuntimeWrapperDoctorDe
     const targetPath = parseRuntimeTargetPath(wrapper)
     if (targetPath !== null && !existsSync(targetPath)) {
       issues.push({
-        title: "omo runtime wrapper target is missing",
-        description: `Generated omo runtime wrapper at ${wrapperPath} points to missing target ${targetPath}.`,
-        fix: `Run: ${REINSTALL_COMMAND}`,
+        title: t("cli.doctor.codexRuntime.title"),
+        description: t("cli.doctor.codexRuntime.description", { wrapperPath, targetPath }),
+        fix: t("cli.doctor.codexRuntime.fix", { command: REINSTALL_COMMAND }),
         severity: "warning",
         affects: ["ulw-loop"],
       })
@@ -39,8 +40,8 @@ export async function checkCodexRuntimeWrapper(deps: CodexRuntimeWrapperDoctorDe
   return {
     name: CHECK_NAME,
     status: issues.length > 0 ? "warn" : "pass",
-    message: issues.length > 0 ? `${issues.length} Codex runtime wrapper issue(s) detected` : "Codex runtime wrapper checks passed",
-    details: [`Wrapper: ${wrapperPath}`],
+    message: issues.length > 0 ? t("cli.doctor.codexRuntime.issueDetected", { count: issues.length }) : t("cli.doctor.codexRuntime.passed"),
+    details: [t("cli.doctor.codexRuntime.detail.wrapper", { path: wrapperPath })],
     issues,
   }
 }

@@ -10,6 +10,7 @@ import { spawnWithTimeout } from "../framework/spawn-with-timeout"
 import { getCachedBinaryPath } from "../../../hooks/comment-checker/downloader"
 import { bunWhich } from "../../../shared/bun-which-shim"
 import { isModuleResolutionFailure } from "../../../shared/module-resolution-failure"
+import { t } from "../../../shared/i18n"
 
 type BinaryCheck =
   | { exists: true; path: string }
@@ -43,19 +44,19 @@ export async function checkAstGrepCli(): Promise<DependencyInfo> {
   const sgPath = findSgBinarySync({ runtimeDir })
   if (sgPath === null) {
     return {
-      name: "AST-Grep CLI",
+      name: t("cli.doctor.dependencies.astGrepName"),
       required: false,
       installed: false,
       version: null,
       path: null,
-      installHint: "Provisioned automatically by the bundled ast-grep skill; reinstall or start a new OpenCode session to retry.",
+      installHint: t("cli.doctor.dependencies.astGrepInstallHint"),
     }
   }
 
   const version = await getBinaryVersion(sgPath)
 
   return {
-    name: "AST-Grep CLI",
+    name: t("cli.doctor.dependencies.astGrepName"),
     required: false,
     installed: true,
     version,
@@ -92,7 +93,7 @@ export async function checkCommentChecker(): Promise<DependencyInfo> {
   if (cachedPath) {
     const version = await getBinaryVersion(cachedPath)
     return {
-      name: "Comment Checker",
+      name: t("cli.doctor.dependencies.commentCheckerName"),
       required: false,
       installed: true,
       version,
@@ -105,19 +106,19 @@ export async function checkCommentChecker(): Promise<DependencyInfo> {
 
   if (!resolvedPath) {
     return {
-      name: "Comment Checker",
+      name: t("cli.doctor.dependencies.commentCheckerName"),
       required: false,
       installed: false,
       version: null,
       path: null,
-      installHint: "Hook will be disabled if not available",
+      installHint: t("cli.doctor.dependencies.commentCheckerInstallHint"),
     }
   }
 
   const version = await getBinaryVersion(resolvedPath)
 
   return {
-    name: "Comment Checker",
+    name: t("cli.doctor.dependencies.commentCheckerName"),
     required: false,
     installed: true,
     version,

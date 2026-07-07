@@ -292,6 +292,20 @@ const locales = {
   "cli.doctor.models.detail.entry": "  {{marker}} {{name}}: {{display}} [capabilities: {{mode}}]",
   "cli.doctor.models.detail.legend": "● = user override, ○ = provider fallback",
 
+  // --- cli.doctor.dependencies (ast-grep / comment-checker dependency names + hints) ---
+  "cli.doctor.dependencies.astGrepName": "AST-Grep CLI",
+  "cli.doctor.dependencies.astGrepInstallHint": "Provisioned automatically by the bundled ast-grep skill; reinstall or start a new OpenCode session to retry.",
+  "cli.doctor.dependencies.commentCheckerName": "Comment Checker",
+  "cli.doctor.dependencies.commentCheckerInstallHint": "Hook will be disabled if not available",
+
+  // --- cli.doctor.codex-runtime-wrapper ---
+  "cli.doctor.codexRuntime.title": "omo runtime wrapper target is missing",
+  "cli.doctor.codexRuntime.description": "Generated omo runtime wrapper at {{wrapperPath}} points to missing target {{targetPath}}.",
+  "cli.doctor.codexRuntime.fix": "Run: {{command}}",
+  "cli.doctor.codexRuntime.passed": "Codex runtime wrapper checks passed",
+  "cli.doctor.codexRuntime.issueDetected": "{{count}} Codex runtime wrapper issue(s) detected",
+  "cli.doctor.codexRuntime.detail.wrapper": "Wrapper: {{path}}",
+
   "cli.version.header": "oh-my-opencode Version Information",
   "cli.version.currentVersion": "Current Version: {{version}}",
   "cli.version.currentVersionUnknown": "Current Version: unknown",

@@ -294,6 +294,20 @@ const overrides: Partial<Record<TranslationKey, string>> = {
   "cli.doctor.models.detail.entry": "  {{marker}} {{name}}：{{display}} [能力：{{mode}}]",
   "cli.doctor.models.detail.legend": "● = 用户覆盖，○ = provider 回退",
 
+  // --- cli.doctor.dependencies (ast-grep / comment-checker dependency names + hints) ---
+  "cli.doctor.dependencies.astGrepName": "AST-Grep CLI",
+  "cli.doctor.dependencies.astGrepInstallHint": "由内置的 ast-grep skill 自动配置；重新安装或启动新的 OpenCode 会话以重试。",
+  "cli.doctor.dependencies.commentCheckerName": "Comment Checker",
+  "cli.doctor.dependencies.commentCheckerInstallHint": "若不可用，hook 将被禁用",
+
+  // --- cli.doctor.codex-runtime-wrapper ---
+  "cli.doctor.codexRuntime.title": "omo 运行时包装器目标缺失",
+  "cli.doctor.codexRuntime.description": "位于 {{wrapperPath}} 的生成的 omo 运行时包装器指向缺失的目标 {{targetPath}}。",
+  "cli.doctor.codexRuntime.fix": "运行：{{command}}",
+  "cli.doctor.codexRuntime.passed": "Codex 运行时包装器检查通过",
+  "cli.doctor.codexRuntime.issueDetected": "检测到 {{count}} 个 Codex 运行时包装器问题",
+  "cli.doctor.codexRuntime.detail.wrapper": "包装器：{{path}}",
+
   "cli.version.header": "oh-my-opencode 版本信息",
   "cli.version.currentVersion": "当前版本: {{version}}",
   "cli.version.currentVersionUnknown": "当前版本: 未知",
