@@ -9,6 +9,7 @@ import type {
 import { detectedToInitialValues } from "./install-validators"
 import { ULTIMATE_FALLBACK } from "./model-fallback"
 import { isSenpiPlatformEnabled } from "./senpi-platform-flag"
+import { t } from "../shared/i18n"
 
 async function selectOrCancel<TValue extends Readonly<string | boolean | number>>(params: {
   message: string
@@ -23,26 +24,37 @@ async function selectOrCancel<TValue extends Readonly<string | boolean | number>
     initialValue: params.initialValue,
   })
   if (p.isCancel(value)) {
-    p.cancel("Installation cancelled.")
+    p.cancel(t("cli.install.cancelled"))
     return null
   }
   return value as TValue
+}
+
+function otherProvidersHint(): string {
+  return t("cli.install.hint.otherProviders")
+}
+
+function yesNoOptions(yesHint: string): Option<string>[] {
+  return [
+    { value: "no", label: t("cli.install.option.no"), hint: otherProvidersHint() },
+    { value: "yes", label: t("cli.install.option.yes"), hint: yesHint },
+  ]
 }
 
 export async function promptInstallPlatform(
   initialValue: InstallPlatform = "opencode",
 ): Promise<InstallPlatform | null> {
   const options: Option<InstallPlatform>[] = [
-    { value: "opencode", label: "OpenCode", hint: "Install OpenCode plugin only" },
-    { value: "codex", label: "Codex", hint: "Install Codex harness adapter only" },
-    { value: "both", label: "Both", hint: "Install OpenCode plugin and Codex adapter" },
+    { value: "opencode", label: t("cli.install.platform.opencode.label"), hint: t("cli.install.platform.opencode.hint") },
+    { value: "codex", label: t("cli.install.platform.codex.label"), hint: t("cli.install.platform.codex.hint") },
+    { value: "both", label: t("cli.install.platform.both.label"), hint: t("cli.install.platform.both.hint") },
   ]
   if (isSenpiPlatformEnabled()) {
     options.push({ value: "senpi", label: "Senpi", hint: "Install Senpi harness adapter only" })
   }
 
   return selectOrCancel<InstallPlatform>({
-    message: "Which platform do you want to install?",
+    message: t("cli.install.platform.question"),
     options,
     initialValue,
   })
@@ -85,122 +97,98 @@ export async function promptInstallConfig(
   const initial = detectedToInitialValues(detected)
 
   const claude = await selectOrCancel<ClaudeSubscription>({
-    message: "Do you have a Claude Pro/Max subscription?",
+    message: t("cli.install.claude.question"),
     options: [
-      { value: "no", label: "No", hint: `Will use ${ULTIMATE_FALLBACK} as fallback` },
-      { value: "yes", label: "Yes (standard)", hint: "Claude Opus 5 for orchestration" },
-      { value: "max20", label: "Yes (max20 mode)", hint: "Higher Claude usage limits for orchestration" },
+      { value: "no", label: t("cli.install.option.no"), hint: t("cli.install.claude.hint.no", { fallback: ULTIMATE_FALLBACK }) },
+      { value: "yes", label: t("cli.install.claude.option.yesStandard"), hint: t("cli.install.claude.option.yesStandard.hint") },
+      { value: "max20", label: t("cli.install.claude.option.max20"), hint: t("cli.install.claude.option.max20.hint") },
     ],
     initialValue: initial.claude,
   })
   if (!claude) return null
 
   const openai = await selectOrCancel({
-    message: "Do you have an OpenAI/ChatGPT Plus subscription?",
+    message: t("cli.install.openai.question"),
     options: [
-      { value: "no", label: "No", hint: "Oracle will use fallback models" },
-      { value: "yes", label: "Yes", hint: "GPT-5.6 Sol for Oracle (high-IQ debugging)" },
+      { value: "no", label: t("cli.install.option.no"), hint: t("cli.install.openai.hint.no") },
+      { value: "yes", label: t("cli.install.option.yes"), hint: t("cli.install.openai.hint.yes") },
     ],
     initialValue: initial.openai,
   })
   if (!openai) return null
 
   const gemini = await selectOrCancel({
-    message: "Will you integrate Google Gemini?",
+    message: t("cli.install.gemini.question"),
     options: [
-      { value: "no", label: "No", hint: "Frontend/docs agents will use fallback" },
-      { value: "yes", label: "Yes", hint: "Beautiful UI generation with Gemini 3.1 Pro" },
+      { value: "no", label: t("cli.install.option.no"), hint: t("cli.install.gemini.hint.no") },
+      { value: "yes", label: t("cli.install.option.yes"), hint: t("cli.install.gemini.hint.yes") },
     ],
     initialValue: initial.gemini,
   })
   if (!gemini) return null
 
   const copilot = await selectOrCancel({
-    message: "Do you have a GitHub Copilot subscription?",
+    message: t("cli.install.copilot.question"),
     options: [
-      { value: "no", label: "No", hint: "Only native providers will be used" },
-      { value: "yes", label: "Yes", hint: "Fallback option when native providers unavailable" },
+      { value: "no", label: t("cli.install.option.no"), hint: t("cli.install.copilot.hint.no") },
+      { value: "yes", label: t("cli.install.option.yes"), hint: t("cli.install.copilot.hint.yes") },
     ],
     initialValue: initial.copilot,
   })
   if (!copilot) return null
 
   const opencodeZen = await selectOrCancel({
-    message: "Do you have access to OpenCode Zen (opencode/ models)?",
-    options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "opencode/claude-opus-5, opencode/gpt-5.6-sol, etc." },
-    ],
+    message: t("cli.install.opencodeZen.question"),
+    options: yesNoOptions(t("cli.install.opencodeZen.hint.yes")),
     initialValue: initial.opencodeZen,
   })
   if (!opencodeZen) return null
 
   const zaiCodingPlan = await selectOrCancel({
-    message: "Do you have a Z.ai Coding Plan subscription?",
-    options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "Fallback for Librarian and Multimodal Looker" },
-    ],
+    message: t("cli.install.zaiCodingPlan.question"),
+    options: yesNoOptions(t("cli.install.zaiCodingPlan.hint.yes")),
     initialValue: initial.zaiCodingPlan,
   })
   if (!zaiCodingPlan) return null
 
   const kimiForCoding = await selectOrCancel({
-    message: "Do you have a Kimi For Coding subscription?",
-    options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "Kimi K3 for Sisyphus/Prometheus fallback" },
-    ],
+    message: t("cli.install.kimiForCoding.question"),
+    options: yesNoOptions(t("cli.install.kimiForCoding.hint.yes")),
     initialValue: initial.kimiForCoding,
   })
   if (!kimiForCoding) return null
 
   const opencodeGo = await selectOrCancel({
-    message: "Do you have an OpenCode Go subscription?",
-    options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "OpenCode Go for quick tasks" },
-    ],
+    message: t("cli.install.opencodeGo.question"),
+    options: yesNoOptions(t("cli.install.opencodeGo.hint.yes")),
     initialValue: initial.opencodeGo,
   })
   if (!opencodeGo) return null
 
   const bailianCodingPlan = await selectOrCancel({
-    message: "Do you have a Bailian Coding Plan subscription?",
-    options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "Qwen, GLM, and Kimi fallback route" },
-    ],
+    message: t("cli.install.bailianCodingPlan.question"),
+    options: yesNoOptions(t("cli.install.bailianCodingPlan.hint.yes")),
     initialValue: initial.bailianCodingPlan,
   })
   if (!bailianCodingPlan) return null
 
   const minimaxCnCodingPlan = await selectOrCancel({
-    message: "Do you have a MiniMax Coding Plan (minimaxi.com) subscription?",
-    options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "Enables MiniMax-M3 fallback models via minimaxi.com" },
-    ],
+    message: t("cli.install.minimaxCnCodingPlan.question"),
+    options: yesNoOptions(t("cli.install.minimaxCnCodingPlan.hint.yes")),
     initialValue: initial.minimaxCnCodingPlan,
   })
   if (!minimaxCnCodingPlan) return null
 
   const minimaxCodingPlan = await selectOrCancel({
-    message: "Do you have a MiniMax Coding Plan (minimax.io) subscription?",
-    options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "Enables MiniMax-M3 fallback models via minimax.io" },
-    ],
+    message: t("cli.install.minimaxCodingPlan.question"),
+    options: yesNoOptions(t("cli.install.minimaxCodingPlan.hint.yes")),
     initialValue: initial.minimaxCodingPlan,
   })
   if (!minimaxCodingPlan) return null
 
   const vercelAiGateway = await selectOrCancel({
-    message: "Do you have a Vercel AI Gateway API key?",
-    options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "Universal proxy for OpenAI, Anthropic, Google, etc." },
-    ],
+    message: t("cli.install.vercelAiGateway.question"),
+    options: yesNoOptions(t("cli.install.vercelAiGateway.hint.yes")),
     initialValue: initial.vercelAiGateway,
   })
   if (!vercelAiGateway) return null
