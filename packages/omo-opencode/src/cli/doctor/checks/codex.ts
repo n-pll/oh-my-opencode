@@ -9,6 +9,7 @@ import { parseHookStateHeaderKey, splitTomlSections } from "../../install-codex/
 import { CHECK_IDS, CHECK_NAMES } from "../framework/constants"
 import type { CheckResult, CodexConfigSummary, CodexDoctorSummary, DoctorIssue } from "../framework/types"
 import packageJson from "../../../../package.json" with { type: "json" }
+import { t } from "../../../shared/i18n"
 
 type DetectCodexInstallation = () => Promise<CodexInstallationDetection>
 
@@ -75,18 +76,18 @@ export async function checkCodex(deps: CodexDoctorDeps = {}): Promise<CheckResul
   return {
     name: CHECK_NAMES[CHECK_IDS.CODEX],
     status,
-    message: status === "pass" ? "Codex checks passed" : `${issues.length} Codex issue(s) detected`,
+    message: status === "pass" ? t("cli.doctor.codex.passed") : t("cli.doctor.codex.issueDetected", { count: issues.length }),
     details: [
-      `Codex: ${summary.codexPath ?? summary.codexAppId ?? "not detected"}`,
-      `CLI: oh-my-openagent@${summary.installerVersion}`,
-      `Marketplace: ${summary.marketplaceName}`,
-      `Plugin: ${summary.pluginName}@${summary.pluginVersion ?? "unknown"}${summary.pluginVersionStamped ? "" : " (placeholder, not stamped)"}`,
-      `Distribution: ${summary.packageName ?? "unknown"}@${summary.packageVersion ?? "unknown"}`,
-      `Config: ${summary.configPath}`,
-      `Enabled plugin: ${summary.config.pluginEnabled ? "omo@sisyphuslabs" : "missing"}`,
-      `Companion plugin: ${formatCompanionPluginStatus(summary.config)}`,
-      `Linked bins: ${summary.linkedBins.length > 0 ? summary.linkedBins.join(", ") : "none"}`,
-      `Agents: ${summary.agents.length > 0 ? summary.agents.join(", ") : "none"}`,
+      t("cli.doctor.codex.detail.codex", { value: summary.codexPath ?? summary.codexAppId ?? t("cli.doctor.codex.detail.codexNotDetected") }),
+      t("cli.doctor.codex.detail.cli", { version: summary.installerVersion }),
+      t("cli.doctor.codex.detail.marketplace", { name: summary.marketplaceName }),
+      t("cli.doctor.codex.detail.plugin", { name: summary.pluginName, version: summary.pluginVersion ?? t("common.unknown"), suffix: summary.pluginVersionStamped ? "" : t("cli.doctor.codex.detail.pluginPlaceholder") }),
+      t("cli.doctor.codex.detail.distribution", { name: summary.packageName ?? t("common.unknown"), version: summary.packageVersion ?? t("common.unknown") }),
+      t("cli.doctor.codex.detail.config", { path: summary.configPath }),
+      t("cli.doctor.codex.detail.enabledPlugin", { value: summary.config.pluginEnabled ? t("cli.doctor.codex.detail.enabledPluginValue") : t("common.missing") }),
+      t("cli.doctor.codex.detail.companionPlugin", { value: formatCompanionPluginStatus(summary.config) }),
+      t("cli.doctor.codex.detail.linkedBins", { value: summary.linkedBins.length > 0 ? summary.linkedBins.join(", ") : t("common.none") }),
+      t("cli.doctor.codex.detail.agents", { value: summary.agents.length > 0 ? summary.agents.join(", ") : t("common.none") }),
     ],
     issues,
   }
@@ -96,75 +97,71 @@ function buildCodexIssues(summary: CodexDoctorSummary): DoctorIssue[] {
   const issues: DoctorIssue[] = []
   if (summary.codexPath === null && summary.codexAppId === null) {
     issues.push({
-      title: "Codex is not installed",
-      description: "OpenAI Codex CLI or desktop app was not detected.",
-      fix: "Install Codex, then rerun `lazycodex doctor`.",
+      title: t("cli.doctor.codex.notInstalled.title"),
+      description: t("cli.doctor.codex.notInstalled.description"),
+      fix: t("cli.doctor.codex.notInstalled.fix"),
       severity: "error",
       affects: ["codex"],
     })
   }
   if (summary.pluginRoot === null) {
     issues.push({
-      title: "OMO Codex plugin is not installed",
-      description: `Expected cached plugin at ${join("plugins", "cache", MARKETPLACE_NAME, PLUGIN_NAME, DEFAULT_PLUGIN_VERSION)} under CODEX_HOME.`,
-      fix: "Run: npx lazycodex-ai install",
+      title: t("cli.doctor.codex.pluginNotInstalled.title"),
+      description: t("cli.doctor.codex.pluginNotInstalled.description", { path: join("plugins", "cache", MARKETPLACE_NAME, PLUGIN_NAME, DEFAULT_PLUGIN_VERSION) }),
+      fix: t("cli.doctor.codex.fix.install"),
       severity: "error",
       affects: ["plugin loading"],
     })
   } else if (!summary.pluginVersionStamped) {
     issues.push({
-      title: "Codex plugin bundle is not version-stamped",
-      description: `The installed OMO Codex plugin reports the placeholder version ${summary.pluginVersion ?? "unknown"}${summary.packageVersion === null ? " and no distribution snapshot was found" : ""}. This usually means it was installed through the Codex app plugin UI instead of the CLI installer, so its version does not reflect the real release. Your CLI is oh-my-openagent ${summary.installerVersion}.`,
-      fix: "Run: npx lazycodex-ai install",
+      title: t("cli.doctor.codex.notStamped.title"),
+      description: t("cli.doctor.codex.notStamped.description", { version: summary.pluginVersion ?? t("common.unknown"), noSnapshot: summary.packageVersion === null ? t("cli.doctor.codex.notStamped.noSnapshot") : "", installerVersion: summary.installerVersion }),
+      fix: t("cli.doctor.codex.fix.install"),
       severity: "warning",
       affects: ["version reporting"],
     })
   }
   if (summary.pluginRoot !== null && !summary.linkedBins.includes("omo")) {
     issues.push({
-      title: "omo runtime command is not linked",
-      description:
-        "The omo runtime wrapper is missing from the installer bin directory, so `omo ulw-loop` fails in Codex sessions. lazycodex-ai 4.8.0/4.8.1 installs removed the legacy omo bin without writing a replacement.",
-      fix: "Run: npx lazycodex-ai@latest install",
+      title: t("cli.doctor.codex.runtimeNotLinked.title"),
+      description: t("cli.doctor.codex.runtimeNotLinked.description"),
+      fix: t("cli.doctor.codex.fix.installLatest"),
       severity: "error",
       affects: ["ulw-loop"],
     })
   }
   if (!summary.config.pluginEnabled) {
     issues.push({
-      title: "Codex plugin is not enabled",
-      description: 'Expected [plugins."omo@sisyphuslabs"] enabled = true in Codex config.',
-      fix: "Run: npx lazycodex-ai install",
+      title: t("cli.doctor.codex.pluginNotEnabled.title"),
+      description: t("cli.doctor.codex.pluginNotEnabled.description"),
+      fix: t("cli.doctor.codex.fix.install"),
       severity: "error",
       affects: ["plugin loading"],
     })
   }
   if (!summary.config.marketplaceConfigured) {
     issues.push({
-      title: "LazyCodex marketplace is not configured",
-      description: 'Expected [marketplaces.sisyphuslabs] in Codex config.',
-      fix: "Run: npx lazycodex-ai install",
+      title: t("cli.doctor.codex.marketplaceNotConfigured.title"),
+      description: t("cli.doctor.codex.marketplaceNotConfigured.description"),
+      fix: t("cli.doctor.codex.fix.install"),
       severity: "error",
       affects: ["plugin loading"],
     })
   }
   if (!summary.config.pluginsFeatureEnabled || !summary.config.pluginHooksFeatureEnabled) {
     issues.push({
-      title: "Codex plugin features are not enabled",
-      description: "Codex plugins and plugin hooks must both be enabled.",
-      fix: "Run: npx lazycodex-ai install",
+      title: t("cli.doctor.codex.featuresNotEnabled.title"),
+      description: t("cli.doctor.codex.featuresNotEnabled.description"),
+      fix: t("cli.doctor.codex.fix.install"),
       severity: "warning",
       affects: ["hooks"],
     })
   }
   if (summary.config.pluginEnabled && hasCompanionLifecycleSurface(summary.config)) {
     issues.push({
-      title: "Codex Companion lifecycle hooks may conflict with LazyCodex",
-      description: [
-        companionLifecycleSurfaceDescription(summary.config),
-        "LazyCodex does not disable other plugins automatically, but when LazyCodex is your primary Codex workflow these extra lifecycle hooks can produce confusing SessionStart/Stop hook failure banners.",
-      ].join(" "),
-      fix: 'If LazyCodex is your primary Codex workflow, set [plugins."codex@openai-codex"] enabled = false and remove stale [hooks.state."codex@openai-codex:..."] SessionStart/Stop entries if the warning remains.',
+      title: t("cli.doctor.codex.companionConflict.title"),
+      description: t("cli.doctor.codex.companionConflict.description", { surface: companionLifecycleSurfaceDescription(summary.config) }),
+      fix: t("cli.doctor.codex.companionConflict.fix"),
       severity: "warning",
       affects: ["hooks", "plugin compatibility"],
     })
@@ -250,23 +247,25 @@ function hasCompanionLifecycleSurface(config: CodexConfigSummary): boolean {
 function companionLifecycleSurfaceDescription(config: CodexConfigSummary): string {
   const states = config.companionLifecycleHookStateEvents
   const stateText = states.length > 0
-    ? `trusted ${formatCompanionLifecycleEvents(states)} hook state`
-    : "no trusted SessionStart/Stop hook state detected"
-  const pluginText = config.companionPluginEnabled ? `${COMPANION_PLUGIN_KEY} is enabled` : `${COMPANION_PLUGIN_KEY} appears disabled`
-  return `${pluginText}, with ${stateText}.`
+    ? t("cli.doctor.codex.companionSurface.trustedState", { events: formatCompanionLifecycleEvents(states) })
+    : t("cli.doctor.codex.companionSurface.noState")
+  const pluginText = config.companionPluginEnabled
+    ? t("cli.doctor.codex.companionSurface.pluginEnabled", { key: COMPANION_PLUGIN_KEY })
+    : t("cli.doctor.codex.companionSurface.pluginDisabled", { key: COMPANION_PLUGIN_KEY })
+  return t("cli.doctor.codex.companionSurface.summary", { plugin: pluginText, state: stateText })
 }
 
 function formatCompanionPluginStatus(config: CodexConfigSummary): string {
   if (config.companionPluginEnabled) {
     const suffix = config.companionLifecycleHookStateEvents.length > 0
-      ? ` (${formatCompanionLifecycleEvents(config.companionLifecycleHookStateEvents)} hook trust)`
+      ? t("cli.doctor.codex.companionStatus.hookTrustSuffix", { events: formatCompanionLifecycleEvents(config.companionLifecycleHookStateEvents) })
       : ""
-    return `${COMPANION_PLUGIN_KEY} enabled${suffix}`
+    return t("cli.doctor.codex.companionStatus.enabled", { key: COMPANION_PLUGIN_KEY, suffix })
   }
   if (config.companionLifecycleHookStateEvents.length > 0) {
-    return `stale ${COMPANION_PLUGIN_KEY} ${formatCompanionLifecycleEvents(config.companionLifecycleHookStateEvents)} hook trust`
+    return t("cli.doctor.codex.companionStatus.stale", { key: COMPANION_PLUGIN_KEY, events: formatCompanionLifecycleEvents(config.companionLifecycleHookStateEvents) })
   }
-  return "none"
+  return t("common.none")
 }
 
 function readCompanionLifecycleHookStateEvents(content: string): readonly string[] {
