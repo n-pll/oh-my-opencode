@@ -30,18 +30,19 @@ import { starGitHubRepositories } from "./star-request"
 import { getNoModelProvidersWarning, hasAnyConfiguredProvider } from "./provider-availability"
 import { ensureTuiPluginEntry } from "./config-manager/add-tui-plugin-to-tui-config"
 import * as astGrepInstall from "./install-ast-grep-sg"
+import { t } from "../shared/i18n"
 
 export async function runCliInstaller(args: InstallArgs, version: string): Promise<number> {
   const validation = validateNonTuiArgs(args)
   if (!validation.valid) {
     printHeader(false)
-    printError("Validation failed:")
+    printError(t("cli.cli-installer.validationFailed"))
     for (const err of validation.errors) {
       console.log(`  ${SYMBOLS.bullet} ${err}`)
     }
     console.log()
     printInfo(
-      `Usage: bunx ${PUBLISHED_PACKAGE_NAME} install --no-tui --claude=<no|yes|max20> --gemini=<no|yes> --copilot=<no|yes>`,
+      t("cli.cli-installer.usageHint", { packageName: PUBLISHED_PACKAGE_NAME }),
     )
     console.log()
     return 1
@@ -128,12 +129,11 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
     await astGrepInstall.installAstGrepForOpenCode({ log: printWarning })
   }
 
-  printBox(formatConfigSummary(config), isUpdate ? "Updated Configuration" : "Installation Complete")
+  printBox(formatConfigSummary(config), isUpdate ? t("cli.cli-installer.note.updatedConfig") : t("cli.cli-installer.note.installComplete"))
 
   if (config.hasOpenCode && !config.hasClaude) {
     printInfo(
-      "Note: Sisyphus agent performs best with Claude Opus 5. " +
-        "Other models work but may have reduced orchestration quality.",
+      t("cli.cli-installer.note.claudeBest", { label: `${color.bold("Note:")}` }),
     )
   }
 
@@ -141,24 +141,24 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
     printWarning(getNoModelProvidersWarning())
   }
 
-  console.log(`${SYMBOLS.star} ${color.bold(color.green(isUpdate ? "Configuration updated!" : "Installation complete!"))}`)
+  console.log(`${SYMBOLS.star} ${color.bold(color.green(isUpdate ? t("cli.tui-installer.configUpdated") : t("cli.tui-installer.installComplete")))}`)
   if (hasOpenCode) {
-    console.log(`  Run ${color.cyan("opencode")} to start!`)
+    console.log(t("cli.tui-installer.runToStart", { command: `  ${color.cyan("opencode")}` }))
   }
   console.log()
 
   if (config.hasCodex) {
-    printInfo("Installing Codex harness adapter...")
+    printInfo(t("cli.cli-installer.codexInstalling"))
     try {
       const codexResult = await runCodexInstaller({ autonomousPermissions: config.codexAutonomous })
-      printSuccess(`Codex plugin installed ${SYMBOLS.arrow} ${color.dim(codexResult.configPath)}`)
+      printSuccess(t("cli.cli-installer.codexInstalled", { arrow: SYMBOLS.arrow, path: color.dim(codexResult.configPath) }))
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       if (!config.hasOpenCode) {
-        printError(`Codex install failed: ${message}`)
+        printError(t("cli.cli-installer.codexInstallFailed", { message }))
         return 1
       }
-      printWarning(`Codex install failed (OpenCode install is still complete): ${message}`)
+      printWarning(t("cli.cli-installer.codexInstallFailedOcOk", { message }))
     }
     console.log()
   }
@@ -176,32 +176,28 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
     console.log()
   }
 
-  printInfo(
-    "Anonymous telemetry is enabled by default. Disable it with OMO_SEND_ANONYMOUS_TELEMETRY=0 or OMO_DISABLE_POSTHOG=1.",
-  )
-  printInfo("Docs: docs/legal/privacy-policy.md and docs/legal/terms-of-service.md")
+  printInfo(t("cli.tui-installer.telemetryNote"))
+  printInfo(t("cli.tui-installer.docsNote"))
   console.log()
 
   printBox(
-    `${color.bold("Pro Tip:")} Include ${color.cyan("ultrawork")} (or ${color.cyan("ulw")}) in your prompt.\n` +
-      `All features work like magic-parallel agents, background tasks,\n` +
-      `deep exploration, and relentless execution until completion.`,
-    "The Magic Word",
+    t("cli.cli-installer.magicWordBody", { label: `${color.bold("Pro Tip:")}`, word: color.cyan("ultrawork"), wordShort: color.cyan("ulw") }),
+    t("cli.cli-installer.magicWordTitle"),
   )
 
   if (args.tui) {
     await maybePromptForGitHubStars(config.platform)
   }
-  console.log(color.dim("oMoMoMoMo... Enjoy!"))
+  console.log(color.dim(t("cli.tui-installer.enjoy")))
   console.log()
 
   if (hasOpenCode && (config.hasClaude || config.hasGemini || config.hasCopilot) && !args.skipAuth) {
     printBox(
-      `Run ${color.cyan("opencode auth login")} and select your provider:\n` +
+      t("cli.cli-installer.authBody", { command: color.cyan("opencode auth login") }) + "\n" +
         (config.hasClaude ? `  ${SYMBOLS.bullet} Anthropic ${color.gray("→ Claude Pro/Max")}\n` : "") +
         (config.hasGemini ? `  ${SYMBOLS.bullet} Google ${color.gray("→ Gemini")}\n` : "") +
         (config.hasCopilot ? `  ${SYMBOLS.bullet} GitHub ${color.gray("→ Copilot")}` : ""),
-      "Authenticate Your Providers",
+      t("cli.cli-installer.authTitle"),
     )
   }
 

@@ -161,6 +161,22 @@ const overrides: Partial<Record<TranslationKey, string>> = {
   "cli.tui-installer.authProviderGithub": "GitHub",
   "cli.tui-installer.authProviderGithubHint": "Copilot",
 
+  // --- cli.cli-installer (non-interactive installer fallback path) ---
+  "cli.cli-installer.validationFailed": "验证失败：",
+  "cli.cli-installer.usageHint": "用法：bunx {{packageName}} install --no-tui --claude=<no|yes|max20> --gemini=<no|yes> --copilot=<no|yes>",
+  "cli.cli-installer.note.updatedConfig": "已更新的配置",
+  "cli.cli-installer.note.installComplete": "安装完成",
+  "cli.cli-installer.note.claudeBest": "{{label}} Sisyphus agent 在 Claude Opus 4.5+ 下表现最佳。其他模型可用，但编排质量可能下降。",
+  "cli.cli-installer.codexInstalling": "正在安装 Codex harness 适配器...",
+  "cli.cli-installer.codexInstalled": "Codex 插件已安装 {{arrow}} {{path}}",
+  "cli.cli-installer.codexInstallFailed": "Codex 安装失败：{{message}}",
+  "cli.cli-installer.codexInstallFailedOcOk": "Codex 安装失败（OpenCode 安装仍然完成）：{{message}}",
+  "cli.cli-installer.configWritten": "配置已写入 {{arrow}} {{path}}",
+  "cli.cli-installer.magicWordTitle": "魔法口令",
+  "cli.cli-installer.magicWordBody": "{{label}} 在提示词中加入 {{word}}（或 {{wordShort}})。\n所有功能如魔法并行 agent、后台任务、\n深度探索，以及持续执行直到完成。",
+  "cli.cli-installer.authTitle": "认证你的提供商",
+  "cli.cli-installer.authBody": "运行 {{command}} 并选择你的提供商：",
+
   "cli.doctor.summary": "摘要",
   "cli.doctor.passed": "{{count}} 通过",
   "cli.doctor.failed": "{{count}} 失败",

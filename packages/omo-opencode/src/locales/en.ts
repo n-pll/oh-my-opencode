@@ -159,6 +159,22 @@ const locales = {
   "cli.tui-installer.authProviderGithub": "GitHub",
   "cli.tui-installer.authProviderGithubHint": "Copilot",
 
+  // --- cli.cli-installer (non-interactive installer fallback path) ---
+  "cli.cli-installer.validationFailed": "Validation failed:",
+  "cli.cli-installer.usageHint": "Usage: bunx {{packageName}} install --no-tui --claude=<no|yes|max20> --gemini=<no|yes> --copilot=<no|yes>",
+  "cli.cli-installer.note.updatedConfig": "Updated Configuration",
+  "cli.cli-installer.note.installComplete": "Installation Complete",
+  "cli.cli-installer.note.claudeBest": "{{label}} Sisyphus agent performs best with Claude Opus 4.5+. Other models work but may have reduced orchestration quality.",
+  "cli.cli-installer.codexInstalling": "Installing Codex harness adapter...",
+  "cli.cli-installer.codexInstalled": "Codex plugin installed {{arrow}} {{path}}",
+  "cli.cli-installer.codexInstallFailed": "Codex install failed: {{message}}",
+  "cli.cli-installer.codexInstallFailedOcOk": "Codex install failed (OpenCode install is still complete): {{message}}",
+  "cli.cli-installer.configWritten": "Config written {{arrow}} {{path}}",
+  "cli.cli-installer.magicWordTitle": "The Magic Word",
+  "cli.cli-installer.magicWordBody": "{{label}} Include {{word}} (or {{wordShort}}) in your prompt.\nAll features work like magic-parallel agents, background tasks,\ndeep exploration, and relentless execution until completion.",
+  "cli.cli-installer.authTitle": "Authenticate Your Providers",
+  "cli.cli-installer.authBody": "Run {{command}} and select your provider:",
+
   "cli.doctor.summary": "Summary",
   "cli.doctor.passed": "{{count}} passed",
   "cli.doctor.failed": "{{count}} failed",
