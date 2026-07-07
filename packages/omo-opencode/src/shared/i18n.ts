@@ -36,9 +36,9 @@ export function setLocale(lang: string): void {
   if (isSupportedLocale(lang)) currentLang = lang
 }
 
-export function t(key: TranslationKey, params?: Record<string, string | number>): string
-export function t(key: string, params?: Record<string, string | number>): string
-export function t(key: string, params?: Record<string, string | number>): string {
+export function t(key: TranslationKey, params?: Record<string, string | number | null | undefined>): string
+export function t(key: string, params?: Record<string, string | number | null | undefined>): string
+export function t(key: string, params?: Record<string, string | number | null | undefined>): string {
   let msg = key
   if (isTranslationKey(key)) {
     msg = locales[currentLang][key] ?? locales[fallbackLang][key] ?? key
