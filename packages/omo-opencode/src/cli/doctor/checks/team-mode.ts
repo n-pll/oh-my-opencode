@@ -6,12 +6,18 @@ import { CHECK_IDS, CHECK_NAMES } from "../framework/constants"
 import type { CheckResult } from "../framework/types"
 import { promises as fs } from "node:fs"
 import path from "node:path"
+<<<<<<< HEAD
+=======
+import { detectPluginConfigFile, getOpenCodeConfigDir, parseJsonc } from "../../../shared"
+import { CONFIG_BASENAME, LEGACY_CONFIG_BASENAME } from "../../../shared/plugin-identity"
+import { t } from "../../../shared/i18n"
+>>>>>>> 1ae0e2923 (feat(i18n): migrate doctor config/telemetry/team-mode checks to t())
 
 export async function checkTeamMode(): Promise<CheckResult> {
   const config = loadTeamModeConfig()
   const teamModeConfig = TeamModeConfigSchema.parse(config.team_mode ?? {})
   if (!teamModeConfig.enabled) {
-    return { name: CHECK_NAMES[CHECK_IDS.TEAM_MODE], status: "skip", message: "team_mode: disabled", issues: [] }
+    return { name: CHECK_NAMES[CHECK_IDS.TEAM_MODE], status: "skip", message: t("cli.doctor.team-mode.disabled"), issues: [] }
   }
 
   const deps = await checkTeamModeDependencies(teamModeConfig)
@@ -21,12 +27,18 @@ export async function checkTeamMode(): Promise<CheckResult> {
     safeCount(path.join(baseDir, "teams")),
     safeCount(path.join(baseDir, "runtime")),
   ])
-  const baseDirMessage = baseDirExists ? `base dir: ok` : `base dir: missing (plugin init will create it on first use)`
+  const baseDirMessage = baseDirExists ? t("cli.doctor.team-mode.baseDirOk") : t("cli.doctor.team-mode.baseDirMissing")
 
   return {
     name: CHECK_NAMES[CHECK_IDS.TEAM_MODE],
     status: deps.tmuxAvailable && deps.gitAvailable ? "pass" : "warn",
-    message: `team_mode: enabled | tmux: ${deps.tmuxAvailable ? "ok" : "missing"} | git: ${deps.gitAvailable ? "ok" : "missing"} | ${baseDirMessage} | declared: ${teamCount} | runtime dirs: ${runtimeCount}`,
+    message: t("cli.doctor.team-mode.message", {
+      tmux: deps.tmuxAvailable ? t("common.ok") : t("common.missing"),
+      git: deps.gitAvailable ? t("common.ok") : t("common.missing"),
+      baseDir: baseDirMessage,
+      declared: teamCount,
+      runtime: runtimeCount,
+    }),
     details: undefined,
     issues: [],
   }

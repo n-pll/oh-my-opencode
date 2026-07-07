@@ -6,6 +6,7 @@ import { loadAvailableModelsFromCache } from "./model-resolution-cache"
 import { getModelResolutionInfoWithOverrides } from "./model-resolution"
 import type { OmoConfig } from "./model-resolution-types"
 import { findLegacyConfigLeftovers, legacyConfigLeftoverWarning } from "./legacy-config-leftovers"
+import { t } from "../../../shared/i18n"
 
 interface ConfigValidationResult {
   exists: boolean
@@ -68,8 +69,8 @@ function collectModelResolutionIssues(config: OmoConfig): DoctorIssue[] {
 
   for (const invalidAgent of invalidAgentOverrides) {
     issues.push({
-      title: `Invalid agent override: ${invalidAgent.name}`,
-      description: `Override '${invalidAgent.userOverride}' must be in provider/model format.`,
+      title: t("cli.doctor.config.invalidAgent.title", { name: invalidAgent.name }),
+      description: t("cli.doctor.config.invalidOverride.description", { override: invalidAgent.userOverride }),
       severity: "warning",
       affects: [invalidAgent.name],
     })
@@ -77,8 +78,8 @@ function collectModelResolutionIssues(config: OmoConfig): DoctorIssue[] {
 
   for (const invalidCategory of invalidCategoryOverrides) {
     issues.push({
-      title: `Invalid category override: ${invalidCategory.name}`,
-      description: `Override '${invalidCategory.userOverride}' must be in provider/model format.`,
+      title: t("cli.doctor.config.invalidCategory.title", { name: invalidCategory.name }),
+      description: t("cli.doctor.config.invalidOverride.description", { override: invalidCategory.userOverride }),
       severity: "warning",
       affects: [invalidCategory.name],
     })
@@ -97,8 +98,8 @@ function collectModelResolutionIssues(config: OmoConfig): DoctorIssue[] {
     if (unknownProviders.length > 0) {
       const uniqueProviders = [...new Set(unknownProviders)]
       issues.push({
-        title: "Model override uses unavailable provider",
-        description: `Provider(s) not found in OpenCode model cache: ${uniqueProviders.join(", ")}`,
+        title: t("cli.doctor.config.unavailableProvider.title"),
+        description: t("cli.doctor.config.unavailableProvider.description", { providers: uniqueProviders.join(", ") }),
         severity: "warning",
         affects: ["model resolution"],
       })
@@ -121,8 +122,8 @@ export async function checkConfig(): Promise<CheckResult> {
   if (!validation.exists) {
     return {
       name: CHECK_NAMES[CHECK_IDS.CONFIG],
-      status: issues.length > 0 ? "warn" : "pass",
-      message: issues.length > 0 ? "Legacy configuration migration required" : "No custom config found; defaults are used",
+      status: "pass",
+      message: t("cli.doctor.config.noCustomConfig"),
       details: undefined,
       issues,
     }
@@ -131,7 +132,7 @@ export async function checkConfig(): Promise<CheckResult> {
   if (!validation.valid) {
     issues.push(
       ...validation.errors.map((error) => ({
-        title: "Invalid configuration",
+        title: t("cli.doctor.config.invalidConfig.title"),
         description: error,
         severity: "error" as const,
         affects: ["plugin startup"],
@@ -141,8 +142,8 @@ export async function checkConfig(): Promise<CheckResult> {
     return {
       name: CHECK_NAMES[CHECK_IDS.CONFIG],
       status: "fail",
-      message: `Configuration invalid (${issues.length} issue${issues.length > 1 ? "s" : ""})`,
-      details: validation.path ? [`Path: ${validation.path}`] : undefined,
+      message: issues.length > 1 ? t("cli.doctor.config.invalid", { count: issues.length }) : t("cli.doctor.config.invalidSingular", { count: issues.length }),
+      details: validation.path ? [t("cli.doctor.config.detail.path", { path: validation.path })] : undefined,
       issues,
     }
   }
@@ -154,8 +155,8 @@ export async function checkConfig(): Promise<CheckResult> {
   return {
     name: CHECK_NAMES[CHECK_IDS.CONFIG],
     status: issues.length > 0 ? "warn" : "pass",
-    message: issues.length > 0 ? `${issues.length} configuration warning(s)` : "Configuration is valid",
-    details: validation.path ? [`Path: ${validation.path}`] : undefined,
+    message: issues.length > 0 ? t("cli.doctor.config.warningCount", { count: issues.length }) : t("cli.doctor.config.valid"),
+    details: validation.path ? [t("cli.doctor.config.detail.path", { path: validation.path })] : undefined,
     issues,
   }
 }

@@ -238,6 +238,38 @@ const locales = {
   "cli.doctor.tools.detail.ghMissing": "missing",
   "cli.doctor.tools.detail.mcp": "MCP: builtin={{builtin}}, user={{user}}",
 
+  // --- cli.doctor.config (config validation check) ---
+  "cli.doctor.config.noCustomConfig": "No custom config found; defaults are used",
+  "cli.doctor.config.invalid": "Configuration invalid ({{count}} issues)",
+  "cli.doctor.config.invalidSingular": "Configuration invalid ({{count}} issue)",
+  "cli.doctor.config.warningCount": "{{count}} configuration warning(s)",
+  "cli.doctor.config.valid": "Configuration is valid",
+  "cli.doctor.config.detail.path": "Path: {{path}}",
+  "cli.doctor.config.invalidAgent.title": "Invalid agent override: {{name}}",
+  "cli.doctor.config.invalidOverride.description": "Override '{{override}}' must be in provider/model format.",
+  "cli.doctor.config.invalidCategory.title": "Invalid category override: {{name}}",
+  "cli.doctor.config.unavailableProvider.title": "Model override uses unavailable provider",
+  "cli.doctor.config.unavailableProvider.description": "Provider(s) not found in OpenCode model cache: {{providers}}",
+  "cli.doctor.config.invalidConfig.title": "Invalid configuration",
+
+  // --- cli.doctor.telemetry ---
+  "cli.doctor.telemetry.message": "Telemetry: {{status}}",
+  "cli.doctor.telemetry.status.enabled": "enabled",
+  "cli.doctor.telemetry.status.disabled": "disabled",
+  "cli.doctor.telemetry.never": "never",
+  "cli.doctor.telemetry.unreadable": "unreadable",
+  "cli.doctor.telemetry.detail.posthogHost": "PostHog host: {{host}}",
+  "cli.doctor.telemetry.detail.lastActive": "Last daily active date: {{date}}",
+  "cli.doctor.telemetry.detail.stateFile": "State file: {{path}}",
+
+  // --- cli.doctor.team-mode ---
+  "cli.doctor.team-mode.disabled": "team_mode: disabled",
+  "cli.doctor.team-mode.message": "team_mode: enabled | tmux: {{tmux}} | git: {{git}} | {{baseDir}} | declared: {{declared}} | runtime dirs: {{runtime}}",
+  "cli.doctor.team-mode.baseDirOk": "base dir: ok",
+  "cli.doctor.team-mode.baseDirMissing": "base dir: missing (plugin init will create it on first use)",
+  "common.ok": "ok",
+  "common.missing": "missing",
+
   "cli.version.header": "oh-my-opencode Version Information",
   "cli.version.currentVersion": "Current Version: {{version}}",
   "cli.version.currentVersionUnknown": "Current Version: unknown",

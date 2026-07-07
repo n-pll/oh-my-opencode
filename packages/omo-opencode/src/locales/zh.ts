@@ -240,6 +240,38 @@ const overrides: Partial<Record<TranslationKey, string>> = {
   "cli.doctor.tools.detail.ghMissing": "缺失",
   "cli.doctor.tools.detail.mcp": "MCP：内置={{builtin}}，用户={{user}}",
 
+  // --- cli.doctor.config (config validation check) ---
+  "cli.doctor.config.noCustomConfig": "未找到自定义配置；使用默认值",
+  "cli.doctor.config.invalid": "配置无效（{{count}} 个问题）",
+  "cli.doctor.config.invalidSingular": "配置无效（{{count}} 个问题）",
+  "cli.doctor.config.warningCount": "{{count}} 个配置警告",
+  "cli.doctor.config.valid": "配置有效",
+  "cli.doctor.config.detail.path": "路径：{{path}}",
+  "cli.doctor.config.invalidAgent.title": "无效的 agent 覆盖：{{name}}",
+  "cli.doctor.config.invalidOverride.description": "覆盖值 '{{override}}' 必须为 provider/model 格式。",
+  "cli.doctor.config.invalidCategory.title": "无效的 category 覆盖：{{name}}",
+  "cli.doctor.config.unavailableProvider.title": "模型覆盖使用了不可用的 provider",
+  "cli.doctor.config.unavailableProvider.description": "在 OpenCode 模型缓存中未找到 provider：{{providers}}",
+  "cli.doctor.config.invalidConfig.title": "配置无效",
+
+  // --- cli.doctor.telemetry ---
+  "cli.doctor.telemetry.message": "遥测：{{status}}",
+  "cli.doctor.telemetry.status.enabled": "已启用",
+  "cli.doctor.telemetry.status.disabled": "已禁用",
+  "cli.doctor.telemetry.never": "从未",
+  "cli.doctor.telemetry.unreadable": "不可读",
+  "cli.doctor.telemetry.detail.posthogHost": "PostHog 主机：{{host}}",
+  "cli.doctor.telemetry.detail.lastActive": "上次每日活跃日期：{{date}}",
+  "cli.doctor.telemetry.detail.stateFile": "状态文件：{{path}}",
+
+  // --- cli.doctor.team-mode ---
+  "cli.doctor.team-mode.disabled": "team_mode：已禁用",
+  "cli.doctor.team-mode.message": "team_mode：已启用 | tmux：{{tmux}} | git：{{git}} | {{baseDir}} | 已声明：{{declared}} | 运行时目录：{{runtime}}",
+  "cli.doctor.team-mode.baseDirOk": "基础目录：正常",
+  "cli.doctor.team-mode.baseDirMissing": "基础目录：缺失（插件初始化时会在首次使用时创建）",
+  "common.ok": "正常",
+  "common.missing": "缺失",
+
   "cli.version.header": "oh-my-opencode 版本信息",
   "cli.version.currentVersion": "当前版本: {{version}}",
   "cli.version.currentVersionUnknown": "当前版本: 未知",
