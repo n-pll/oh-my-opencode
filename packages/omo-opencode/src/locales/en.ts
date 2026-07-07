@@ -352,6 +352,40 @@ const locales = {
   "cli.doctor.codex.companionStatus.hookTrustSuffix": " ({{events}} hook trust)",
   "cli.doctor.codex.companionStatus.stale": "stale {{key}} {{events}} hook trust",
 
+  // --- cli.doctor.codex-components (plugin bundle integrity check) ---
+  "cli.doctor.codexComponents.reinstallFix": "Reinstall: npx lazycodex-ai install (or upgrade: codex plugin marketplace upgrade sisyphuslabs)",
+  "cli.doctor.codexComponents.skipMessage": "OMO Codex plugin is not installed — skipping component checks",
+  "cli.doctor.codexComponents.detail.pluginRootMissing": "plugin root: not installed under {{codexHome}}",
+  "cli.doctor.codexComponents.detail.pluginRoot": "plugin root: {{root}}",
+  "cli.doctor.codexComponents.detail.distOk": "dist targets: ok ({{count}} referenced)",
+  "cli.doctor.codexComponents.detail.distBroken": "dist targets: {{broken}} of {{total}} referenced target(s) broken",
+  "cli.doctor.codexComponents.detail.astGrepMissing": "ast_grep: missing",
+  "cli.doctor.codexComponents.detail.astGrepOk": "ast_grep: ok ({{source}}: {{path}})",
+  "cli.doctor.codexComponents.missingTarget.title": "Missing plugin dist target: {{path}}",
+  "cli.doctor.codexComponents.missingTarget.description": "Referenced by {{referencedBy}} but {{reason}} the installed plugin bundle.",
+  "cli.doctor.codexComponents.missingTarget.reasonMissing": "missing from",
+  "cli.doctor.codexComponents.missingTarget.reasonZeroBytes": "zero bytes in",
+  "cli.doctor.codexComponents.astGrepMissing.title": "ast_grep (sg) binary is missing",
+  "cli.doctor.codexComponents.astGrepMissing.description": "sg was not found via the {{envKey}} override, the Codex runtime dir ({{runtimePath}}), or PATH. The ast-grep skill runs degraded until sg is provisioned.",
+  "cli.doctor.codexComponents.astGrepMissing.fix": "Start a Codex session so LazyCodex bootstrap can provision the ast-grep skill runtime, then rerun: npx lazycodex-ai doctor (or omo doctor).",
+  "cli.doctor.codexComponents.passed": "Codex component checks passed",
+  "cli.doctor.codexComponents.issueDetected": "{{count}} Codex component issue(s) detected",
+  "cli.doctor.codexComponents.sgSource.envOverride": "env override {{key}}",
+  "cli.doctor.codexComponents.sgSource.runtimeDir": "runtime dir",
+  "cli.doctor.codexComponents.sgSource.path": "PATH",
+
+  // --- cli.doctor.tools-gh / tools-mcp (small status strings) ---
+  "cli.doctor.tools-gh.timeout": "gh auth status timed out",
+  "cli.doctor.tools-gh.notAuthenticated": "Not authenticated",
+  "cli.doctor.tools-gh.checkFailed": "Failed to check auth status",
+  "cli.doctor.tools-mcp.invalidConfig": "Invalid configuration format",
+
+  // --- cli.doctor.model-resolution-effective (resolution diagnostics) ---
+  "cli.doctor.models.effective.unknown": "unknown",
+  "cli.doctor.models.effective.userOverride": "User override: {{model}}",
+  "cli.doctor.models.effective.noFallbackChain": "No fallback chain defined",
+  "cli.doctor.models.effective.providerFallback": "Provider fallback: {{chain}} → {{model}}",
+
   "cli.version.header": "oh-my-opencode Version Information",
   "cli.version.currentVersion": "Current Version: {{version}}",
   "cli.version.currentVersionUnknown": "Current Version: unknown",

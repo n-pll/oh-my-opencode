@@ -4,6 +4,7 @@ import { join } from "node:path"
 
 import type { McpServerInfo } from "../framework/types"
 import { parseJsonc } from "../../../shared"
+import { t } from "../../../shared/i18n"
 
 const BUILTIN_MCP_SERVERS = ["websearch", "context7", "grep_app", "lsp"]
 
@@ -60,7 +61,7 @@ export function getUserMcpInfo(): McpServerInfo[] {
       type: "user",
       enabled: true,
       valid,
-      error: valid ? undefined : "Invalid configuration format",
+      error: valid ? undefined : t("cli.doctor.tools-mcp.invalidConfig"),
     }
   })
 }

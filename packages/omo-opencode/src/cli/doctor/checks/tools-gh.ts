@@ -1,5 +1,6 @@
 import { spawnWithTimeout } from "../framework/spawn-with-timeout"
 import { bunWhich } from "../../../shared/bun-which-shim"
+import { t } from "../../../shared/i18n"
 
 export interface GhCliInfo {
   installed: boolean
@@ -56,7 +57,7 @@ async function getGhAuthStatus(spawn: typeof spawnWithTimeout): Promise<{
     )
 
     if (result.timedOut) {
-      return { authenticated: false, username: null, scopes: [], error: "gh auth status timed out" }
+      return { authenticated: false, username: null, scopes: [], error: t("cli.doctor.tools-gh.timeout") }
     }
 
     const output = result.stderr || result.stdout
@@ -77,14 +78,14 @@ async function getGhAuthStatus(spawn: typeof spawnWithTimeout): Promise<{
       authenticated: false,
       username: null,
       scopes: [],
-      error: errorMatch?.[1]?.trim() ?? "Not authenticated",
+      error: errorMatch?.[1]?.trim() ?? t("cli.doctor.tools-gh.notAuthenticated"),
     }
   } catch (error) {
     return {
       authenticated: false,
       username: null,
       scopes: [],
-      error: error instanceof Error ? error.message : "Failed to check auth status",
+      error: error instanceof Error ? error.message : t("cli.doctor.tools-gh.checkFailed"),
     }
   }
 }

@@ -1,4 +1,5 @@
 import type { ModelRequirement } from "../../../shared/model-requirements"
+import { t } from "../../../shared/i18n"
 
 function formatProviderChain(providers: string[]): string {
   return providers.join(" → ")
@@ -10,18 +11,18 @@ export function getEffectiveModel(requirement: ModelRequirement, userOverride?: 
   }
   const firstEntry = requirement.fallbackChain[0]
   if (!firstEntry) {
-    return "unknown"
+    return t("cli.doctor.models.effective.unknown")
   }
   return `${firstEntry.providers[0]}/${firstEntry.model}`
 }
 
 export function buildEffectiveResolution(requirement: ModelRequirement, userOverride?: string): string {
   if (userOverride) {
-    return `User override: ${userOverride}`
+    return t("cli.doctor.models.effective.userOverride", { model: userOverride })
   }
   const firstEntry = requirement.fallbackChain[0]
   if (!firstEntry) {
-    return "No fallback chain defined"
+    return t("cli.doctor.models.effective.noFallbackChain")
   }
-  return `Provider fallback: ${formatProviderChain(firstEntry.providers)} → ${firstEntry.model}`
+  return t("cli.doctor.models.effective.providerFallback", { chain: formatProviderChain(firstEntry.providers), model: firstEntry.model })
 }

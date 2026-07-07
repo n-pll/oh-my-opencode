@@ -354,6 +354,40 @@ const overrides: Partial<Record<TranslationKey, string>> = {
   "cli.doctor.codex.companionStatus.hookTrustSuffix": "（{{events}} hook 信任）",
   "cli.doctor.codex.companionStatus.stale": "过期的 {{key}} {{events}} hook 信任",
 
+  // --- cli.doctor.codex-components (plugin bundle integrity check) ---
+  "cli.doctor.codexComponents.reinstallFix": "重新安装：npx lazycodex-ai install（或升级：codex plugin marketplace upgrade sisyphuslabs）",
+  "cli.doctor.codexComponents.skipMessage": "未安装 OMO Codex 插件 — 跳过组件检查",
+  "cli.doctor.codexComponents.detail.pluginRootMissing": "插件根目录：未安装在 {{codexHome}} 下",
+  "cli.doctor.codexComponents.detail.pluginRoot": "插件根目录：{{root}}",
+  "cli.doctor.codexComponents.detail.distOk": "dist 目标：正常（引用 {{count}} 个）",
+  "cli.doctor.codexComponents.detail.distBroken": "dist 目标：{{broken}} / {{total}} 个被引用目标损坏",
+  "cli.doctor.codexComponents.detail.astGrepMissing": "ast_grep：缺失",
+  "cli.doctor.codexComponents.detail.astGrepOk": "ast_grep：正常（{{source}}：{{path}}）",
+  "cli.doctor.codexComponents.missingTarget.title": "缺失插件 dist 目标：{{path}}",
+  "cli.doctor.codexComponents.missingTarget.description": "被 {{referencedBy}} 引用，但在已安装的插件包中{{reason}}。",
+  "cli.doctor.codexComponents.missingTarget.reasonMissing": "缺失",
+  "cli.doctor.codexComponents.missingTarget.reasonZeroBytes": "为零字节",
+  "cli.doctor.codexComponents.astGrepMissing.title": "ast_grep (sg) 可执行文件缺失",
+  "cli.doctor.codexComponents.astGrepMissing.description": "未通过 {{envKey}} 覆盖、Codex 运行时目录（{{runtimePath}}）或 PATH 找到 sg。在 sg 被配置之前，ast-grep skill 将以降级模式运行。",
+  "cli.doctor.codexComponents.astGrepMissing.fix": "启动一个 Codex 会话，让 LazyCodex bootstrap 配置 ast-grep skill 运行时，然后重新运行：npx lazycodex-ai doctor（或 omo doctor）。",
+  "cli.doctor.codexComponents.passed": "Codex 组件检查通过",
+  "cli.doctor.codexComponents.issueDetected": "检测到 {{count}} 个 Codex 组件问题",
+  "cli.doctor.codexComponents.sgSource.envOverride": "环境变量覆盖 {{key}}",
+  "cli.doctor.codexComponents.sgSource.runtimeDir": "运行时目录",
+  "cli.doctor.codexComponents.sgSource.path": "PATH",
+
+  // --- cli.doctor.tools-gh / tools-mcp (small status strings) ---
+  "cli.doctor.tools-gh.timeout": "gh auth status 超时",
+  "cli.doctor.tools-gh.notAuthenticated": "未认证",
+  "cli.doctor.tools-gh.checkFailed": "检查认证状态失败",
+  "cli.doctor.tools-mcp.invalidConfig": "配置格式无效",
+
+  // --- cli.doctor.model-resolution-effective (resolution diagnostics) ---
+  "cli.doctor.models.effective.unknown": "未知",
+  "cli.doctor.models.effective.userOverride": "用户覆盖：{{model}}",
+  "cli.doctor.models.effective.noFallbackChain": "未定义回退链",
+  "cli.doctor.models.effective.providerFallback": "Provider 回退：{{chain}} → {{model}}",
+
   "cli.version.header": "oh-my-opencode 版本信息",
   "cli.version.currentVersion": "当前版本: {{version}}",
   "cli.version.currentVersionUnknown": "当前版本: 未知",

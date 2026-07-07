@@ -5,13 +5,13 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path"
 import { findSgBinarySync, runtimeSlug, SG_PATH_ENV_KEY, sgBinaryName, type SgResolverOptions } from "@oh-my-opencode/utils"
 import type { CheckResult, DoctorIssue } from "../framework/types"
 import { gatherCodexSummary, type CodexDoctorDeps } from "./codex"
+import { t } from "../../../shared/i18n"
 
 export const CODEX_COMPONENTS_CHECK_ID = "codex-components"
 export const CODEX_COMPONENTS_CHECK_NAME = "codex-components"
 
 const PLUGIN_DATA_DIR_NAME = "omo-sisyphuslabs"
 const BOOTSTRAP_PENDING_MESSAGE = "bootstrap pending — start a Codex session"
-const REINSTALL_FIX = "Reinstall: npx lazycodex-ai install (or upgrade: codex plugin marketplace upgrade sisyphuslabs)"
 
 export interface CodexComponentsDoctorDeps extends CodexDoctorDeps {
   readonly env?: Record<string, string | undefined>
@@ -54,26 +54,26 @@ export async function checkCodexComponents(deps: CodexComponentsDoctorDeps = {})
     return {
       name: CODEX_COMPONENTS_CHECK_NAME,
       status: "skip",
-      message: "OMO Codex plugin is not installed — skipping component checks",
-      details: [`plugin root: not installed under ${codexHome}`],
+      message: t("cli.doctor.codexComponents.skipMessage"),
+      details: [t("cli.doctor.codexComponents.detail.pluginRootMissing", { codexHome })],
       issues: [],
     }
   }
 
   const issues: DoctorIssue[] = []
-  const details: string[] = [`plugin root: ${summary.pluginRoot}`]
+  const details: string[] = [t("cli.doctor.codexComponents.detail.pluginRoot", { root: summary.pluginRoot })]
 
   const { referencedCount, broken } = await auditBundleTargets(summary.pluginRoot)
   details.push(
     broken.length === 0
-      ? `dist targets: ok (${referencedCount} referenced)`
-      : `dist targets: ${broken.length} of ${referencedCount} referenced target(s) broken`,
+      ? t("cli.doctor.codexComponents.detail.distOk", { count: referencedCount })
+      : t("cli.doctor.codexComponents.detail.distBroken", { broken: broken.length, total: referencedCount }),
   )
   for (const target of broken) {
     issues.push({
-      title: `Missing plugin dist target: ${target.relativePath}`,
-      description: `Referenced by ${target.referencedBy} but ${target.reason === "missing" ? "missing from" : "zero bytes in"} the installed plugin bundle.`,
-      fix: REINSTALL_FIX,
+      title: t("cli.doctor.codexComponents.missingTarget.title", { path: target.relativePath }),
+      description: t("cli.doctor.codexComponents.missingTarget.description", { referencedBy: target.referencedBy, reason: target.reason === "missing" ? t("cli.doctor.codexComponents.missingTarget.reasonMissing") : t("cli.doctor.codexComponents.missingTarget.reasonZeroBytes") }),
+      fix: t("cli.doctor.codexComponents.reinstallFix"),
       severity: "error",
       affects: [target.referencedBy.endsWith(".mcp.json") ? "MCP servers" : "plugin hooks"],
     })
@@ -90,16 +90,16 @@ export async function checkCodexComponents(deps: CodexComponentsDoctorDeps = {})
     ...(deps.sgWhich === undefined ? {} : { which: deps.sgWhich }),
   })
   if (sg === null) {
-    details.push("ast_grep: missing")
+    details.push(t("cli.doctor.codexComponents.detail.astGrepMissing"))
     issues.push({
-      title: "ast_grep (sg) binary is missing",
-      description: `sg was not found via the ${SG_PATH_ENV_KEY} override, the Codex runtime dir (${runtimeSgPath}), or PATH. The ast-grep skill runs degraded until sg is provisioned.`,
-      fix: "Start a Codex session so LazyCodex bootstrap can provision the ast-grep skill runtime, then rerun: npx lazycodex-ai doctor (or omo doctor).",
+      title: t("cli.doctor.codexComponents.astGrepMissing.title"),
+      description: t("cli.doctor.codexComponents.astGrepMissing.description", { envKey: SG_PATH_ENV_KEY, runtimePath: runtimeSgPath }),
+      fix: t("cli.doctor.codexComponents.astGrepMissing.fix"),
       severity: "warning",
       affects: ["ast-grep skill"],
     })
   } else {
-    details.push(`ast_grep: ok (${describeSgSource(sg, env, runtimeSgDir, platform)}: ${sg})`)
+    details.push(t("cli.doctor.codexComponents.detail.astGrepOk", { source: describeSgSource(sg, env, runtimeSgDir, platform), path: sg }))
   }
 
   const state = await readBootstrapStateSummary(codexHome)
@@ -109,7 +109,7 @@ export async function checkCodexComponents(deps: CodexComponentsDoctorDeps = {})
   return {
     name: CODEX_COMPONENTS_CHECK_NAME,
     status,
-    message: status === "pass" ? "Codex component checks passed" : `${issues.length} Codex component issue(s) detected`,
+    message: status === "pass" ? t("cli.doctor.codexComponents.passed") : t("cli.doctor.codexComponents.issueDetected", { count: issues.length }),
     details,
     issues,
   }
@@ -265,9 +265,9 @@ function describeSgSource(
   platform: NodeJS.Platform,
 ): string {
   const override = env[SG_PATH_ENV_KEY]?.trim()
-  if (override !== undefined && override.length > 0 && sgPath === override) return `env override ${SG_PATH_ENV_KEY}`
-  if (sgPath === join(runtimeSgDir, sgBinaryName(platform))) return "runtime dir"
-  return "PATH"
+  if (override !== undefined && override.length > 0 && sgPath === override) return t("cli.doctor.codexComponents.sgSource.envOverride", { key: SG_PATH_ENV_KEY })
+  if (sgPath === join(runtimeSgDir, sgBinaryName(platform))) return t("cli.doctor.codexComponents.sgSource.runtimeDir")
+  return t("cli.doctor.codexComponents.sgSource.path")
 }
 
 async function readBootstrapStateSummary(codexHome: string): Promise<BootstrapStateSummary | null> {
