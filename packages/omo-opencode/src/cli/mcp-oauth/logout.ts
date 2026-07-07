@@ -1,4 +1,5 @@
 import { deleteToken } from "@oh-my-opencode/mcp-client-core/mcp-oauth/storage"
+import { t } from "../../shared/i18n"
 
 export interface LogoutOptions {
   serverUrl?: string
@@ -8,23 +9,23 @@ export async function logout(serverName: string, options?: LogoutOptions): Promi
   try {
     const serverUrl = options?.serverUrl
     if (!serverUrl) {
-      console.error(`Error: --server-url is required for logout. Token storage uses server URLs, not names.`)
-      console.error(`  Usage: mcp oauth logout ${serverName} --server-url https://your-server.example.com`)
+      console.error(t("cli.mcp-oauth.logout.serverUrlRequired"))
+      console.error(t("cli.mcp-oauth.logout.usageHint", { serverName }))
       return 1
     }
 
     const success = deleteToken(serverUrl, serverUrl)
 
     if (success) {
-      console.log(`✓ Successfully removed tokens for ${serverName}`)
+      console.log(t("cli.mcp-oauth.logout.success", { serverName }))
       return 0
     }
 
-    console.error(`Error: Failed to remove tokens for ${serverName}`)
+    console.error(t("cli.mcp-oauth.logout.failed", { serverName }))
     return 1
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    console.error(`Error: Failed to remove tokens for ${serverName}: ${message}`)
+    console.error(t("cli.mcp-oauth.logout.failedWithMessage", { serverName, message }))
     return 1
   }
 }

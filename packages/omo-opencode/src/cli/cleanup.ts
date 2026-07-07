@@ -1,4 +1,5 @@
 import { cleanupCodexLight } from "./install-codex/codex-cleanup"
+import { t } from "../shared/i18n"
 
 export type CleanupPlatform = "codex"
 
@@ -19,7 +20,7 @@ export function resolveCleanupPlatform(
 
 export async function cleanup(options: CleanupOptions): Promise<number> {
   if (options.platform !== "codex") {
-    console.error("Error: cleanup currently supports only --platform=codex")
+    console.error(t("cli.cleanup.onlyCodex"))
     return 1
   }
 
@@ -33,30 +34,30 @@ export async function cleanup(options: CleanupOptions): Promise<number> {
     return 0
   }
 
-  console.log(`Codex Light cleanup complete: ${result.codexHome}`)
+  console.log(t("cli.cleanup.complete", { codexHome: result.codexHome }))
   if (result.configChanged) {
-    console.log(`- Updated ${result.configPath}`)
-    if (result.configBackupPath !== undefined) console.log(`- Backup ${result.configBackupPath}`)
+    console.log(t("cli.cleanup.updatedConfig", { configPath: result.configPath }))
+    if (result.configBackupPath !== undefined) console.log(t("cli.cleanup.backup", { configBackupPath: result.configBackupPath }))
   } else {
-    console.log(`- No managed Codex config blocks found in ${result.configPath}`)
+    console.log(t("cli.cleanup.noManagedBlocks", { configPath: result.configPath }))
   }
   for (const path of result.removedPaths) {
-    console.log(`- Removed ${path}`)
+    console.log(t("cli.cleanup.removed", { path }))
   }
   for (const skippedPath of result.skippedPaths) {
-    console.log(`- Skipped cleanup target ${skippedPath.path}: ${skippedPath.reason}`)
+    console.log(t("cli.cleanup.skipped", { path: skippedPath.path, reason: skippedPath.reason }))
   }
   for (const path of result.removedAgentLinks) {
-    console.log(`- Removed managed agent link ${path}`)
+    console.log(t("cli.cleanup.removedAgentLink", { path }))
   }
   for (const path of result.skippedAgentLinks) {
-    console.log(`- Skipped agent path outside managed scope ${path}`)
+    console.log(t("cli.cleanup.skippedAgentLink", { path }))
   }
   if (result.projectCleanup.changed) {
-    console.log(`- Repaired project-local Codex config ${result.projectCleanup.configPath}`)
+    console.log(t("cli.cleanup.repairedProjectConfig", { configPath: result.projectCleanup.configPath }))
   }
   for (const artifact of result.projectCleanup.artifacts) {
-    console.log(`- Left project-local artifact in place ${artifact.path}`)
+    console.log(t("cli.cleanup.leftArtifact", { path: artifact.path }))
   }
 
   return 0

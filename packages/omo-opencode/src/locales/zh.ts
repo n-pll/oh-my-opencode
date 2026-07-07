@@ -124,6 +124,41 @@ const overrides: Partial<Record<TranslationKey, string>> = {
   "cli.version.versionInfoUnavailable": "版本信息不可用",
 
   "cli.run.message": "运行 OpenCode 并强制完成 todo/后台任务",
+
+  // --- cli.mcp-oauth ---
+  "cli.mcp-oauth.status.noTokensFor": "未找到 {{serverName}} 的令牌",
+  "cli.mcp-oauth.status.header": "{{serverName}} 的 OAuth 状态：",
+  "cli.mcp-oauth.status.accessToken": "访问令牌：[已隐藏]",
+  "cli.mcp-oauth.status.refreshToken": "刷新令牌：[已隐藏]",
+  "cli.mcp-oauth.status.expiry": "过期时间：{{date}} ({{status}})",
+  "cli.mcp-oauth.status.noTokensStored": "未存储任何 OAuth 令牌",
+  "cli.mcp-oauth.status.storedHeader": "已存储的 OAuth 令牌：",
+  "cli.mcp-oauth.status.getStatusError": "错误：获取令牌状态失败：{{message}}",
+  "cli.mcp-oauth.logout.serverUrlRequired": "错误：注销需要 --server-url。令牌存储使用服务器 URL，而非名称。",
+  "cli.mcp-oauth.logout.usageHint": "  用法：mcp oauth logout {{serverName}} --server-url https://your-server.example.com",
+  "cli.mcp-oauth.logout.success": "已成功移除 {{serverName}} 的令牌",
+  "cli.mcp-oauth.logout.failed": "错误：移除 {{serverName}} 的令牌失败",
+  "cli.mcp-oauth.logout.failedWithMessage": "错误：移除 {{serverName}} 的令牌失败：{{message}}",
+
+  // --- cli.mcp-oauth.login ---
+  "cli.mcp-oauth.login.serverUrlRequired": "错误：服务器 \"{{serverName}}\" 需要 --server-url",
+  "cli.mcp-oauth.login.authenticating": "正在向 {{serverName}} 认证...",
+  "cli.mcp-oauth.login.success": "已成功向 {{serverName}} 完成认证",
+  "cli.mcp-oauth.login.tokenExpiresAt": "  令牌过期时间：{{date}}",
+  "cli.mcp-oauth.login.failed": "错误：向 {{serverName}} 认证失败：{{message}}",
+
+  // --- cli.cleanup ---
+  "cli.cleanup.onlyCodex": "错误：cleanup 目前仅支持 --platform=codex",
+  "cli.cleanup.complete": "Codex Light 清理完成：{{codexHome}}",
+  "cli.cleanup.updatedConfig": "- 已更新 {{configPath}}",
+  "cli.cleanup.backup": "- 备份 {{configBackupPath}}",
+  "cli.cleanup.noManagedBlocks": "- 在 {{configPath}} 中未找到受管理的 Codex 配置块",
+  "cli.cleanup.removed": "- 已移除 {{path}}",
+  "cli.cleanup.skipped": "- 已跳过清理目标 {{path}}：{{reason}}",
+  "cli.cleanup.removedAgentLink": "- 已移除受管理的 agent 链接 {{path}}",
+  "cli.cleanup.skippedAgentLink": "- 已跳过管理范围外的 agent 路径 {{path}}",
+  "cli.cleanup.repairedProjectConfig": "- 已修复项目级 Codex 配置 {{configPath}}",
+  "cli.cleanup.leftArtifact": "- 已保留项目级产物于原处 {{path}}",
 }
 
 const locales = {

@@ -122,6 +122,41 @@ const locales = {
   "cli.version.versionInfoUnavailable": "Version information unavailable",
 
   "cli.run.message": "Run opencode with todo/background task completion enforcement",
+
+  // --- cli.mcp-oauth ---
+  "cli.mcp-oauth.status.noTokensFor": "No tokens found for {{serverName}}",
+  "cli.mcp-oauth.status.header": "OAuth Status for {{serverName}}:",
+  "cli.mcp-oauth.status.accessToken": "Access Token: [REDACTED]",
+  "cli.mcp-oauth.status.refreshToken": "Refresh Token: [REDACTED]",
+  "cli.mcp-oauth.status.expiry": "Expiry: {{date}} ({{status}})",
+  "cli.mcp-oauth.status.noTokensStored": "No OAuth tokens stored",
+  "cli.mcp-oauth.status.storedHeader": "Stored OAuth Tokens:",
+  "cli.mcp-oauth.status.getStatusError": "Error: Failed to get token status: {{message}}",
+  "cli.mcp-oauth.logout.serverUrlRequired": "Error: --server-url is required for logout. Token storage uses server URLs, not names.",
+  "cli.mcp-oauth.logout.usageHint": "  Usage: mcp oauth logout {{serverName}} --server-url https://your-server.example.com",
+  "cli.mcp-oauth.logout.success": "Successfully removed tokens for {{serverName}}",
+  "cli.mcp-oauth.logout.failed": "Error: Failed to remove tokens for {{serverName}}",
+  "cli.mcp-oauth.logout.failedWithMessage": "Error: Failed to remove tokens for {{serverName}}: {{message}}",
+
+  // --- cli.mcp-oauth.login ---
+  "cli.mcp-oauth.login.serverUrlRequired": "Error: --server-url is required for server \"{{serverName}}\"",
+  "cli.mcp-oauth.login.authenticating": "Authenticating with {{serverName}}...",
+  "cli.mcp-oauth.login.success": "Successfully authenticated with {{serverName}}",
+  "cli.mcp-oauth.login.tokenExpiresAt": "  Token expires at: {{date}}",
+  "cli.mcp-oauth.login.failed": "Error: Failed to authenticate with {{serverName}}: {{message}}",
+
+  // --- cli.cleanup ---
+  "cli.cleanup.onlyCodex": "Error: cleanup currently supports only --platform=codex",
+  "cli.cleanup.complete": "Codex Light cleanup complete: {{codexHome}}",
+  "cli.cleanup.updatedConfig": "- Updated {{configPath}}",
+  "cli.cleanup.backup": "- Backup {{configBackupPath}}",
+  "cli.cleanup.noManagedBlocks": "- No managed Codex config blocks found in {{configPath}}",
+  "cli.cleanup.removed": "- Removed {{path}}",
+  "cli.cleanup.skipped": "- Skipped cleanup target {{path}}: {{reason}}",
+  "cli.cleanup.removedAgentLink": "- Removed managed agent link {{path}}",
+  "cli.cleanup.skippedAgentLink": "- Skipped agent path outside managed scope {{path}}",
+  "cli.cleanup.repairedProjectConfig": "- Repaired project-local Codex config {{configPath}}",
+  "cli.cleanup.leftArtifact": "- Left project-local artifact in place {{path}}",
 } as const
 
 export type TranslationKey = keyof typeof locales

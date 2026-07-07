@@ -1,4 +1,5 @@
 import { McpOAuthProvider } from "@oh-my-opencode/mcp-client-core/mcp-oauth/provider"
+import { t } from "../../shared/i18n"
 
 export interface LoginOptions {
   serverUrl?: string
@@ -24,7 +25,7 @@ export async function login(
   try {
     const serverUrl = options.serverUrl
     if (!serverUrl) {
-      console.error(`Error: --server-url is required for server "${serverName}"`)
+      console.error(t("cli.mcp-oauth.login.serverUrlRequired", { serverName }))
       return 1
     }
 
@@ -34,19 +35,19 @@ export async function login(
       scopes: options.scopes,
     })
 
-    console.log(`Authenticating with ${serverName}...`)
+    console.log(t("cli.mcp-oauth.login.authenticating", { serverName }))
     const tokenData = await provider.login()
 
-    console.log(`✓ Successfully authenticated with ${serverName}`)
+    console.log(t("cli.mcp-oauth.login.success", { serverName }))
     if (tokenData.expiresAt) {
       const expiryDate = new Date(tokenData.expiresAt * 1000)
-      console.log(`  Token expires at: ${expiryDate.toISOString()}`)
+      console.log(t("cli.mcp-oauth.login.tokenExpiresAt", { date: expiryDate.toISOString() }))
     }
 
     return 0
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    console.error(`Error: Failed to authenticate with ${serverName}: ${message}`)
+    console.error(t("cli.mcp-oauth.login.failed", { serverName, message }))
     return 1
   }
 }
