@@ -147,6 +147,50 @@ describe("loadPrompt", () => {
   })
 })
 
+describe("loadPrompt locale selection", () => {
+  test("#given bundled source with contentByLocale and matching locale #then returns localized content", () => {
+    const source: BundledPromptSource = {
+      kind: "bundled",
+      content: "English body",
+      filePath: "test/default.md",
+      contentByLocale: { zh: "Chinese body" },
+    }
+    const prompt = loadPromptSync({ source, name: "test", variant: "default", locale: "zh" })
+    expect(prompt.body).toBe("Chinese body")
+  })
+
+  test("#given bundled source with contentByLocale but no matching locale #then falls back to base content", () => {
+    const source: BundledPromptSource = {
+      kind: "bundled",
+      content: "English body",
+      filePath: "test/default.md",
+      contentByLocale: { zh: "Chinese body" },
+    }
+    const prompt = loadPromptSync({ source, name: "test", variant: "default", locale: "ja" })
+    expect(prompt.body).toBe("English body")
+  })
+
+  test("#given bundled source without contentByLocale and a locale #then uses base content (backwards compatible)", () => {
+    const source: BundledPromptSource = {
+      kind: "bundled",
+      content: "English body",
+      filePath: "test/default.md",
+    }
+    const prompt = loadPromptSync({ source, name: "test", variant: "default", locale: "zh" })
+    expect(prompt.body).toBe("English body")
+  })
+
+  test("#given filesystem source with locale variant file present #then loads localized file", async () => {
+    const prompt = await loadPrompt({ source: fixtureSource, name: "test-prompt", variant: "default", locale: "zh" })
+    expect(prompt.body).toBe("Localized (zh) prompt body with {X}.\nSecond line remains verbatim.\n")
+  })
+
+  test("#given filesystem source with locale but no localized file #then falls back to base file", async () => {
+    const prompt = await loadPrompt({ source: fixtureSource, name: "test-prompt", variant: "default", locale: "ja" })
+    expect(prompt.body).toBe("Default prompt body with {X}.\nSecond line remains verbatim.\n")
+  })
+})
+
 async function captureError(operation: () => Promise<unknown>): Promise<Error> {
   let capturedError: unknown
   try {

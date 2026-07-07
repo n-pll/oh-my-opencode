@@ -18,6 +18,13 @@ export type BundledPromptSource = {
   readonly kind: "bundled"
   readonly content: string
   readonly filePath: string
+  /**
+   * Optional locale-keyed content overrides. When `loadPromptSync`/`loadPrompt`
+   * is called with a `locale` that has an entry here, that content is used
+   * instead of `content`. Falls back to `content` when the locale is absent.
+   * The `filePath` stays the base (English) path for error reporting.
+   */
+  readonly contentByLocale?: Readonly<Record<string, string>>
 }
 
 export type PromptSource = FilesystemPromptSource | BundledPromptSource
@@ -37,6 +44,11 @@ export type LoadFilesystemPromptInput = {
   readonly name: string
   readonly variant: string
   readonly inject?: readonly RuntimeInjection[]
+  /**
+   * Optional locale. When set, the loader first tries `<name>/<variant>.<locale>.md`
+   * and falls back to `<name>/<variant>.md`. Absent = English default.
+   */
+  readonly locale?: string
 }
 
 export type LoadBundledPromptInput = {
@@ -44,6 +56,12 @@ export type LoadBundledPromptInput = {
   readonly name: string
   readonly variant: string
   readonly inject?: readonly SyncRuntimeInjection[]
+  /**
+   * Optional locale for content selection. When set, the loader prefers
+   * source.contentByLocale[locale] over source.content. Absent = English
+   * (backwards-compatible default).
+   */
+  readonly locale?: string
 }
 
 export type LoadPromptInput = LoadFilesystemPromptInput | LoadBundledPromptInput

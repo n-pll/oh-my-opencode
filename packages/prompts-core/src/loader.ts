@@ -1,4 +1,5 @@
 import { parseFrontmatter } from "@oh-my-opencode/utils"
+import { existsSync } from "node:fs"
 import { readFile } from "node:fs/promises"
 import { isAbsolute, relative, resolve } from "node:path"
 import type {
@@ -60,7 +61,7 @@ function isLoadBundledPromptInput(input: LoadPromptInput): input is LoadBundledP
 async function loadFilesystemPrompt<TFrontmatter = Record<string, unknown>>(
   input: LoadFilesystemPromptInput
 ): Promise<LoadedPrompt<TFrontmatter>> {
-  const filePath = resolvePromptFilePath(input.source.baseDir, input.name, input.variant)
+  const filePath = resolvePromptFilePath(input.source.baseDir, input.name, input.variant, input.locale)
   const content = await readPromptFile(input.name, input.variant, filePath)
   const parsed = parseFrontmatter<TFrontmatter>(content)
   const body = await applyRuntimeInjections(parsed.body, input.inject ?? [])
@@ -77,7 +78,8 @@ async function loadFilesystemPrompt<TFrontmatter = Record<string, unknown>>(
 function loadBundledPrompt<TFrontmatter = Record<string, unknown>>(
   input: LoadBundledPromptInput
 ): LoadedPrompt<TFrontmatter> {
-  const parsed = parseFrontmatter<TFrontmatter>(input.source.content)
+  const content = selectBundledContent(input.source, input.locale)
+  const parsed = parseFrontmatter<TFrontmatter>(content)
   const body = applyRuntimeInjectionsSync(parsed.body, input.inject ?? [])
 
   return {
@@ -89,14 +91,40 @@ function loadBundledPrompt<TFrontmatter = Record<string, unknown>>(
   }
 }
 
-function resolvePromptFilePath(baseDir: string, promptName: string, variant: string): string {
-  const resolvedBaseDir = resolve(baseDir)
-  const filePath = resolve(resolvedBaseDir, promptName, `${variant}.md`)
-  const relativePath = relative(resolvedBaseDir, filePath)
-  if (relativePath.startsWith("..") || isAbsolute(relativePath)) {
-    throw new PromptPathTraversalError(promptName, variant)
+/**
+ * Pick the locale-specific content when available, falling back to the base
+ * (English) content. This is the single seam where locale selection happens
+ * for bundled prompts; filesystem prompts resolve locale via filename.
+ */
+function selectBundledContent(
+  source: import("./types").BundledPromptSource,
+  locale: string | undefined,
+): string {
+  if (locale !== undefined && source.contentByLocale !== undefined) {
+    const localized = source.contentByLocale[locale]
+    if (localized !== undefined) return localized
   }
-  return filePath
+  return source.content
+}
+
+function resolvePromptFilePath(baseDir: string, promptName: string, variant: string, locale?: string): string {
+  const resolvedBaseDir = resolve(baseDir)
+  // When a locale is requested, prefer <variant>.<locale>.md and fall back to
+  // the base <variant>.md so missing translations degrade gracefully.
+  const candidates = locale !== undefined
+    ? [`${variant}.${locale}.md`, `${variant}.md`]
+    : [`${variant}.md`]
+  for (const candidate of candidates) {
+    const filePath = resolve(resolvedBaseDir, promptName, candidate)
+    const relativePath = relative(resolvedBaseDir, filePath)
+    if (relativePath.startsWith("..") || isAbsolute(relativePath)) {
+      throw new PromptPathTraversalError(promptName, variant)
+    }
+    if (existsSync(filePath)) return filePath
+  }
+  // No candidate existed; return the base path so the caller's readPromptFile
+  // raises the usual PromptFileNotFoundError.
+  return resolve(resolvedBaseDir, promptName, `${variant}.md`)
 }
 
 async function readPromptFile(promptName: string, variant: string, filePath: string): Promise<string> {
