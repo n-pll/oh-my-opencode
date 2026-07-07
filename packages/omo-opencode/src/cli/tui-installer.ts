@@ -18,10 +18,11 @@ import { starGitHubRepositories } from "./star-request"
 import { getNoModelProvidersWarning, hasAnyConfiguredProvider } from "./provider-availability"
 import { ensureTuiPluginEntry } from "./config-manager/add-tui-plugin-to-tui-config"
 import * as astGrepInstall from "./install-ast-grep-sg"
+import { t } from "../shared/i18n"
 
 export async function runTuiInstaller(args: InstallArgs, version: string): Promise<number> {
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
-    console.error("Error: Interactive installer requires a TTY. Use --non-interactive or set environment variables directly.")
+    console.error(t("cli.tui-installer.requiresTty"))
     return 1
   }
 
@@ -51,30 +52,30 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
       }
   const isUpdate = hasOpenCode && detected.isInstalled
 
-  p.intro(color.bgMagenta(color.white(isUpdate ? " oMoMoMoMo... Update " : " oMoMoMoMo... ")))
+  p.intro(color.bgMagenta(color.white(isUpdate ? t("cli.tui-installer.intro.update") : t("cli.tui-installer.intro.install"))))
 
   if (isUpdate) {
     const initial = detectedToInitialValues(detected)
-    p.log.info(`Existing configuration detected: Claude=${initial.claude}, Gemini=${initial.gemini}`)
+    p.log.info(t("cli.tui-installer.existingConfig", { claude: initial.claude, gemini: initial.gemini }))
   }
 
   const spinner = p.spinner()
   if (hasOpenCode) {
-    spinner.start("Checking OpenCode installation")
+    spinner.start(t("cli.tui-installer.checkingOpencode"))
 
     const installed = await isOpenCodeInstalled()
     const openCodeVersion = await getOpenCodeVersion()
     if (!installed) {
-      spinner.stop(`OpenCode binary not found ${color.yellow("[!]")}`)
-      p.log.warn("OpenCode binary not found. Plugin will be configured, but you'll need to install OpenCode to use it.")
-      p.note("Visit https://opencode.ai/docs for installation instructions", "Installation Guide")
+      spinner.stop(`${t("cli.tui-installer.opencodeNotFound")} ${color.yellow("[!]")}`)
+      p.log.warn(t("cli.tui-installer.opencodeNotFoundDetail"))
+      p.note(t("cli.tui-installer.installGuideBody"), t("cli.tui-installer.installGuideTitle"))
     } else {
-      spinner.stop(`OpenCode ${openCodeVersion ?? "installed"} ${color.green("[OK]")}`)
+      spinner.stop(`${t("cli.tui-installer.opencodeOk", { version: openCodeVersion ?? "installed" })} ${color.green("[OK]")}`)
 
       const unsupportedVersionMessage = getUnsupportedOpenCodeVersionMessage(openCodeVersion)
       if (unsupportedVersionMessage) {
         p.log.warn(unsupportedVersionMessage)
-        p.outro(color.red("Installation blocked."))
+        p.outro(color.red(t("cli.tui-installer.installingBlocked")))
         return 1
       }
     }
@@ -84,36 +85,40 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
   if (!config) return 1
 
   if (config.hasOpenCode) {
-    spinner.start(`Adding ${PLUGIN_NAME} to OpenCode config`)
+    spinner.start(t("cli.tui-installer.addingPlugin", { pluginName: PLUGIN_NAME }))
     const pluginResult = await addPluginToOpenCodeConfig(version)
     if (!pluginResult.success) {
-      spinner.stop(`Failed to add plugin: ${pluginResult.error}`)
-      p.outro(color.red("Installation failed."))
+      spinner.stop(t("cli.tui-installer.failedAddPlugin", { error: pluginResult.error }))
+      p.outro(color.red(t("cli.tui-installer.installFailed")))
       return 1
     }
-    spinner.stop(`Plugin added to ${color.cyan(pluginResult.configPath)}`)
+    spinner.stop(t("cli.tui-installer.pluginAdded", { configPath: color.cyan(pluginResult.configPath) }))
     try {
       ensureTuiPluginEntry()
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
-      p.log.warn(`Could not update OpenCode TUI config: ${message}`)
+      p.log.warn(t("cli.tui-installer.couldNotUpdateTui", { message }))
     }
 
-    spinner.start(`Writing ${PLUGIN_NAME} configuration`)
+    spinner.start(t("cli.tui-installer.writingConfig", { pluginName: PLUGIN_NAME }))
     const omoResult = writeOmoConfig(config)
     if (!omoResult.success) {
-      spinner.stop(`Failed to write config: ${omoResult.error}`)
-      p.outro(color.red("Installation failed."))
+      spinner.stop(t("cli.tui-installer.failedWriteConfig", { error: omoResult.error }))
+      p.outro(color.red(t("cli.tui-installer.installFailed")))
       return 1
     }
-    spinner.stop(`Config written to ${color.cyan(omoResult.configPath)}`)
+    spinner.stop(t("cli.tui-installer.configWritten", { configPath: color.cyan(omoResult.configPath) }))
     await astGrepInstall.installAstGrepForOpenCode({ log: p.log.warn })
   }
 
   if (config.hasOpenCode && !config.hasClaude) {
     p.log.info(
+<<<<<<< HEAD
       `${color.bold("Note:")} Sisyphus agent performs best with Claude Opus 5.\n` +
         `Other models work but may have reduced orchestration quality.`,
+=======
+      t("cli.tui-installer.note.claudeBest", { label: color.bold("Note:") }),
+>>>>>>> d101758f0 (feat(i18n): migrate tui-installer.ts interactive flow to t())
     )
   }
 
@@ -121,7 +126,7 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
     p.log.warn(getNoModelProvidersWarning())
   }
 
-  p.note(formatConfigSummary(config), isUpdate ? "Updated Configuration" : "Installation Complete")
+  p.note(formatConfigSummary(config), isUpdate ? t("cli.tui-installer.note.updatedConfig") : t("cli.tui-installer.note.installComplete"))
 
   if (config.hasCodex) {
     const codexInstallation = await detectCodexInstallation()
@@ -129,19 +134,19 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
       p.log.warn(formatCodexInstallationWarning(codexInstallation))
     }
 
-    spinner.start("Installing Codex harness adapter")
+    spinner.start(t("cli.tui-installer.installingCodex"))
     try {
       const codexResult = await runCodexInstaller({ autonomousPermissions: config.codexAutonomous })
-      spinner.stop(`Codex plugin installed to ${color.cyan(codexResult.configPath)}`)
+      spinner.stop(t("cli.tui-installer.codexInstalled", { configPath: color.cyan(codexResult.configPath) }))
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
-      spinner.stop(`Codex install failed ${color.yellow("[!]")}`)
+      spinner.stop(`${t("cli.tui-installer.codexInstallFailedShort")} ${color.yellow("[!]")}`)
       if (!config.hasOpenCode) {
-        p.log.error(`Codex install failed: ${message}`)
-        p.outro(color.red("Installation failed."))
+        p.log.error(t("cli.tui-installer.codexInstallFailed", { message }))
+        p.outro(color.red(t("cli.tui-installer.installFailed")))
         return 1
       }
-      p.log.warn(`Codex install failed (OpenCode install remains successful): ${message}`)
+      p.log.warn(t("cli.tui-installer.codexInstallFailedOcOk", { message }))
     }
   }
 
@@ -159,48 +164,46 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
     }
   }
 
-  p.log.success(color.bold(isUpdate ? "Configuration updated!" : "Installation complete!"))
+  p.log.success(color.bold(isUpdate ? t("cli.tui-installer.configUpdated") : t("cli.tui-installer.installComplete")))
   if (config.hasOpenCode) {
-    p.log.message(`Run ${color.cyan("opencode")} to start!`)
+    p.log.message(t("cli.tui-installer.runToStart", { command: color.cyan("opencode") }))
   }
-  p.log.info("Anonymous telemetry is enabled by default. Disable it with OMO_SEND_ANONYMOUS_TELEMETRY=0 or OMO_DISABLE_POSTHOG=1.")
-  p.log.info("Docs: docs/legal/privacy-policy.md and docs/legal/terms-of-service.md")
+  p.log.info(t("cli.tui-installer.telemetryNote"))
+  p.log.info(t("cli.tui-installer.docsNote"))
 
   p.note(
-    `Include ${color.cyan("ultrawork")} (or ${color.cyan("ulw")}) in your prompt.\n` +
-      `All features work like magic-parallel agents, background tasks,\n` +
-      `deep exploration, and relentless execution until completion.`,
-    "The Magic Word",
+    t("cli.tui-installer.magicWordBody", { word: color.cyan("ultrawork"), wordShort: color.cyan("ulw") }),
+    t("cli.tui-installer.magicWordTitle"),
   )
 
   const shouldStar = await p.confirm({
-    message: "Star the repos on GitHub?",
+    message: t("cli.tui-installer.starQuestion"),
     initialValue: false,
   })
   if (!p.isCancel(shouldStar) && shouldStar) {
-    spinner.start("Starring GitHub repositories")
+    spinner.start(t("cli.tui-installer.starring"))
     const results = await starGitHubRepositories(selectedPlatform)
     const failed = results.filter((result) => !result.ok)
     if (failed.length === 0) {
-      spinner.stop("GitHub repositories starred")
+      spinner.stop(t("cli.tui-installer.starred"))
     } else {
-      spinner.stop("Could not star every repository")
-      p.log.warn("Make sure GitHub CLI is installed and authenticated.")
+      spinner.stop(t("cli.tui-installer.couldNotStar"))
+      p.log.warn(t("cli.tui-installer.starAuthHint"))
     }
   }
 
-  p.outro(color.green("oMoMoMoMo... Enjoy!"))
+  p.outro(color.green(t("cli.tui-installer.enjoy")))
 
   if (config.hasOpenCode && (config.hasClaude || config.hasGemini || config.hasCopilot) && !args.skipAuth) {
     const providers: string[] = []
-    if (config.hasClaude) providers.push(`Anthropic ${color.gray("→ Claude Pro/Max")}`)
-    if (config.hasGemini) providers.push(`Google ${color.gray("→ Gemini")}`)
-    if (config.hasCopilot) providers.push(`GitHub ${color.gray("→ Copilot")}`)
+    if (config.hasClaude) providers.push(`${t("cli.tui-installer.authProviderAnthropic")} ${color.gray(`→ ${t("cli.tui-installer.authProviderAnthropicHint")}`)}`)
+    if (config.hasGemini) providers.push(`${t("cli.tui-installer.authProviderGoogle")} ${color.gray(`→ ${t("cli.tui-installer.authProviderGoogleHint")}`)}`)
+    if (config.hasCopilot) providers.push(`${t("cli.tui-installer.authProviderGithub")} ${color.gray(`→ ${t("cli.tui-installer.authProviderGithubHint")}`)}`)
 
     console.log()
-    console.log(color.bold("Authenticate Your Providers"))
+    console.log(color.bold(t("cli.tui-installer.authTitle")))
     console.log()
-    console.log(`   Run ${color.cyan("opencode auth login")} and select:`)
+    console.log(t("cli.tui-installer.authRunHint", { command: color.cyan("opencode auth login") }))
     for (const provider of providers) {
       console.log(`   ${SYMBOLS.bullet} ${provider}`)
     }
