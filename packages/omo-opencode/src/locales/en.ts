@@ -175,6 +175,19 @@ const locales = {
   "cli.cli-installer.authTitle": "Authenticate Your Providers",
   "cli.cli-installer.authBody": "Run {{command}} and select your provider:",
 
+  // --- hooks (guard / lifecycle messages shown to user or agent) ---
+  "hooks.notepadWriteGuard.refused": "Refused: Write to {{filePath}} is blocked because notepad files are append-only and Write would destroy history. Report the original Edit failure to the user and ask for guidance instead.",
+  "hooks.prometheusMdOnly.refused": "[{{hookName}}] Prometheus is a planning agent. File operations restricted to .omo/*.md plan files only. Use task() to delegate implementation. Attempted to modify: {{filePath}}. APOLOGIZE TO THE USER, REMIND OF YOUR PLAN WRITING PROCESSES, TELL USER WHAT YOU WILL GOING TO DO AS THE PROCESS, WRITE THE PLAN",
+  "hooks.writeExistingFileGuard.refused": "File already exists. Use edit tool instead.",
+  "hooks.claudeCodeHooks.blockedPrompt": "Hook blocked the prompt",
+  "hooks.claudeCodeHooks.blockedOperation": "Hook blocked the operation",
+  "hooks.teamGating.alreadyParticipant": "team_create denied: session is already a participant of team {{teamRunId}}",
+  "hooks.teamGating.leadOnly": "{{toolName}} is lead-only",
+  "hooks.teamGating.callerMustBeMemberOrLead": "{{toolName}}: caller must be target member or team lead",
+  "hooks.teamGating.requiresTeamRunId": "team-mode tool {{toolName}} requires teamRunId argument",
+  "hooks.teamGating.deniedNotParticipant": "team-mode tool {{toolName}} denied: not a participant of team {{teamRunId}}",
+  "hooks.tasksTodoDisabler.message": "TodoRead is DISABLED because experimental.task_system is enabled.\n\n**ACTION REQUIRED**: Use Task tools to inspect work state. TodoWrite is still allowed so the live todo panel keeps updating, but reads belong to the task system.\n\n**Use these tools instead of TodoRead:**\n- TaskList: List active tasks with dependency info\n- TaskGet: Get full task details\n- TaskCreate: Create new task with auto-generated ID\n- TaskUpdate: Update status, assign owner, add dependencies\n\n**Workflow:**\n1. TaskCreate({ subject: \"your task description\" })\n2. TaskUpdate({ id: \"T-xxx\", status: \"in_progress\", owner: \"your-thread-id\" })\n3. DO THE WORK\n4. TaskUpdate({ id: \"T-xxx\", status: \"completed\" })\n\nCRITICAL: 1 task = 1 task. Fire independent tasks concurrently.\n\n**STOP! DO NOT START WORKING DIRECTLY - NO MATTER HOW SMALL THE TASK!**\nEven if the task seems trivial (1 line fix, simple edit, quick change), you MUST:\n1. FIRST register it with TaskCreate\n2. THEN mark it in_progress\n3. ONLY THEN do the actual work\n4. FINALLY mark it completed\n\n**WHY?** Task tracking = visibility = accountability. Skipping registration = invisible work = chaos.\n\nDO NOT retry TodoRead. Use TaskList or TaskGet NOW.",
+
   "cli.doctor.summary": "Summary",
   "cli.doctor.passed": "{{count}} passed",
   "cli.doctor.failed": "{{count}} failed",

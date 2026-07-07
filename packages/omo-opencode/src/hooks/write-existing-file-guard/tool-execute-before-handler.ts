@@ -1,6 +1,7 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { existsSync } from "fs"
 import { log } from "../../shared"
+import { t } from "../../shared/i18n"
 import { MAX_TRACKED_PATHS_PER_SESSION } from "./hook"
 import {
   asRecord,
@@ -189,5 +190,5 @@ export async function handleWriteExistingFileGuardToolExecuteBefore(params: {
     resolvedPath,
   })
 
-  throw new Error("File already exists. Use edit tool instead.")
+  throw new Error(t("hooks.writeExistingFileGuard.refused"))
 }

@@ -1,6 +1,7 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { loadClaudeHooksConfig } from "../config"
 import { loadPluginExtendedConfig } from "../config-loader"
+import { t } from "../../../shared/i18n"
 import {
 	executeUserPromptSubmitHooks,
 	type MessagePart,
@@ -100,7 +101,7 @@ export function createChatMessageHandler(
 		)
 
 		if (result.block) {
-			throw new Error(result.reason ?? "Hook blocked the prompt")
+			throw new Error(result.reason ?? t("hooks.claudeCodeHooks.blockedPrompt"))
 		}
 
 		const interruptStateAfterHooks = sessionInterruptState.get(input.sessionID)

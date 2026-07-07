@@ -1,5 +1,6 @@
 import { isTaskSystemEnabled } from "../../shared";
-import { BLOCKED_TOOLS, REPLACEMENT_MESSAGE } from "./constants";
+import { BLOCKED_TOOLS } from "./constants";
+import { t } from "../../shared/i18n";
 
 export interface TasksTodowriteDisablerConfig {
   experimental?: {
@@ -27,7 +28,7 @@ export function createTasksTodowriteDisablerHook(
           (blocked) => blocked.toLowerCase() === toolName.toLowerCase(),
         )
       ) {
-        throw new Error(REPLACEMENT_MESSAGE);
+        throw new Error(t("hooks.tasksTodoDisabler.message"));
       }
     },
   };

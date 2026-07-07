@@ -7,6 +7,7 @@ import {
   listActiveTeams,
   loadRuntimeState,
 } from "../../features/team-mode/team-state-store"
+import { t } from "../../shared/i18n"
 
 const ACTIVE_RUNTIME_STATUSES = new Set<RuntimeState["status"]>(["creating", "active", "shutdown_requested"])
 const UNIVERSAL_TOOL_NAMES = new Set([
@@ -101,7 +102,7 @@ export function createTeamToolGating(_ctx: PluginInput, config: TeamModeConfig |
 
       if (toolName === "team_create") {
         if (participant.role !== "neither") {
-          throw new Error(`team_create denied: session is already a participant of team ${participant.teamRunId}`)
+          throw new Error(t("hooks.teamGating.alreadyParticipant", { teamRunId: participant.teamRunId }))
         }
 
         return
@@ -112,7 +113,7 @@ export function createTeamToolGating(_ctx: PluginInput, config: TeamModeConfig |
 
       if (toolName === "team_delete" || toolName === "team_shutdown_request") {
         if (!isLeadOfTargetTeam(participant, teamRunId)) {
-          throw new Error(`${toolName} is lead-only`)
+          throw new Error(t("hooks.teamGating.leadOnly", { toolName }))
         }
 
         return
@@ -120,7 +121,7 @@ export function createTeamToolGating(_ctx: PluginInput, config: TeamModeConfig |
 
       if (toolName === "team_approve_shutdown" || toolName === "team_reject_shutdown") {
         if (!isLeadOfTargetTeam(participant, teamRunId) && !isTargetMember(participant, teamRunId, memberName)) {
-          throw new Error(`${toolName}: caller must be target member or team lead`)
+          throw new Error(t("hooks.teamGating.callerMustBeMemberOrLead", { toolName }))
         }
 
         return
@@ -140,8 +141,8 @@ export function createTeamToolGating(_ctx: PluginInput, config: TeamModeConfig |
 
         throw new Error(
           teamRunId === undefined
-            ? `team-mode tool ${toolName} requires teamRunId argument`
-            : `team-mode tool ${toolName} denied: not a participant of team ${teamRunId}`,
+            ? t("hooks.teamGating.requiresTeamRunId", { toolName })
+            : t("hooks.teamGating.deniedNotParticipant", { toolName, teamRunId }),
         )
       }
     },

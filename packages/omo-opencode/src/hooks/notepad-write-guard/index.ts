@@ -1,5 +1,6 @@
 import type { Hooks } from "@opencode-ai/plugin"
 import { normalize, sep } from "path"
+import { t } from "../../shared/i18n"
 
 const NOTEPAD_ROOTS = [
   normalize(".sisyphus/notepads"),
@@ -38,7 +39,7 @@ export function createNotepadWriteGuardHook(): Hooks {
 
       if (isNotepadPath(filePath)) {
         throw new Error(
-          `Refused: Write to ${filePath} is blocked because notepad files are append-only and Write would destroy history. Report the original Edit failure to the user and ask for guidance instead.`,
+          t("hooks.notepadWriteGuard.refused", { filePath }),
         )
       }
     },

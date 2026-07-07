@@ -1,6 +1,7 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { loadClaudeHooksConfig } from "../config"
 import { loadPluginExtendedConfig } from "../config-loader"
+import { t } from "../../../shared/i18n"
 import {
 	executePreToolUseHooks,
 	type PreToolUseContext,
@@ -126,7 +127,7 @@ export function createToolExecuteBeforeHandler(ctx: PluginInput, config: PluginC
 						log("PreToolUse hook toast failed", { sessionID: input.sessionID, error: String(error) })
 					}
 				})
-			throw new Error(result.reason ?? "Hook blocked the operation")
+			throw new Error(result.reason ?? t("hooks.claudeCodeHooks.blockedOperation"))
 		}
 
 		if (result.modifiedInput) {
