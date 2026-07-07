@@ -3,6 +3,7 @@ import type { PluginInput } from "@opencode-ai/plugin"
 import type { DelegatedModelConfig } from "../../shared/model-resolution-types"
 import { subagentSessions, syncSubagentSessions } from "../../features/claude-code-session-state"
 import { log } from "../../shared"
+import { t } from "../../shared/i18n"
 
 export async function createOrGetSession(
   args: CallOmoAgentArgs,
@@ -23,7 +24,7 @@ export async function createOrGetSession(
     })
     if (sessionResult.error) {
       log(`[call_omo_agent] Session get error:`, sessionResult.error)
-      throw new Error(`Failed to get existing session: ${sessionResult.error}`)
+      throw new Error(t("tools.callOmoAgent.failedGetSession", { error: sessionResult.error }))
     }
     return { sessionID: args.session_id, isNew: false }
   } else {
@@ -60,16 +61,9 @@ export async function createOrGetSession(
       log(`[call_omo_agent] Session create error:`, createResult.error)
       const errorStr = String(createResult.error)
       if (errorStr.toLowerCase().includes("unauthorized")) {
-        throw new Error(`Failed to create session (Unauthorized). This may be due to:
-1. OAuth token restrictions (e.g., Claude Code credentials are restricted to Claude Code only)
-2. Provider authentication issues
-3. Session permission inheritance problems
-
-Try using a different provider or API key authentication.
-
-Original error: ${createResult.error}`)
+        throw new Error(t("tools.callOmoAgent.failedCreateSessionUnauthorized", { error: createResult.error }))
       }
-      throw new Error(`Failed to create session: ${createResult.error}`)
+      throw new Error(t("tools.callOmoAgent.failedCreateSession", { error: createResult.error }))
     }
 
     const sessionID = createResult.data.id

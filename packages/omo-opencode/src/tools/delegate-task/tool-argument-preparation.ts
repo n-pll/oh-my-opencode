@@ -1,6 +1,7 @@
 import type { DelegateTaskArgs, ToolContextWithMetadata } from "./types"
 import { SISYPHUS_JUNIOR_AGENT } from "./sisyphus-junior-agent"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 
 export async function prepareDelegateTaskArgs(args: Record<string, unknown>, ctx: ToolContextWithMetadata): Promise<DelegateTaskArgs> {
   const category = typeof args.category === "string" ? args.category : undefined
@@ -74,7 +75,7 @@ export async function prepareDelegateTaskArgs(args: Record<string, unknown>, ctx
     // #4121 explicitly requested we preserve it. `null` strongly signals
     // "I tried to pass something and it was wrong" - silently coercing
     // hides bugs upstream.
-    throw new Error("Invalid arguments: load_skills=null is not allowed. Pass [] if no skills needed.")
+    throw new Error(t("tools.delegateTask.invalidLoadSkills"))
   }
 
   const normalizedLoadSkills = Array.isArray(loadSkills)

@@ -1,6 +1,7 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { log } from "../../shared"
 import { normalizeSDKResponse } from "../../shared"
+import { t } from "../../shared/i18n"
 
 export async function waitForCompletion(
   sessionID: string,
@@ -27,7 +28,7 @@ export async function waitForCompletion(
   while (Date.now() - pollStart < MAX_POLL_TIME_MS) {
     if (toolContext.abort?.aborted) {
       log(`[call_omo_agent] Aborted by user`)
-      throw new Error("Task aborted.")
+      throw new Error(t("tools.callOmoAgent.aborted"))
     }
 
     await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS))
@@ -53,7 +54,7 @@ export async function waitForCompletion(
       stablePolls = 0
       lastMsgCount = 0
       if (!sawActiveStatus && Date.now() - pollStart >= PROMPT_ACCEPTANCE_TIMEOUT_MS) {
-        throw new Error(`Prompt was not durably accepted by OpenCode for session ${sessionID}.`)
+        throw new Error(t("tools.callOmoAgent.notAccepted", { sessionID }))
       }
       continue
     }
@@ -72,6 +73,6 @@ export async function waitForCompletion(
 
   if (Date.now() - pollStart >= MAX_POLL_TIME_MS) {
     log(`[call_omo_agent] Timeout reached`)
-    throw new Error("Agent task timed out after 5 minutes.")
+    throw new Error(t("tools.callOmoAgent.timeout"))
   }
 }

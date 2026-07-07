@@ -1,6 +1,7 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { log } from "../../shared"
 import { consumeNewMessages } from "../../shared/session-cursor"
+import { t } from "../../shared/i18n"
 
 interface SDKMessage {
   info?: { role?: string; time?: { created?: number } }
@@ -17,7 +18,7 @@ export async function processMessages(
 
   if (messagesResult.error) {
     log(`[call_omo_agent] Messages error:`, messagesResult.error)
-    throw new Error(`Failed to get messages: ${messagesResult.error}`)
+    throw new Error(t("tools.callOmoAgent.failedGetMessages", { error: messagesResult.error }))
   }
 
   const messages = messagesResult.data
@@ -32,7 +33,7 @@ export async function processMessages(
   if (relevantMessages.length === 0) {
     log(`[call_omo_agent] No assistant or tool messages found`)
     log(`[call_omo_agent] All messages:`, JSON.stringify(messages, null, 2))
-    throw new Error("No assistant or tool response found")
+    throw new Error(t("tools.callOmoAgent.noResponse"))
   }
 
   log(`[call_omo_agent] Found ${relevantMessages.length} relevant messages`)

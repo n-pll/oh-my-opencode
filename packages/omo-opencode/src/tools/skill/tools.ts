@@ -18,6 +18,7 @@ import {
   matchSkillByName,
 } from "./skill-matcher"
 import { extractSkillBody } from "./skill-body"
+import { t } from "../../shared/i18n"
 import {
   isPromiseLike,
   loadedSkillToInfo,
@@ -160,7 +161,7 @@ export function createSkillTool(options: SkillLoadOptions): ToolDefinition {
         })
 
         if (matchedSkill.definition.agent && (!ctx?.agent || matchedSkill.definition.agent !== ctx.agent)) {
-          throw new Error(`Skill "${matchedSkill.name}" is restricted to agent "${matchedSkill.definition.agent}"`)
+          throw new Error(t("tools.skill.restricted", { name: matchedSkill.name, agent: matchedSkill.definition.agent }))
         }
 
         let body = await extractSkillBody(matchedSkill)

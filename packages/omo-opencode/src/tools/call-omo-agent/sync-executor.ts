@@ -3,6 +3,7 @@ import { clearSessionAgent, handedBackSyncSessions, setSessionAgent, subagentSes
 import { dispatchInternalPrompt, isInternalPromptDispatchAccepted } from "../../hooks/shared/prompt-async-gate"
 import { getAgentToolRestrictions, isAmbiguousPostDispatchPromptFailure, log } from "../../shared"
 import { normalizeAgentForPrompt, stripAgentListSortPrefix } from "../../shared/agent-display-names"
+import { t } from "../../shared/i18n"
 import {
   clearDelegatedChildSessionBootstrap,
   registerDelegatedChildSessionBootstrap,
@@ -167,7 +168,7 @@ export async function executeSync(
         }
       }
       if (!promptMayHaveBeenAccepted && !isInternalPromptDispatchAccepted(promptResult)) {
-        throw new Error(`prompt skipped by gate: ${promptResult.status}`)
+        throw new Error(t("tools.callOmoAgent.promptSkipped", { status: promptResult.status }))
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)

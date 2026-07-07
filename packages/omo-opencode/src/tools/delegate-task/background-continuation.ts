@@ -6,6 +6,7 @@ import { getSessionTools } from "../../shared/session-tools-store"
 import { buildTaskMetadataBlock } from "../../features/tool-metadata-store/task-metadata-contract"
 import { resolveMetadataModel } from "./resolve-metadata-model"
 import { getTaskID } from "./task-id"
+import { t } from "../../shared/i18n"
 
 export async function executeBackgroundContinuation(
   args: DelegateTaskArgs,
@@ -19,7 +20,7 @@ export async function executeBackgroundContinuation(
 
   try {
     if (!taskID) {
-      throw new Error("task_id is required to continue a background task")
+      throw new Error(t("tools.delegateTask.taskIdRequiredBg"))
     }
 
     const effectivePrompt = systemContent

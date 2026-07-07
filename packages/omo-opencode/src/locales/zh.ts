@@ -190,6 +190,21 @@ const overrides: Partial<Record<TranslationKey, string>> = {
   "hooks.teamGating.deniedNotParticipant": "team-mode 工具 {{toolName}} 被拒绝：不是团队 {{teamRunId}} 的参与者",
   "hooks.tasksTodoDisabler.message": "TodoRead 已禁用，因为 experimental.task_system 已启用。\n\n**需要操作**：使用 Task 工具检查工作状态。TodoWrite 仍然允许，以便实时 todo 面板持续更新，但读取属于任务系统。\n\n**用这些工具替代 TodoRead：**\n- TaskList：列出活跃任务及其依赖信息\n- TaskGet：获取完整任务详情\n- TaskCreate：创建带有自动生成 ID 的新任务\n- TaskUpdate：更新状态、分配 owner、添加依赖\n\n**工作流：**\n1. TaskCreate({ subject: \"你的任务描述\" })\n2. TaskUpdate({ id: \"T-xxx\", status: \"in_progress\", owner: \"your-thread-id\" })\n3. 执行工作\n4. TaskUpdate({ id: \"T-xxx\", status: \"completed\" })\n\n关键：1 个任务 = 1 个任务。并发触发独立任务。\n\n**停下！不要直接开始工作 — 无论任务多小！**\n即使任务看似微不足道（1 行修复、简单编辑、快速更改），你必须：\n1. 首先用 TaskCreate 注册\n2. 然后标记为 in_progress\n3. 只有这样才能做实际工作\n4. 最后标记为 completed\n\n**为什么？** 任务跟踪 = 可见性 = 责任。跳过注册 = 不可见的工作 = 混乱。\n\n不要重试 TodoRead。立即使用 TaskList 或 TaskGet。",
 
+  // --- tools (execution errors shown to user/agent) ---
+  "tools.callOmoAgent.aborted": "任务已中止。",
+  "tools.callOmoAgent.notAccepted": "OpenCode 未持久接受会话 {{sessionID}} 的提示。",
+  "tools.callOmoAgent.timeout": "Agent 任务在 5 分钟后超时。",
+  "tools.callOmoAgent.failedGetMessages": "获取消息失败：{{error}}",
+  "tools.callOmoAgent.noResponse": "未找到 assistant 或工具响应",
+  "tools.callOmoAgent.failedGetSession": "获取现有会话失败：{{error}}",
+  "tools.callOmoAgent.failedCreateSession": "创建会话失败：{{error}}",
+  "tools.callOmoAgent.failedCreateSessionUnauthorized": "创建会话失败（未授权）。可能原因：\n1. OAuth token 限制（例如 Claude Code 凭证仅限 Claude Code 使用）\n2. Provider 认证问题\n3. 会话权限继承问题\n\n尝试使用其他 provider 或 API key 认证。\n\n原始错误：{{error}}",
+  "tools.callOmoAgent.promptSkipped": "提示被 gate 跳过：{{status}}",
+  "tools.delegateTask.taskIdRequiredBg": "继续后台任务需要 task_id",
+  "tools.delegateTask.taskIdRequiredSync": "继续同步任务需要 task_id",
+  "tools.delegateTask.invalidLoadSkills": "无效参数：不允许 load_skills=null。如不需要 skills 请传 []。",
+  "tools.skill.restricted": "Skill \"{{name}}\" 仅限 agent \"{{agent}}\" 使用",
+
   "cli.doctor.summary": "摘要",
   "cli.doctor.passed": "{{count}} 通过",
   "cli.doctor.failed": "{{count}} 失败",

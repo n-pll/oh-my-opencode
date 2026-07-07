@@ -188,6 +188,21 @@ const locales = {
   "hooks.teamGating.deniedNotParticipant": "team-mode tool {{toolName}} denied: not a participant of team {{teamRunId}}",
   "hooks.tasksTodoDisabler.message": "TodoRead is DISABLED because experimental.task_system is enabled.\n\n**ACTION REQUIRED**: Use Task tools to inspect work state. TodoWrite is still allowed so the live todo panel keeps updating, but reads belong to the task system.\n\n**Use these tools instead of TodoRead:**\n- TaskList: List active tasks with dependency info\n- TaskGet: Get full task details\n- TaskCreate: Create new task with auto-generated ID\n- TaskUpdate: Update status, assign owner, add dependencies\n\n**Workflow:**\n1. TaskCreate({ subject: \"your task description\" })\n2. TaskUpdate({ id: \"T-xxx\", status: \"in_progress\", owner: \"your-thread-id\" })\n3. DO THE WORK\n4. TaskUpdate({ id: \"T-xxx\", status: \"completed\" })\n\nCRITICAL: 1 task = 1 task. Fire independent tasks concurrently.\n\n**STOP! DO NOT START WORKING DIRECTLY - NO MATTER HOW SMALL THE TASK!**\nEven if the task seems trivial (1 line fix, simple edit, quick change), you MUST:\n1. FIRST register it with TaskCreate\n2. THEN mark it in_progress\n3. ONLY THEN do the actual work\n4. FINALLY mark it completed\n\n**WHY?** Task tracking = visibility = accountability. Skipping registration = invisible work = chaos.\n\nDO NOT retry TodoRead. Use TaskList or TaskGet NOW.",
 
+  // --- tools (execution errors shown to user/agent) ---
+  "tools.callOmoAgent.aborted": "Task aborted.",
+  "tools.callOmoAgent.notAccepted": "Prompt was not durably accepted by OpenCode for session {{sessionID}}.",
+  "tools.callOmoAgent.timeout": "Agent task timed out after 5 minutes.",
+  "tools.callOmoAgent.failedGetMessages": "Failed to get messages: {{error}}",
+  "tools.callOmoAgent.noResponse": "No assistant or tool response found",
+  "tools.callOmoAgent.failedGetSession": "Failed to get existing session: {{error}}",
+  "tools.callOmoAgent.failedCreateSession": "Failed to create session: {{error}}",
+  "tools.callOmoAgent.failedCreateSessionUnauthorized": "Failed to create session (Unauthorized). This may be due to:\n1. OAuth token restrictions (e.g., Claude Code credentials are restricted to Claude Code only)\n2. Provider authentication issues\n3. Session permission inheritance problems\n\nTry using a different provider or API key authentication.\n\nOriginal error: {{error}}",
+  "tools.callOmoAgent.promptSkipped": "prompt skipped by gate: {{status}}",
+  "tools.delegateTask.taskIdRequiredBg": "task_id is required to continue a background task",
+  "tools.delegateTask.taskIdRequiredSync": "task_id is required to continue a sync task",
+  "tools.delegateTask.invalidLoadSkills": "Invalid arguments: load_skills=null is not allowed. Pass [] if no skills needed.",
+  "tools.skill.restricted": "Skill \"{{name}}\" is restricted to agent \"{{agent}}\"",
+
   "cli.doctor.summary": "Summary",
   "cli.doctor.passed": "{{count}} passed",
   "cli.doctor.failed": "{{count}} failed",

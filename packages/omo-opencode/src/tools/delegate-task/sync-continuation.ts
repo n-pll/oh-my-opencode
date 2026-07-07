@@ -16,6 +16,7 @@ import { buildTaskMetadataBlock } from "../../features/tool-metadata-store/task-
 import { getTaskID } from "./task-id"
 import { resolveMetadataModel } from "./resolve-metadata-model"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 
 type ResumeModel = { providerID: string; modelID: string }
 
@@ -103,7 +104,7 @@ export async function executeSyncContinuation(
   const toastManager = getTaskToastManager()
   const continuationID = getTaskID(args)
   if (!continuationID) {
-    throw new Error("task_id is required to continue a sync task")
+    throw new Error(t("tools.delegateTask.taskIdRequiredSync"))
   }
   const taskId = `resume_sync_${continuationID.slice(0, 8)}`
   const startTime = new Date()
