@@ -7,6 +7,7 @@ import { loadOmoConfig } from "./model-resolution-config"
 import { buildModelResolutionDetails } from "./model-resolution-details"
 import { buildEffectiveResolution, getEffectiveModel } from "./model-resolution-effective-model"
 import type { AgentResolutionInfo, CategoryResolutionInfo, ModelResolutionInfo, OmoConfig } from "./model-resolution-types"
+import { t } from "../../../shared/i18n"
 
 export function parseProviderModel(value: string): { providerID: string; modelID: string } | null {
   const slashIndex = value.indexOf("/")
@@ -103,11 +104,11 @@ export function collectCapabilityResolutionIssues(info: ModelResolutionInfo): Do
   }
 
   const summary = fallbackEntries
-    .map((entry) => `${entry.name}=${entry.effectiveModel} (${entry.capabilityDiagnostics?.resolutionMode ?? "unknown"})`)
+    .map((entry) => `${entry.name}=${entry.effectiveModel} (${entry.capabilityDiagnostics?.resolutionMode ?? t("common.unknown")})`)
     .join(", ")
 
   issues.push({
-    title: "Configured models rely on compatibility fallback",
+    title: t("cli.doctor.models.fallback.title"),
     description: summary,
     severity: "warning",
     affects: fallbackEntries.map((entry) => entry.name),
@@ -124,9 +125,9 @@ export async function checkModels(): Promise<CheckResult> {
 
   if (!available.cacheExists) {
     issues.push({
-      title: "Model cache not found",
-      description: "OpenCode model cache is missing, so model availability cannot be validated.",
-      fix: "Run: opencode models --refresh",
+      title: t("cli.doctor.models.cacheNotFound.title"),
+      description: t("cli.doctor.models.cacheNotFound.description"),
+      fix: t("cli.doctor.models.cacheNotFound.fix"),
       severity: "warning",
       affects: ["model resolution"],
     })
@@ -141,7 +142,12 @@ export async function checkModels(): Promise<CheckResult> {
   return {
     name: CHECK_NAMES[CHECK_IDS.MODELS],
     status: issues.length > 0 ? "warn" : "pass",
-    message: `${info.agents.length} agents, ${info.categories.length} categories, ${overrideCount} override${overrideCount === 1 ? "" : "s"}`,
+    message: t("cli.doctor.models.message", {
+      agents: info.agents.length,
+      categories: info.categories.length,
+      count: overrideCount,
+      suffix: overrideCount === 1 ? t("cli.doctor.models.overrideSuffixSingular") : t("cli.doctor.models.overrideSuffixPlural"),
+    }),
     details: buildModelResolutionDetails({ info, available, config }),
     issues,
   }

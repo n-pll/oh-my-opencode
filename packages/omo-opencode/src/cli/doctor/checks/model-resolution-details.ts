@@ -3,9 +3,10 @@ import { join } from "node:path"
 import { getOpenCodeCacheDir } from "../../../shared"
 import type { AvailableModelsInfo, ModelResolutionInfo, OmoConfig } from "./model-resolution-types"
 import { formatModelWithVariant, getCategoryEffectiveVariant, getEffectiveVariant } from "./model-resolution-variant"
+import { t } from "../../../shared/i18n"
 
 function formatCapabilityResolutionLabel(mode: string | undefined): string {
-  return mode ?? "unknown"
+  return mode ?? t("common.unknown")
 }
 
 export function buildModelResolutionDetails(options: {
@@ -16,45 +17,45 @@ export function buildModelResolutionDetails(options: {
   const details: string[] = []
   const cacheFile = join(getOpenCodeCacheDir(), "models.json")
 
-  details.push("═══ Available Models (from cache) ═══")
+  details.push(t("cli.doctor.models.detail.availableHeader"))
   details.push("")
   if (options.available.cacheExists) {
-    details.push(`  Providers in cache: ${options.available.providers.length}`)
+    details.push(t("cli.doctor.models.detail.providersInCache", { count: options.available.providers.length }))
     details.push(
-      `  Sample: ${options.available.providers.slice(0, 6).join(", ")}${options.available.providers.length > 6 ? "..." : ""}`
+      t("cli.doctor.models.detail.sample", { sample: options.available.providers.slice(0, 6).join(", "), ellipsis: options.available.providers.length > 6 ? "..." : "" })
     )
-    details.push(`  Total models: ${options.available.modelCount}`)
-    details.push(`  Cache: ${cacheFile}`)
-    details.push(`  ℹ Runtime: only connected providers used`)
-    details.push(`  Refresh: opencode models --refresh`)
+    details.push(t("cli.doctor.models.detail.totalModels", { count: options.available.modelCount }))
+    details.push(t("cli.doctor.models.detail.cache", { path: cacheFile }))
+    details.push(t("cli.doctor.models.detail.runtimeNote"))
+    details.push(t("cli.doctor.models.detail.refresh"))
   } else {
-    details.push("  ⚠ Cache not found. Run 'opencode' to populate.")
+    details.push(t("cli.doctor.models.detail.cacheNotFoundDetail"))
   }
   details.push("")
 
-  details.push("═══ Configured Models ═══")
+  details.push(t("cli.doctor.models.detail.configuredHeader"))
   details.push("")
-  details.push("Agents:")
+  details.push(t("cli.doctor.models.detail.agentsHeader"))
   for (const agent of options.info.agents) {
     const marker = agent.userOverride ? "●" : "○"
     const display = formatModelWithVariant(
       agent.effectiveModel,
       getEffectiveVariant(agent.name, agent.requirement, options.config)
     )
-    details.push(`  ${marker} ${agent.name}: ${display} [capabilities: ${formatCapabilityResolutionLabel(agent.capabilityDiagnostics?.resolutionMode)}]`)
+    details.push(t("cli.doctor.models.detail.entry", { marker, name: agent.name, display, mode: formatCapabilityResolutionLabel(agent.capabilityDiagnostics?.resolutionMode) }))
   }
   details.push("")
-  details.push("Categories:")
+  details.push(t("cli.doctor.models.detail.categoriesHeader"))
   for (const category of options.info.categories) {
     const marker = category.userOverride ? "●" : "○"
     const display = formatModelWithVariant(
       category.effectiveModel,
       getCategoryEffectiveVariant(category.name, category.requirement, options.config)
     )
-    details.push(`  ${marker} ${category.name}: ${display} [capabilities: ${formatCapabilityResolutionLabel(category.capabilityDiagnostics?.resolutionMode)}]`)
+    details.push(t("cli.doctor.models.detail.entry", { marker, name: category.name, display, mode: formatCapabilityResolutionLabel(category.capabilityDiagnostics?.resolutionMode) }))
   }
   details.push("")
-  details.push("● = user override, ○ = provider fallback")
+  details.push(t("cli.doctor.models.detail.legend"))
 
   return details
 }
