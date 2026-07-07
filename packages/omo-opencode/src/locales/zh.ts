@@ -414,7 +414,7 @@ const overrides: Partial<Record<TranslationKey, string>> = {
   "cli.doctor.tuiPlugin.serverMissing.fix": "重新运行安装程序（`npx oh-my-openagent install`）以自动写入 opencode.json，或将 \"{{pluginName}}\" 添加到 {{configPath}} 的 \"plugin\" 数组中。",
   "cli.doctor.tuiPlugin.bothRegistered": "server 和 TUI 插件条目均已注册",
 
-  "cli.version.header": "oh-my-opencode 版本信息",
+  "cli.version.header": "{{pluginName}} 版本信息",
   "cli.version.currentVersion": "当前版本: {{version}}",
   "cli.version.currentVersionUnknown": "当前版本: 未知",
   "cli.version.latestVersion": "最新版本: {{version}}",

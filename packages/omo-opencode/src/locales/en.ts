@@ -412,7 +412,7 @@ const locales = {
   "cli.doctor.tuiPlugin.serverMissing.fix": "Re-run the installer (`npx oh-my-openagent install`) to auto-write opencode.json, or add \"{{pluginName}}\" to the \"plugin\" array in {{configPath}}.",
   "cli.doctor.tuiPlugin.bothRegistered": "Server and TUI plugin entries are both registered",
 
-  "cli.version.header": "oh-my-opencode Version Information",
+  "cli.version.header": "{{pluginName}} Version Information",
   "cli.version.currentVersion": "Current Version: {{version}}",
   "cli.version.currentVersionUnknown": "Current Version: unknown",
   "cli.version.latestVersion": "Latest Version: {{version}}",
