@@ -3,6 +3,7 @@ import type { AgentMode, AgentPromptMetadata } from "./types";
 import { buildClaudeThinkingConfig, isGpt5_6Model, isGptModel } from "./types";
 import { createAgentToolRestrictions } from "../shared/permission-compat";
 import { MOMUS_GPT_5_6_PROMPT } from "./momus-gpt-5-6";
+import { t } from "../shared/i18n";
 
 const MODE: AgentMode = "subagent";
 
@@ -288,7 +289,7 @@ export function createMomusAgent(model: string): AgentConfig {
 
   const base = {
     description:
-      "Expert reviewer for evaluating work plans against rigorous clarity, verifiability, and completeness standards. (Momus - OhMyOpenCode)",
+      t("agents.momus.description"),
     mode: MODE,
     model,
     temperature: 0.1,

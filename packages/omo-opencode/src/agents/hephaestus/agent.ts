@@ -9,6 +9,7 @@ import type {
 } from "../dynamic-agent-prompt-builder";
 import { categorizeTools, buildAgentIdentitySection } from "../dynamic-agent-prompt-builder";
 import { getFrontierToolSchemaPermission } from "../frontier-tool-schema-guard";
+import { t } from "../../shared/i18n";
 
 import { buildHephaestusPrompt as buildGptPrompt } from "./gpt";
 import { buildHephaestusPrompt as buildGpt54Prompt } from "./gpt-5-4";
@@ -168,7 +169,7 @@ export function createHephaestusAgent(
 
   return {
     description:
-      "Autonomous Deep Worker - goal-oriented execution with GPT Codex. Explores thoroughly before acting, uses explore/librarian agents for comprehensive context, completes tasks end-to-end. Inspired by AmpCode deep mode. (Hephaestus - OhMyOpenCode)",
+      t("agents.hephaestus.description"),
     mode: MODE,
     model,
     maxTokens: 32000,

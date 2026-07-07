@@ -2,6 +2,7 @@ import type { AgentConfig } from "@opencode-ai/sdk";
 import type { AgentMode, AgentPromptMetadata } from "./types";
 import { buildClaudeThinkingConfig, isGpt5_5Model, isGpt5_6Model, isGptModel } from "./types";
 import { createAgentToolRestrictions } from "../shared/permission-compat";
+import { t } from "../shared/i18n";
 
 const MODE: AgentMode = "subagent";
 
@@ -418,7 +419,7 @@ export function createOracleAgent(model: string): AgentConfig {
 
   const base = {
     description:
-      "Read-only consultation agent. High-IQ reasoning specialist for debugging hard problems and high-difficulty architecture design. (Oracle - OhMyOpenCode)",
+      t("agents.oracle.description"),
     mode: MODE,
     model,
     temperature: 0.1,

@@ -23,6 +23,7 @@ import {
   migrateAgentConfig,
   type PermissionValue,
 } from "../../shared/permission-compat"
+import { t } from "../../shared/i18n"
 
 import { buildDefaultSisyphusJuniorPrompt } from "./default"
 import { buildKimiK26SisyphusJuniorPrompt } from "./kimi-k2-6"
@@ -142,7 +143,7 @@ export function createSisyphusJuniorAgentWithOverrides(
 
   const base: AgentConfig = {
     description: override?.description ??
-      "Focused task executor. Same discipline, no delegation. (Sisyphus-Junior - OhMyOpenCode)",
+      t("agents.sisyphus-junior.description"),
     mode: MODE,
     model,
     temperature,

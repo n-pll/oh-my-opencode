@@ -26,6 +26,7 @@ import type { AvailableAgent, AvailableSkill, AvailableCategory } from "../dynam
 import { buildAgentIdentitySection, buildCategorySkillsDelegationGuide } from "../dynamic-agent-prompt-builder"
 import type { CategoryConfig } from "../../config/schema"
 import { mergeCategories } from "../../shared/merge-categories"
+import { t } from "../../shared/i18n"
 
 import {
   getCategoryDescription,
@@ -120,7 +121,7 @@ function buildDynamicOrchestratorPrompt(ctx?: OrchestratorContext): string {
 export function createAtlasAgent(ctx: OrchestratorContext): AgentConfig {
   const baseConfig: AgentConfig = {
     description:
-      "Orchestrates work via task() to complete ALL tasks in a todo list until fully done. (Atlas - OhMyOpenCode)",
+      t("agents.atlas.description"),
     mode: MODE,
     ...(ctx.model ? { model: ctx.model } : {}),
     temperature: 0.1,

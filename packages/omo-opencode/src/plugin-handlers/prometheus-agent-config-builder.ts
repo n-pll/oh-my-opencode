@@ -10,6 +10,7 @@ import {
   resolveModelPipeline,
 } from "../shared";
 import { resolveCategoryConfig } from "./category-config-resolver";
+import { t } from "../shared/i18n";
 
 type PrometheusOverride = Record<string, unknown> & {
   category?: string;
@@ -115,7 +116,7 @@ export async function buildPrometheusAgentConfig(params: {
     mode: "primary",
     prompt: getPrometheusPrompt(resolvedModel, params.disabledTools),
     permission: PROMETHEUS_PERMISSION,
-    description: `${(params.configAgentPlan?.description as string) ?? "Plan agent"} (Prometheus - OhMyOpenCode)`,
+    description: `${(params.configAgentPlan?.description as string) ?? t("agents.prometheus.description")} (Prometheus - OhMyOpenCode)`,
     color: (params.configAgentPlan?.color as string) ?? "#FF5722",
     ...(temperatureToUse !== undefined ? { temperature: temperatureToUse } : {}),
     ...(topPToUse !== undefined ? { top_p: topPToUse } : {}),

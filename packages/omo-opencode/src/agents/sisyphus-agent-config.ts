@@ -2,9 +2,11 @@ import type { AgentConfig } from "@opencode-ai/sdk";
 import { getFrontierToolSchemaPermission } from "./frontier-tool-schema-guard";
 import { buildClaudeThinkingConfig } from "./types";
 import type { AgentMode } from "./types";
+import { t } from "../shared/i18n";
 
-const SISYPHUS_DESCRIPTION =
-  "Powerful AI orchestrator. Plans obsessively with todos, assesses search complexity before exploration, delegates strategically via category+skills combinations. Uses explore for internal code (parallel-friendly), librarian for external docs. (Sisyphus - OhMyOpenCode)";
+function sisyphusDescription(): string {
+  return t("agents.sisyphus.description");
+}
 
 function buildSisyphusPermission(model: string): AgentConfig["permission"] {
   return {
@@ -20,7 +22,7 @@ function buildBaseSisyphusAgentConfig(
   prompt: string,
 ): AgentConfig {
   return {
-    description: SISYPHUS_DESCRIPTION,
+    description: sisyphusDescription(),
     mode,
     model,
     maxTokens: 64000,
