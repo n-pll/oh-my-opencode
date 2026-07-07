@@ -23,7 +23,7 @@ export type LocaleMap<TKey extends string> = Record<SupportedLocale, LocaleMessa
 /** Translate a key with optional interpolation params ({{name}} placeholders). */
 export type TranslateFn<TKey extends string> = (
   key: TKey,
-  params?: Record<string, string | number>,
+  params?: Record<string, string | number | null | undefined>,
 ) => string
 
 export interface Translator<TKey extends string> {
@@ -58,11 +58,11 @@ export function detectLocale(langEnv: string | undefined): SupportedLocale {
 
 const INTERPOLATION_PATTERN = /\{\{(\w+)\}\}/g
 
-function interpolate(template: string, params: Record<string, string | number> | undefined): string {
+function interpolate(template: string, params: Record<string, string | number | null | undefined> | undefined): string {
   if (params === undefined) return template
   return template.replace(INTERPOLATION_PATTERN, (match, name: string) => {
     const value = params[name]
-    return value === undefined ? match : String(value)
+    return value != null ? String(value) : match
   })
 }
 

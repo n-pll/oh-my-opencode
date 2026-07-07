@@ -1,6 +1,7 @@
 import { spawn } from "@oh-my-opencode/utils/runtime"
 import { validateGatewayUrl } from "./gateway-url-validation"
 import type { OpenClawGateway, WakeResult } from "./types"
+import { t } from "./i18n"
 
 const DEFAULT_HTTP_TIMEOUT_MS = 10_000
 const DEFAULT_COMMAND_TIMEOUT_MS = 5_000
@@ -114,7 +115,7 @@ export async function wakeGateway(
     return {
       gateway: gatewayName,
       success: false,
-      error: "Invalid URL (HTTPS required)",
+      error: t("dispatcher.error.invalidUrl"),
     }
   }
 
@@ -154,7 +155,7 @@ export async function wakeGateway(
     return {
       gateway: gatewayName,
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : t("dispatcher.error.unknown"),
     }
   }
 }
@@ -168,7 +169,7 @@ export async function wakeCommandGateway(
     return {
       gateway: gatewayName,
       success: false,
-      error: "No command configured",
+           error: t("dispatcher.error.noCommand"),
     }
   }
 
@@ -206,7 +207,7 @@ export async function wakeCommandGateway(
     }
 
     if (proc.exitCode !== 0) {
-      throw new Error(`Command exited with code ${proc.exitCode}`)
+      throw new Error(t("dispatcher.error.commandExited", { code: proc.exitCode }))
     }
 
     const metadata = parseWakeMetadata(await stdoutPromise)
@@ -216,7 +217,7 @@ export async function wakeCommandGateway(
     return {
       gateway: gatewayName,
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : t("dispatcher.error.unknown"),
     }
   }
 }

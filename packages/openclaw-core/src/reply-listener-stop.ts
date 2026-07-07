@@ -11,6 +11,7 @@ import {
   type ReplyListenerDaemonState,
   writeReplyListenerDaemonState,
 } from "./reply-listener-state"
+import { t } from "./i18n"
 
 export async function stopReplyListener(): Promise<{
   success: boolean
@@ -22,7 +23,7 @@ export async function stopReplyListener(): Promise<{
   if (pid === null) {
     return {
       success: true,
-      message: "Reply listener daemon is not running",
+      message: t("replyListener.stop.notRunning"),
     }
   }
 
@@ -30,7 +31,7 @@ export async function stopReplyListener(): Promise<{
     removeReplyListenerPid()
     return {
       success: true,
-      message: "Reply listener daemon was not running (cleaned up stale PID file)",
+      message: t("replyListener.stop.cleanedStalePid"),
     }
   }
 
@@ -38,7 +39,7 @@ export async function stopReplyListener(): Promise<{
     removeReplyListenerPid()
     return {
       success: false,
-      message: `Refusing to kill PID ${pid}: process identity does not match the reply listener daemon (stale or reused PID - removed PID file)`,
+      message: t("replyListener.stop.refusingKill", { pid }),
     }
   }
 
@@ -47,16 +48,16 @@ export async function stopReplyListener(): Promise<{
     removeReplyListenerPid()
     const state = markReplyListenerStopped(readReplyListenerDaemonState())
     writeReplyListenerDaemonState(state)
-    logReplyListenerMessage(`Reply listener daemon stopped (PID ${pid})`)
+    logReplyListenerMessage(t("replyListener.stop.stopped", { pid }))
     return {
       success: true,
-      message: `Reply listener daemon stopped (PID ${pid})`,
+      message: t("replyListener.stop.stopped", { pid }),
       state,
     }
   } catch (error) {
     return {
       success: false,
-      message: "Failed to stop daemon",
+      message: t("replyListener.stop.failed"),
       error: error instanceof Error ? error.message : String(error),
     }
   }

@@ -6,6 +6,7 @@ import { spawnReplyListenerDaemon } from "./reply-listener-spawn"
 import { ensureReplyListenerStateDir } from "./reply-listener-paths"
 import { sleep } from "./reply-listener-sleep"
 import { getReplyListenerRuntimeSignature } from "./reply-listener-signature"
+import { t } from "./i18n"
 import {
   isDaemonRunning,
   terminateReplyListenerProcess,
@@ -65,7 +66,7 @@ export async function startReplyListener(
   if (!replyListener?.discordBotToken && !replyListener?.telegramBotToken) {
     return {
       success: false,
-      message: "No enabled reply listener platforms configured (missing bot tokens/channels)",
+      message: t("replyListener.start.noPlatforms"),
     }
   }
 
@@ -76,7 +77,7 @@ export async function startReplyListener(
     if (runtimeSignature === getReplyListenerRuntimeSignature(normalizedConfig)) {
       return {
         success: true,
-        message: "Reply listener daemon is already running",
+        message: t("replyListener.start.alreadyRunning"),
         state: state || undefined,
       }
     }
@@ -85,7 +86,7 @@ export async function startReplyListener(
     if (!stopResult.success) {
       return {
         success: false,
-        message: "Failed to restart reply listener daemon",
+        message: t("replyListener.start.failedRestart"),
         state: stopResult.state,
         error: stopResult.error ?? stopResult.message,
       }
@@ -97,7 +98,7 @@ export async function startReplyListener(
     if (!stopped) {
       return {
         success: false,
-        message: "Timed out waiting for reply listener daemon to stop before restart",
+        message: t("replyListener.start.timeoutRestart"),
         state: readReplyListenerDaemonState() || undefined,
       }
     }
@@ -106,7 +107,7 @@ export async function startReplyListener(
   if (!(await isTmuxAvailable())) {
     return {
       success: false,
-      message: "tmux not available - reply injection requires tmux",
+      message: t("replyListener.start.tmuxUnavailable"),
     }
   }
 
@@ -126,9 +127,9 @@ export async function startReplyListener(
     processInfo.unref()
 
     if (!processInfo.pid) {
-      const stoppedState = markReplyListenerStopped(pendingState, "Failed to start daemon process")
+      const stoppedState = markReplyListenerStopped(pendingState, t("replyListener.start.failedDaemonProcess"))
       writeReplyListenerDaemonState(stoppedState)
-      return createStartFailureResult("Failed to start daemon process", stoppedState)
+      return createStartFailureResult(t("replyListener.start.failedDaemonProcess"), stoppedState)
     }
 
     writeReplyListenerPid(processInfo.pid)
@@ -171,7 +172,7 @@ export async function startReplyListener(
     removeReplyListenerPid()
     return {
       success: false,
-      message: "Failed to start daemon",
+      message: t("replyListener.start.failed"),
       state: stoppedState,
       error: error instanceof Error ? error.message : String(error),
     }
