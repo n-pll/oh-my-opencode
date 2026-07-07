@@ -12,6 +12,7 @@ import {
 } from "../../../shared"
 import { CHECK_IDS, CHECK_NAMES } from "../framework/constants"
 import type { CheckResult, DoctorIssue } from "../framework/types"
+import { t } from "../../../shared/i18n"
 
 const TUI_SUBPATH = "tui"
 const TUI_EXPORT_SUBPATH = `./${TUI_SUBPATH}`
@@ -204,14 +205,14 @@ export async function checkTuiPluginConfig(): Promise<CheckResult> {
   const issues: DoctorIssue[] = []
   const details: string[] = []
 
-  if (server.configPath) details.push(`opencode.json: ${server.configPath}`)
-  if (tui.configPath) details.push(`tui.json: ${tui.configPath}`)
+  if (server.configPath) details.push(t("cli.doctor.tuiPlugin.detail.opencode", { path: server.configPath }))
+  if (tui.configPath) details.push(t("cli.doctor.tuiPlugin.detail.tui", { path: tui.configPath }))
 
   if (!server.registered && !tui.registered) {
     return {
       name,
       status: "skip",
-      message: "Plugin not registered (server or TUI)",
+      message: t("cli.doctor.tuiPlugin.skip"),
       details: details.length > 0 ? details : undefined,
       issues,
     }
@@ -219,26 +220,28 @@ export async function checkTuiPluginConfig(): Promise<CheckResult> {
 
   if (tui.hasNamedTuiEntry) {
     const exportStatus = server.packageExportsTui === null
-      ? `may expose "${TUI_EXPORT_SUBPATH}", but the package could not be inspected`
+      ? t("cli.doctor.tuiPlugin.exportStatus.mayExpose", { tuiExport: TUI_EXPORT_SUBPATH })
       : server.packageExportsTui
-        ? `does export "${TUI_EXPORT_SUBPATH}", but OpenCode resolves TUI exports from the package spec`
-        : `does not export "${TUI_EXPORT_SUBPATH}"`
+        ? t("cli.doctor.tuiPlugin.exportStatus.doesExport", { tuiExport: TUI_EXPORT_SUBPATH })
+        : t("cli.doctor.tuiPlugin.exportStatus.doesNotExport", { tuiExport: TUI_EXPORT_SUBPATH })
     const desiredEntry = server.entry ?? PLUGIN_NAME
     issues.push({
-      title: "TUI plugin entry in tui.json is unresolvable",
-      description:
-        `tui.json contains "${PLUGIN_NAME}/${TUI_SUBPATH}" or "${LEGACY_PLUGIN_NAME}/${TUI_SUBPATH}". `
-        + `The server package ${exportStatus}. `
-        + "OpenCode installs the configured package spec before resolving the TUI export, so "
-        + `the TUI config should use "${desiredEntry}" instead of the package subpath.`,
-      fix: `Remove "${PLUGIN_NAME}/${TUI_SUBPATH}" and "${LEGACY_PLUGIN_NAME}/${TUI_SUBPATH}" from the "plugin" array in ${tui.configPath}, then add "${desiredEntry}".`,
+      title: t("cli.doctor.tuiPlugin.unresolvable.title"),
+      description: t("cli.doctor.tuiPlugin.unresolvable.description", {
+        pluginName: PLUGIN_NAME, tuiSubpath: TUI_SUBPATH, legacyName: LEGACY_PLUGIN_NAME,
+        exportStatus, desiredEntry,
+      }),
+      fix: t("cli.doctor.tuiPlugin.unresolvable.fix", {
+        pluginName: PLUGIN_NAME, tuiSubpath: TUI_SUBPATH, legacyName: LEGACY_PLUGIN_NAME,
+        configPath: tui.configPath, desiredEntry,
+      }),
       affects: ["TUI startup", "plugin loading"],
       severity: "warning",
     })
     return {
       name,
       status: "warn",
-      message: "TUI plugin entry in tui.json is unresolvable",
+      message: t("cli.doctor.tuiPlugin.unresolvable.message"),
       details: details.length > 0 ? details : undefined,
       issues,
     }
@@ -246,18 +249,16 @@ export async function checkTuiPluginConfig(): Promise<CheckResult> {
 
   if (server.registered && server.packageExportsTui === false && tui.hasPackageTuiEntry) {
     issues.push({
-      title: "TUI plugin package does not expose ./tui",
-      description:
-        `The installed ${server.entry ?? PLUGIN_NAME} package registered in opencode.json does not export "${TUI_EXPORT_SUBPATH}", `
-        + "but tui.json contains the package entry for TUI loading.",
-      fix: `Remove "${server.entry ?? PLUGIN_NAME}" from the "plugin" array in ${tui.configPath}, or update the installed package to a version that exports "${TUI_EXPORT_SUBPATH}".`,
+      title: t("cli.doctor.tuiPlugin.noExport.title"),
+      description: t("cli.doctor.tuiPlugin.noExport.description", { entry: server.entry ?? PLUGIN_NAME, tuiExport: TUI_EXPORT_SUBPATH }),
+      fix: t("cli.doctor.tuiPlugin.noExport.fix", { entry: server.entry ?? PLUGIN_NAME, configPath: tui.configPath, tuiExport: TUI_EXPORT_SUBPATH }),
       affects: ["TUI sidebar", "TUI commands"],
       severity: "warning",
     })
     return {
       name,
       status: "warn",
-      message: "TUI plugin package does not expose ./tui",
+      message: t("cli.doctor.tuiPlugin.noExport.message"),
       details: details.length > 0 ? details : undefined,
       issues,
     }
@@ -268,27 +269,23 @@ export async function checkTuiPluginConfig(): Promise<CheckResult> {
       return {
         name,
         status: "pass",
-        message: "Server plugin registered; TUI subpath not shipped by this package version",
+        message: t("cli.doctor.tuiPlugin.tuiSubpathNotShipped"),
         details: details.length > 0 ? details : undefined,
         issues,
       }
     }
 
     issues.push({
-      title: "TUI plugin entry missing from tui.json",
-      description:
-        "The server plugin is registered in opencode.json, but the TUI plugin entry "
-        + `("${server.entry ?? PLUGIN_NAME}") is missing from tui.json. The Roles · `
-        + "Models sidebar section and TUI-only commands will not appear.",
-      fix: "Re-run the installer (`npx oh-my-openagent install`) to auto-write tui.json, "
-        + `or add "${server.entry ?? PLUGIN_NAME}" to the "plugin" array in ${tui.configPath}.`,
+      title: t("cli.doctor.tuiPlugin.tuiMissing.title"),
+      description: t("cli.doctor.tuiPlugin.tuiMissing.description", { entry: server.entry ?? PLUGIN_NAME }),
+      fix: t("cli.doctor.tuiPlugin.tuiMissing.fix", { entry: server.entry ?? PLUGIN_NAME, configPath: tui.configPath }),
       affects: ["TUI sidebar", "TUI commands"],
       severity: "warning",
     })
     return {
       name,
       status: "warn",
-      message: "TUI plugin entry missing from tui.json",
+      message: t("cli.doctor.tuiPlugin.tuiMissing.message"),
       details: details.length > 0 ? details : undefined,
       issues,
     }
@@ -296,21 +293,16 @@ export async function checkTuiPluginConfig(): Promise<CheckResult> {
 
   if (!server.registered && tui.registered) {
     issues.push({
-      title: "Server plugin entry missing from opencode.json",
-      description:
-        `The TUI plugin entry ("${PLUGIN_NAME}") is registered in tui.json, `
-        + "but the server plugin (oh-my-openagent) is missing from opencode.json. "
-        + "The plugin cannot function correctly without both halves — the server side "
-        + "handles tool dispatch, hook execution, and SDK integration.",
-      fix: "Re-run the installer (`npx oh-my-openagent install`) to auto-write opencode.json, "
-        + `or add "${PLUGIN_NAME}" to the "plugin" array in ${server.configPath ?? "opencode.json"}.`,
+      title: t("cli.doctor.tuiPlugin.serverMissing.title"),
+      description: t("cli.doctor.tuiPlugin.serverMissing.description", { pluginName: PLUGIN_NAME }),
+      fix: t("cli.doctor.tuiPlugin.serverMissing.fix", { pluginName: PLUGIN_NAME, configPath: server.configPath ?? "opencode.json" }),
       affects: ["tool dispatch", "hook execution", "SDK integration"],
       severity: "warning",
     })
     return {
       name,
       status: "warn",
-      message: "Server plugin entry missing from opencode.json",
+      message: t("cli.doctor.tuiPlugin.serverMissing.message"),
       details: details.length > 0 ? details : undefined,
       issues,
     }
@@ -319,7 +311,7 @@ export async function checkTuiPluginConfig(): Promise<CheckResult> {
   return {
     name,
     status: "pass",
-    message: "Server and TUI plugin entries are both registered",
+    message: t("cli.doctor.tuiPlugin.bothRegistered"),
     details: details.length > 0 ? details : undefined,
     issues,
   }
