@@ -31,6 +31,7 @@
         "@oh-my-opencode/delegate-core": "workspace:*",
         "@oh-my-opencode/git-bash-mcp": "workspace:*",
         "@oh-my-opencode/hashline-core": "workspace:*",
+        "@oh-my-opencode/i18n-core": "workspace:*",
         "@oh-my-opencode/lsp-core": "workspace:*",
         "@oh-my-opencode/mcp-client-core": "workspace:*",
         "@oh-my-opencode/mcp-stdio-core": "workspace:*",
@@ -127,6 +128,13 @@
       "version": "0.1.0",
       "dependencies": {
         "diff": "^9.0.0",
+      },
+    },
+    "packages/i18n-core": {
+      "name": "@oh-my-opencode/i18n-core",
+      "version": "0.1.0",
+      "dependencies": {
+        "@oh-my-opencode/utils": "workspace:*",
       },
     },
     "packages/lsp-core": {
@@ -246,6 +254,7 @@
       "name": "@oh-my-opencode/openclaw-core",
       "version": "0.1.0",
       "dependencies": {
+        "@oh-my-opencode/i18n-core": "workspace:*",
         "@oh-my-opencode/tmux-core": "workspace:*",
         "@oh-my-opencode/utils": "workspace:*",
       },
@@ -667,6 +676,8 @@
     "@oh-my-opencode/git-bash-mcp": ["@oh-my-opencode/git-bash-mcp@workspace:packages/git-bash-mcp"],
 
     "@oh-my-opencode/hashline-core": ["@oh-my-opencode/hashline-core@workspace:packages/hashline-core"],
+
+    "@oh-my-opencode/i18n-core": ["@oh-my-opencode/i18n-core@workspace:packages/i18n-core"],
 
     "@oh-my-opencode/lsp-core": ["@oh-my-opencode/lsp-core@workspace:packages/lsp-core"],
 

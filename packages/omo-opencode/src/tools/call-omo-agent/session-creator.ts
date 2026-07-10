@@ -24,7 +24,7 @@ export async function createOrGetSession(
     })
     if (sessionResult.error) {
       log(`[call_omo_agent] Session get error:`, sessionResult.error)
-      throw new Error(t("tools.callOmoAgent.failedGetSession", { error: sessionResult.error }))
+      throw new Error(t("tools.callOmoAgent.failedGetSession", { error: String(sessionResult.error) }))
     }
     return { sessionID: args.session_id, isNew: false }
   } else {
@@ -61,9 +61,9 @@ export async function createOrGetSession(
       log(`[call_omo_agent] Session create error:`, createResult.error)
       const errorStr = String(createResult.error)
       if (errorStr.toLowerCase().includes("unauthorized")) {
-        throw new Error(t("tools.callOmoAgent.failedCreateSessionUnauthorized", { error: createResult.error }))
+        throw new Error(t("tools.callOmoAgent.failedCreateSessionUnauthorized", { error: String(createResult.error) }))
       }
-      throw new Error(t("tools.callOmoAgent.failedCreateSession", { error: createResult.error }))
+      throw new Error(t("tools.callOmoAgent.failedCreateSession", { error: String(createResult.error) }))
     }
 
     const sessionID = createResult.data.id

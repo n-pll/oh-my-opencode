@@ -18,7 +18,7 @@ export async function processMessages(
 
   if (messagesResult.error) {
     log(`[call_omo_agent] Messages error:`, messagesResult.error)
-    throw new Error(t("tools.callOmoAgent.failedGetMessages", { error: messagesResult.error }))
+    throw new Error(t("tools.callOmoAgent.failedGetMessages", { error: String(messagesResult.error) }))
   }
 
   const messages = messagesResult.data
