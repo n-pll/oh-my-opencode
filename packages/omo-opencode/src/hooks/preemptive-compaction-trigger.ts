@@ -4,6 +4,7 @@ import {
   type ContextLimitModelCacheState,
 } from "../shared/context-limit-resolver"
 import { log } from "../shared/logger"
+import { t } from "../shared/i18n"
 
 import { resolveCompactionModel } from "./shared/compaction-model-resolver"
 import type {
@@ -115,8 +116,11 @@ export async function runPreemptiveCompactionIfNeeded(args: {
     })
     ctx.client.tui.showToast({
       body: {
-        title: "Preemptive compaction failed",
-        message: `Context window is above ${Math.round(PREEMPTIVE_COMPACTION_THRESHOLD * 100)}% and auto-compaction could not run. The session may grow large. Error: ${errorMessage}`,
+        title: t("hooks.preemptiveCompaction.failedTitle"),
+        message: t("hooks.preemptiveCompaction.failedMessage", {
+          threshold: Math.round(PREEMPTIVE_COMPACTION_THRESHOLD * 100),
+          error: errorMessage,
+        }),
         variant: "warning",
         duration: 10000,
       },

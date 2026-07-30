@@ -1,6 +1,7 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { isRecord } from "../../shared/record-type-guard"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 
 export async function createIterationSession(
   ctx: PluginInput,
@@ -11,7 +12,7 @@ export async function createIterationSession(
     const createResult = await ctx.client.session.create({
       body: {
         parentID: parentSessionID,
-        title: "Ralph Loop Iteration",
+        title: t("hooks.ralphLoop.title.ralphLoopIteration"),
       },
       query: { directory },
     })

@@ -1,4 +1,5 @@
 import type { PluginInput } from "@opencode-ai/plugin"
+import { t } from "../../../shared/i18n"
 import { log } from "../../../shared/logger"
 import { showSpinnerToast } from "./spinner-toast"
 
@@ -15,8 +16,8 @@ export async function showLocalDevToast(
 ): Promise<void> {
   const displayVersion = version ?? "dev"
   const message = isSisyphusEnabled
-    ? "Sisyphus running in local development mode."
-    : "Running in local development mode. oMoMoMo..."
+    ? t("hooks.autoUpdateChecker.localDev.sisyphusMessage")
+    : t("hooks.autoUpdateChecker.localDev.message")
   await showSpinnerToast(ctx, `${displayVersion} (dev)`, message)
   log(`[auto-update-checker] Local dev toast shown: v${displayVersion}`)
 }

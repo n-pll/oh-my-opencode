@@ -1,6 +1,7 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { updateConnectedProvidersCache } from "../../../shared/connected-providers-cache"
 import { isModelCacheAvailable } from "../../../shared/model-availability"
+import { t } from "../../../shared/i18n"
 import { log } from "../../../shared/logger"
 import { ignoreToastError } from "./ignore-toast-error"
 
@@ -29,8 +30,8 @@ export async function updateAndShowConnectedProvidersCacheStatus(ctx: PluginInpu
       await ctx.client.tui
         .showToast({
           body: {
-            title: "Connected Providers Cache",
-            message: "Failed to build provider cache. Restart OpenCode to retry.",
+            title: t("hooks.autoUpdateChecker.connectedProvidersCache.title"),
+            message: t("hooks.autoUpdateChecker.connectedProvidersCache.message"),
             variant: "warning" as const,
             duration: 8000,
           },

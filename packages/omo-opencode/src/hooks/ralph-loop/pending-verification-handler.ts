@@ -1,5 +1,6 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 import { HOOK_NAME, ULTRAWORK_VERIFICATION_PROMISE } from "./constants"
 import { extractOracleSessionID, isOracleVerified } from "./oracle-verification-detector"
 import type { RalphLoopState } from "./types"
@@ -98,8 +99,8 @@ function showCompletionToastBestEffort(ctx: PluginInput, state: RalphLoopState):
 
 	const toastBody = {
 		body: {
-			title: "ULTRAWORK LOOP COMPLETE!",
-			message: `JUST ULW ULW! Task completed after ${state.iteration} iteration(s)`,
+			title: t("hooks.ralphLoop.title.ultraworkLoopComplete"),
+			message: t("hooks.ralphLoop.ulwJustComplete", { iteration: state.iteration }),
 			variant: "success" as const,
 			duration: 5000,
 		},

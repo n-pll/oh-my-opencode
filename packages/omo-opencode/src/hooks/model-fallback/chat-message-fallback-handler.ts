@@ -1,4 +1,5 @@
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 import { getTaskToastManager } from "../../features/task-toast-manager"
 import type { ChatMessageHandlerOutput, ChatMessageInput } from "../../plugin/chat-message"
 
@@ -41,8 +42,10 @@ export async function applyFallbackToChatMessage(params: {
       const variantLabel = fallback.variant ? ` (${fallback.variant})` : ""
       await Promise.resolve(
         toast({
-          title: "Model fallback",
-          message: `Using ${fallback.providerID}/${fallback.modelID}${variantLabel}`,
+          title: t("hooks.modelFallback.title"),
+          message: t("hooks.modelFallback.message", {
+            model: `${fallback.providerID}/${fallback.modelID}${variantLabel}`,
+          }),
           variant: "warning",
           duration: 5000,
         }),

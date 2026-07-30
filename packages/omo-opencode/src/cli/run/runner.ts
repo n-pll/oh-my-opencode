@@ -17,6 +17,7 @@ import { createCliPostHog, getPostHogDistinctId } from "../../shared/posthog"
 import { dispatchInternalPrompt, isInternalPromptDispatchAccepted } from "../../shared/prompt-async-gate"
 import { isAmbiguousPostDispatchPromptFailure } from "../../shared/prompt-failure-classifier"
 import { resolveRunnableRunAgent } from "./runnable-agent-resolver"
+import { t } from "../../shared/i18n"
 
 export { resolveRunAgent }
 
@@ -80,7 +81,7 @@ export async function run(options: RunOptions): Promise<number> {
 
     const restoreInput = suppressRunInput()
     const handleSigint = () => {
-      console.log(pc.yellow("\nInterrupted. Shutting down..."))
+      console.log(pc.yellow(`\n${t("cli.run.interrupted")}`))
       restoreInput()
       cleanup()
       process.exit(130)
@@ -96,10 +97,10 @@ export async function run(options: RunOptions): Promise<number> {
       })
       const runnableAgent = await resolveRunnableRunAgent(client, resolvedAgent, pluginConfig)
 
-      console.log(pc.dim(`Session: ${sessionID}`))
+      console.log(pc.dim(t("cli.run.session", { sessionID })))
 
       if (resolvedModel) {
-        console.log(pc.dim(`Model: ${resolvedModel.providerID}/${resolvedModel.modelID}`))
+        console.log(pc.dim(t("cli.run.model", { model: `${resolvedModel.providerID}/${resolvedModel.modelID}` })))
       }
 
       const ctx: RunContext = {
@@ -196,7 +197,7 @@ export async function run(options: RunOptions): Promise<number> {
     if (err instanceof Error && err.name === "AbortError") {
       return 130
     }
-    console.error(pc.red(`Error: ${serializeError(err)}`))
+    console.error(pc.red(t("cli.run.error", { message: serializeError(err) })))
     return 1
   } finally {
     try {

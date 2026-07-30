@@ -8,6 +8,7 @@ import { PLACEHOLDER_TEXT } from "./message-builder"
 import { incrementEmptyContentAttempt } from "./state"
 import { fixEmptyMessagesWithSDK } from "./empty-content-recovery-sdk"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 
 async function showToastSafely(
   client: Client,
@@ -52,8 +53,8 @@ export async function fixEmptyMessages(params: {
       await showToastSafely(
         params.client,
         {
-          title: "Empty Content Error",
-          message: "No empty messages found in storage. Cannot auto-recover.",
+          title: t("hooks.emptyContentRecovery.errorTitle"),
+          message: t("hooks.emptyContentRecovery.noEmptyMessages"),
           variant: "error",
           duration: 5000,
         },
@@ -66,8 +67,10 @@ export async function fixEmptyMessages(params: {
       await showToastSafely(
         params.client,
         {
-          title: "Session Recovery",
-          message: `Fixed ${result.fixedMessageIds.length} empty message(s). Retrying...`,
+          title: t("hooks.emptyContentRecovery.recoveryTitle"),
+          message: t("hooks.emptyContentRecovery.fixedMessages", {
+            count: result.fixedMessageIds.length,
+          }),
           variant: "warning",
           duration: 3000,
         },
@@ -103,8 +106,8 @@ export async function fixEmptyMessages(params: {
       await showToastSafely(
         params.client,
         {
-          title: "Empty Content Error",
-          message: "No empty messages found in storage. Cannot auto-recover.",
+          title: t("hooks.emptyContentRecovery.errorTitle"),
+          message: t("hooks.emptyContentRecovery.noEmptyMessages"),
           variant: "error",
           duration: 5000,
         },
@@ -132,8 +135,10 @@ export async function fixEmptyMessages(params: {
     await showToastSafely(
       params.client,
       {
-        title: "Session Recovery",
-        message: `Fixed ${fixedMessageIds.length} empty message(s). Retrying...`,
+        title: t("hooks.emptyContentRecovery.recoveryTitle"),
+        message: t("hooks.emptyContentRecovery.fixedMessages", {
+          count: fixedMessageIds.length,
+        }),
         variant: "warning",
         duration: 3000,
       },

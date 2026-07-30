@@ -112,7 +112,7 @@ export function createToolExecuteBeforeHandler(ctx: PluginInput, config: PluginC
 			ctx.client.tui
 				.showToast({
 					body: {
-						title: "PreToolUse Hook Executed",
+						title: t("hooks.claudeCodeHooks.title.preToolUseExecuted"),
 						message: `[BLOCKED] ${result.toolName ?? input.tool} ${
 							result.hookName ?? "hook"
 						}: ${result.elapsedMs ?? 0}ms\n${result.inputLines ?? ""}`,

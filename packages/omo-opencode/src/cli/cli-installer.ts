@@ -78,16 +78,14 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
   let step = 1
 
   if (hasOpenCode) {
-    printStep(step++, totalSteps, "Checking OpenCode installation...")
+    printStep(step++, totalSteps, t("cli.cli-installer.checkingOpenCode"))
     const installed = await isOpenCodeInstalled()
     const openCodeVersion = await getOpenCodeVersion()
     if (!installed) {
-      printWarning(
-        "OpenCode binary not found. Plugin will be configured, but you'll need to install OpenCode to use it.",
-      )
-      printInfo("Visit https://opencode.ai/docs for installation instructions")
+      printWarning(t("cli.cli-installer.opencodeNotFoundDetail"))
+      printInfo(t("cli.cli-installer.installGuideBody"))
     } else {
-      printSuccess(`OpenCode ${openCodeVersion ?? ""} detected`)
+      printSuccess(t("cli.cli-installer.opencodeDetected", { version: openCodeVersion ?? "" }))
 
       const unsupportedVersionMessage = getUnsupportedOpenCodeVersionMessage(openCodeVersion)
       if (unsupportedVersionMessage) {
@@ -99,33 +97,37 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
 
   if (isUpdate) {
     const initial = detectedToInitialValues(detected)
-    printInfo(`Current config: Claude=${initial.claude}, Gemini=${initial.gemini}`)
+    printInfo(t("cli.cli-installer.currentConfig", { claude: initial.claude, gemini: initial.gemini }))
   }
 
   if (hasOpenCode) {
-    printStep(step++, totalSteps, `Adding ${PLUGIN_NAME} plugin...`)
+    printStep(step++, totalSteps, t("cli.cli-installer.addingPlugin", { pluginName: PLUGIN_NAME }))
     const pluginResult = await addPluginToOpenCodeConfig(version)
     if (!pluginResult.success) {
-      printError(`Failed: ${pluginResult.error}`)
+      printError(t("cli.cli-installer.failedAddPlugin", { error: pluginResult.error }))
       return 1
     }
     printSuccess(
-      `Plugin ${isUpdate ? "verified" : "added"} ${SYMBOLS.arrow} ${color.dim(pluginResult.configPath)}`,
+      t("cli.cli-installer.pluginStatus", {
+        status: isUpdate ? t("cli.cli-installer.pluginVerified") : t("cli.cli-installer.pluginAdded"),
+        arrow: SYMBOLS.arrow,
+        path: color.dim(pluginResult.configPath),
+      }),
     )
     try {
       ensureTuiPluginEntry()
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
-      printWarning(`Could not update OpenCode TUI config: ${message}`)
+      printWarning(t("cli.cli-installer.couldNotUpdateTui", { message }))
     }
 
-    printStep(step++, totalSteps, `Writing ${PLUGIN_NAME} configuration...`)
+    printStep(step++, totalSteps, t("cli.cli-installer.writingConfig", { pluginName: PLUGIN_NAME }))
     const omoResult = writeOmoConfig(config)
     if (!omoResult.success) {
-      printError(`Failed: ${omoResult.error}`)
+      printError(t("cli.cli-installer.failedWriteConfig", { error: omoResult.error }))
       return 1
     }
-    printSuccess(`Config written ${SYMBOLS.arrow} ${color.dim(omoResult.configPath)}`)
+    printSuccess(t("cli.cli-installer.configWritten", { arrow: SYMBOLS.arrow, path: color.dim(omoResult.configPath) }))
     await astGrepInstall.installAstGrepForOpenCode({ log: printWarning })
   }
 
@@ -164,13 +166,13 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
   }
 
   if (config.hasSenpi) {
-    printInfo("Installing Senpi harness adapter...")
+    printInfo(t("cli.cli-installer.senpiInstalling"))
     try {
       const senpiResult = await runSenpiInstaller()
-      printSuccess(`Senpi adapter installed ${SYMBOLS.arrow} ${color.dim(senpiResult.settingsPath)}`)
+      printSuccess(t("cli.cli-installer.senpiInstalled", { arrow: SYMBOLS.arrow, path: color.dim(senpiResult.settingsPath) }))
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
-      printError(`Senpi install failed: ${message}`)
+      printError(t("cli.cli-installer.senpiInstallFailed", { message }))
       return 1
     }
     console.log()
@@ -194,9 +196,9 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
   if (hasOpenCode && (config.hasClaude || config.hasGemini || config.hasCopilot) && !args.skipAuth) {
     printBox(
       t("cli.cli-installer.authBody", { command: color.cyan("opencode auth login") }) + "\n" +
-        (config.hasClaude ? `  ${SYMBOLS.bullet} Anthropic ${color.gray("→ Claude Pro/Max")}\n` : "") +
-        (config.hasGemini ? `  ${SYMBOLS.bullet} Google ${color.gray("→ Gemini")}\n` : "") +
-        (config.hasCopilot ? `  ${SYMBOLS.bullet} GitHub ${color.gray("→ Copilot")}` : ""),
+        (config.hasClaude ? `  ${SYMBOLS.bullet} ${t("cli.cli-installer.authProviderAnthropicHint")} ${color.gray(`→ ${t("cli.cli-installer.authProviderAnthropicDetail")}`)}\n` : "") +
+        (config.hasGemini ? `  ${SYMBOLS.bullet} ${t("cli.cli-installer.authProviderGoogleHint")} ${color.gray(`→ ${t("cli.cli-installer.authProviderGoogleDetail")}`)}\n` : "") +
+        (config.hasCopilot ? `  ${SYMBOLS.bullet} ${t("cli.cli-installer.authProviderGithubHint")} ${color.gray(`→ ${t("cli.cli-installer.authProviderGithubDetail")}`)}` : ""),
       t("cli.cli-installer.authTitle"),
     )
   }
@@ -209,7 +211,7 @@ async function maybePromptForGitHubStars(platform: InstallPlatform): Promise<voi
 
   const readline = createInterface({ input: process.stdin, output: process.stdout })
   try {
-    const answer = await readline.question(`${SYMBOLS.star} ${color.yellow("Star the repos on GitHub?")} ${color.dim("[y/N]")} `)
+    const answer = await readline.question(`${SYMBOLS.star} ${color.yellow(t("cli.cli-installer.starQuestion"))} ${color.dim(t("cli.cli-installer.starQuestionHint"))} `)
     if (!isYes(answer)) return
   } finally {
     readline.close()
@@ -218,12 +220,12 @@ async function maybePromptForGitHubStars(platform: InstallPlatform): Promise<voi
   const results = await starGitHubRepositories(platform)
   const failed = results.filter((result) => !result.ok)
   if (failed.length === 0) {
-    printSuccess("Starred GitHub repositories")
+    printSuccess(t("cli.cli-installer.starred"))
     console.log()
     return
   }
 
-  printWarning("Could not star every repository. Make sure GitHub CLI is installed and authenticated.")
+  printWarning(t("cli.cli-installer.couldNotStar"))
   for (const result of failed) {
     console.log(`  ${SYMBOLS.bullet} ${result.repository}`)
   }

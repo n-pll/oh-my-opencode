@@ -1,5 +1,6 @@
 import { MIN_OPENCODE_VERSION } from "./doctor/framework/constants"
 import { compareVersions } from "../shared/opencode-version"
+import { t } from "../shared/i18n"
 
 export function getUnsupportedOpenCodeVersionMessage(openCodeVersion: string | null): string | null {
   if (!openCodeVersion) {
@@ -10,5 +11,5 @@ export function getUnsupportedOpenCodeVersionMessage(openCodeVersion: string | n
     return null
   }
 
-  return `Detected OpenCode ${openCodeVersion}, but ${MIN_OPENCODE_VERSION}+ is required. Update OpenCode, then rerun the installer.`
+  return t("cli.minimumOpenCodeVersion.unsupported", { detected: openCodeVersion, required: MIN_OPENCODE_VERSION })
 }

@@ -14,6 +14,7 @@ import { fixEmptyMessages } from "./empty-content-recovery"
 
 import { resolveCompactionModel } from "../shared/compaction-model-resolver"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 
 const SUMMARIZE_RETRY_TOTAL_TIMEOUT_MS = 120_000
 
@@ -66,8 +67,8 @@ export async function runSummarizeRetryStrategy(params: {
     await showToastSafely(
       params.client,
       {
-        title: "Auto Compact Timed Out",
-        message: "Compaction retries exceeded the timeout window. Please start a new session.",
+        title: t("hooks.contextRecovery.timedOutTitle"),
+        message: t("hooks.contextRecovery.timedOutMessage"),
         variant: "error",
         duration: 5000,
       },
@@ -100,9 +101,9 @@ export async function runSummarizeRetryStrategy(params: {
       await showToastSafely(
         params.client,
         {
-          title: "Recovery Failed",
+          title: t("hooks.contextRecovery.recoveryFailedTitle"),
           message:
-            "Max recovery attempts (3) reached for empty content error. Please start a new session.",
+            t("hooks.contextRecovery.maxAttemptsMessage"),
           variant: "error",
           duration: 10000,
         },
@@ -132,8 +133,11 @@ export async function runSummarizeRetryStrategy(params: {
         await showToastSafely(
           params.client,
           {
-            title: "Auto Compact",
-            message: `Summarizing session (attempt ${retryState.attempt}/${RETRY_CONFIG.maxAttempts})...`,
+            title: t("hooks.contextRecovery.autoCompactTitle"),
+            message: t("hooks.contextRecovery.summarizingMessage", {
+              attempt: retryState.attempt,
+              max: RETRY_CONFIG.maxAttempts,
+            }),
             variant: "warning",
             duration: 3000,
           },
@@ -168,8 +172,8 @@ export async function runSummarizeRetryStrategy(params: {
           await showToastSafely(
             params.client,
             {
-              title: "Auto Compact Timed Out",
-              message: "Compaction retries exceeded the timeout window. Please start a new session.",
+              title: t("hooks.contextRecovery.timedOutTitle"),
+              message: t("hooks.contextRecovery.timedOutMessage"),
               variant: "error",
               duration: 5000,
             },
@@ -194,8 +198,8 @@ export async function runSummarizeRetryStrategy(params: {
       await showToastSafely(
         params.client,
         {
-          title: "Summarize Skipped",
-          message: "Missing providerID or modelID.",
+          title: t("hooks.contextRecovery.summarizeSkippedTitle"),
+          message: t("hooks.contextRecovery.summarizeSkippedMessage"),
           variant: "warning",
           duration: 3000,
         },
@@ -208,8 +212,8 @@ export async function runSummarizeRetryStrategy(params: {
   await showToastSafely(
     params.client,
     {
-      title: "Auto Compact Failed",
-      message: "All recovery attempts failed. Please start a new session.",
+      title: t("hooks.contextRecovery.compactFailedTitle"),
+      message: t("hooks.contextRecovery.compactFailedMessage"),
       variant: "error",
       duration: 5000,
     },

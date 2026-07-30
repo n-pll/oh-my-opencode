@@ -4,6 +4,7 @@ import type { ServerConnection } from "./types"
 import { injectServerAuthIntoClient } from "../../shared/opencode-server-auth"
 import { getAvailableServerPort, isPortAvailable, DEFAULT_SERVER_PORT } from "../../shared/port-utils"
 import { withWorkingOpencodePath } from "./opencode-binary-resolver"
+import { t } from "../../shared/i18n"
 
 const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "::1", "[::1]", "0.0.0.0"])
 
@@ -79,7 +80,7 @@ async function startServer<TClient>(
   )
 
   deps.injectServerAuthIntoClient(client)
-  console.log(pc.dim("Server listening at"), pc.cyan(server.url))
+  console.log(pc.dim(t("cli.run.server.listeningAt")), pc.cyan(server.url))
   return { client, cleanup: () => server.close() }
 }
 
@@ -90,7 +91,7 @@ export async function createServerConnectionWithDeps<TClient>(
   const { port, attach, signal } = options
 
   if (attach !== undefined) {
-    console.log(pc.dim("Attaching to existing server at"), pc.cyan(attach))
+    console.log(pc.dim(t("cli.run.server.attachingTo")), pc.cyan(attach))
     const client = deps.createOpencodeClient({ baseUrl: attach })
     if (isLoopbackAttachUrl(attach)) {
       deps.injectServerAuthIntoClient(client)
@@ -106,7 +107,7 @@ export async function createServerConnectionWithDeps<TClient>(
     const available = await deps.isPortAvailable(port, "127.0.0.1")
 
     if (available) {
-      console.log(pc.dim("Starting server on port"), pc.cyan(port.toString()))
+      console.log(pc.dim(t("cli.run.server.startingOnPort")), pc.cyan(port.toString()))
       try {
         return await startServer({ signal, port }, deps)
       } catch (error) {
@@ -119,14 +120,14 @@ export async function createServerConnectionWithDeps<TClient>(
           throw error
         }
 
-        console.log(pc.dim("Port"), pc.cyan(port.toString()), pc.dim("became occupied, attaching to existing server"))
+        console.log(pc.dim(t("cli.run.server.portPrefix")), pc.cyan(port.toString()), pc.dim(t("cli.run.server.becameOccupied")))
         const client = deps.createOpencodeClient({ baseUrl: `http://127.0.0.1:${port}` })
         deps.injectServerAuthIntoClient(client)
         return { client, cleanup: () => {} }
       }
     }
 
-    console.log(pc.dim("Port"), pc.cyan(port.toString()), pc.dim("is occupied, attaching to existing server"))
+    console.log(pc.dim(t("cli.run.server.portPrefix")), pc.cyan(port.toString()), pc.dim(t("cli.run.server.isOccupied")))
     const client = deps.createOpencodeClient({ baseUrl: `http://127.0.0.1:${port}` })
     deps.injectServerAuthIntoClient(client)
     return { client, cleanup: () => {} }
@@ -148,16 +149,16 @@ export async function createServerConnectionWithDeps<TClient>(
       throw error
     }
 
-    console.log(pc.dim("Port range exhausted, attaching to existing server on"), pc.cyan(DEFAULT_SERVER_PORT.toString()))
+    console.log(pc.dim(t("cli.run.server.portRangeExhausted")), pc.cyan(DEFAULT_SERVER_PORT.toString()))
     const client = deps.createOpencodeClient({ baseUrl: `http://127.0.0.1:${DEFAULT_SERVER_PORT}` })
     deps.injectServerAuthIntoClient(client)
     return { client, cleanup: () => {} }
   }
 
   if (wasAutoSelected) {
-    console.log(pc.dim("Auto-selected port"), pc.cyan(selectedPort.toString()))
+    console.log(pc.dim(t("cli.run.server.autoSelectedPort")), pc.cyan(selectedPort.toString()))
   } else {
-    console.log(pc.dim("Starting server on port"), pc.cyan(selectedPort.toString()))
+    console.log(pc.dim(t("cli.run.server.startingOnPort")), pc.cyan(selectedPort.toString()))
   }
 
   try {
@@ -168,7 +169,7 @@ export async function createServerConnectionWithDeps<TClient>(
     }
 
     const { port: retryPort } = await deps.getAvailableServerPort(selectedPort + 1, "127.0.0.1")
-    console.log(pc.dim("Retrying server start on port"), pc.cyan(retryPort.toString()))
+    console.log(pc.dim(t("cli.run.server.retryingStart")), pc.cyan(retryPort.toString()))
     return await startServer({ signal, port: retryPort }, deps)
   }
 }

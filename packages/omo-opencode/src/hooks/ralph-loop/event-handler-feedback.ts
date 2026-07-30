@@ -1,4 +1,5 @@
 import type { PluginInput } from "@opencode-ai/plugin"
+import { t } from "../../shared/i18n"
 import type { RalphLoopState } from "./types"
 
 export function showToastBestEffort(
@@ -25,8 +26,10 @@ export function showMaxIterationsToast(
 	state: RalphLoopState,
 ): void {
 	showToastBestEffort(ctx, {
-		title: "Ralph Loop Stopped",
-		message: `Max iterations (${state.max_iterations}) reached without completion`,
+		title: t("hooks.ralphLoop.title.ralphLoopStopped"),
+		message: t("hooks.ralphLoop.maxIterationsReached", {
+			maxIterations: state.max_iterations,
+		}),
 		variant: "warning",
 		duration: 5000,
 	})
@@ -36,9 +39,15 @@ export function showIterationToast(
 	ctx: PluginInput,
 	state: RalphLoopState,
 ): void {
+	const message = typeof state.max_iterations === "number"
+		? t("hooks.ralphLoop.iterationProgress", {
+				iteration: state.iteration,
+				maxIterations: state.max_iterations,
+			})
+		: t("hooks.ralphLoop.iterationProgressUnbounded", { iteration: state.iteration })
 	showToastBestEffort(ctx, {
-		title: "Ralph Loop",
-		message: `Iteration ${state.iteration}/${typeof state.max_iterations === "number" ? state.max_iterations : "unbounded"}`,
+		title: t("hooks.ralphLoop.title.ralphLoop"),
+		message,
 		variant: "info",
 		duration: 2000,
 	})
@@ -48,8 +57,8 @@ export function showNoProgressToast(
 	ctx: PluginInput,
 ): void {
 	showToastBestEffort(ctx, {
-		title: "Ralph Loop Stopped",
-		message: "Last assistant turn made no model progress; loop stopped to avoid repeated internal prompts.",
+		title: t("hooks.ralphLoop.title.ralphLoopStopped"),
+		message: t("hooks.ralphLoop.noModelProgress"),
 		variant: "warning",
 		duration: 5000,
 	})
@@ -57,8 +66,8 @@ export function showNoProgressToast(
 
 export function showIterationCommitFailureToast(ctx: PluginInput): void {
 	showToastBestEffort(ctx, {
-		title: "Ralph Loop Failed",
-		message: "Dispatch succeeded but iteration commit failed",
+		title: t("hooks.ralphLoop.title.ralphLoopFailed"),
+		message: t("hooks.ralphLoop.dispatchSucceededCommitFailed"),
 		variant: "warning",
 		duration: 5000,
 	})
@@ -68,11 +77,15 @@ export function showDispatchFailureToast(
 	ctx: PluginInput,
 	result: { readonly status: string; readonly error?: unknown },
 ): void {
+	const message = result.status === "dispatch_rejected"
+		? t("hooks.ralphLoop.dispatchStatusWithError", {
+				status: result.status,
+				error: String(result.error),
+			})
+		: t("hooks.ralphLoop.dispatchStatus", { status: result.status })
 	showToastBestEffort(ctx, {
-		title: "Ralph Loop Failed",
-		message: result.status === "dispatch_rejected"
-			? `Dispatch ${result.status}: ${String(result.error)}`
-			: `Dispatch ${result.status}`,
+		title: t("hooks.ralphLoop.title.ralphLoopFailed"),
+		message,
 		variant: "warning",
 		duration: 5000,
 	})

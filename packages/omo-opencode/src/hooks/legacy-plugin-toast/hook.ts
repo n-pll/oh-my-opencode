@@ -2,6 +2,7 @@ import type { PluginInput } from "@opencode-ai/plugin"
 
 import { checkForLegacyPluginEntry } from "../../shared/legacy-plugin-warning"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 import { LEGACY_PLUGIN_NAME, PLUGIN_NAME, PUBLISHED_PACKAGE_NAME } from "../../shared/plugin-identity"
 import { autoMigrateLegacyPluginEntry } from "./auto-migrate-runner"
 
@@ -40,8 +41,11 @@ export function createLegacyPluginToastHook(ctx: PluginInput, deps: LegacyPlugin
         await ctx.client.tui
           .showToast({
             body: {
-              title: "Plugin Entry Migrated",
-              message: `"${migration.from}" has been renamed to "${migration.to}" in your opencode.json.\nNo action needed.`,
+              title: t("hooks.legacyPluginToast.migratedTitle"),
+              message: t("hooks.legacyPluginToast.migratedMessage", {
+                from: migration.from,
+                to: migration.to,
+              }),
               variant: "success" as const,
               duration: 8000,
             },
@@ -55,8 +59,12 @@ export function createLegacyPluginToastHook(ctx: PluginInput, deps: LegacyPlugin
         await ctx.client.tui
           .showToast({
             body: {
-              title: "Legacy Plugin Name Detected",
-               message: `Update your opencode.json: "${LEGACY_PLUGIN_NAME}" has been renamed to "${PLUGIN_NAME}".\nRun: bunx ${PUBLISHED_PACKAGE_NAME} install`,
+              title: t("hooks.legacyPluginToast.legacyDetectedTitle"),
+               message: t("hooks.legacyPluginToast.legacyDetectedMessage", {
+                legacyName: LEGACY_PLUGIN_NAME,
+                newName: PLUGIN_NAME,
+                packageName: PUBLISHED_PACKAGE_NAME,
+              }),
               variant: "warning" as const,
               duration: 10000,
             },

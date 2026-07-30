@@ -1,5 +1,6 @@
 import { describePathClassification } from "./classify-path-environment"
 import type { FsyncSkipEntry } from "./fsync-skip-tracker"
+import { t } from "./i18n"
 
 const MAX_PATH_LINES = 5
 
@@ -32,30 +33,30 @@ export function formatFsyncSkipWarning(entries: FsyncSkipEntry[]): string {
   const selectedDescription = describePathClassification(selectedClassification)
   const shownEntries = entries.slice(0, MAX_PATH_LINES)
   const hiddenCount = Math.max(entries.length - shownEntries.length, 0)
-  const pathLines = shownEntries.map((entry) => `  - ${entry.filePath} (code: ${entry.errorCode})`)
+  const pathLines = shownEntries.map((entry) => t("shared.fsyncSkip.pathLine", { path: entry.filePath, code: entry.errorCode }))
   if (hiddenCount > 0) {
-    pathLines.push(`  ... and ${hiddenCount} more`)
+    pathLines.push(t("shared.fsyncSkip.morePaths", { count: hiddenCount }))
   }
 
   const environmentLines = selectedClassification === "unknown"
     ? []
-    : [`Detected environment: ${selectedDescription}`]
+    : [t("shared.fsyncSkip.detectedEnvironment", { description: selectedDescription })]
 
   const durabilityLine = selectedClassification === "unknown"
-    ? "  - Crash durability is best-effort because this filesystem does not support fsync."
-    : "  - Crash durability is best-effort on this filesystem (this is normal for iCloud, OneDrive, network drives, antivirus-locked paths)."
+    ? t("shared.fsyncSkip.meaning.durabilityUnknown")
+    : t("shared.fsyncSkip.meaning.durabilityKnown")
 
   return [
     "---",
-    `[fsync-skipped] ${entries.length} write(s) bypassed fsync because the underlying filesystem rejected the syscall.`,
+    t("shared.fsyncSkip.header", { count: entries.length }),
     "",
     ...environmentLines,
-    "Affected paths:",
+    t("shared.fsyncSkip.affectedPaths"),
     ...pathLines,
     "",
-    "What this means:",
-    "  - The write+rename succeeded — the file is on disk, atomicity is preserved.",
+    t("shared.fsyncSkip.whatThisMeans"),
+    t("shared.fsyncSkip.meaning.success"),
     durabilityLine,
-    "  - No action required. Operation completed successfully.",
+    t("shared.fsyncSkip.noActionRequired"),
   ].join("\n")
 }

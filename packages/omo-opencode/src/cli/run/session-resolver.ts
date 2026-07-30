@@ -2,6 +2,7 @@ import pc from "picocolors"
 import { PUBLISHED_PACKAGE_NAME } from "../../shared"
 import type { OpencodeClient } from "./types"
 import { serializeError } from "./events"
+import { t } from "../../shared/i18n"
 
 const SESSION_CREATE_MAX_RETRIES = 3
 const SESSION_CREATE_RETRY_DELAY_MS = 1000
@@ -21,7 +22,7 @@ export async function resolveSession(options: {
       query: { directory },
     })
     if (res.error || !res.data) {
-      throw new Error(`Session not found: ${sessionId}`)
+      throw new Error(t("cli.run.session.sessionNotFound", { sessionId }))
     }
     return sessionId
   }
@@ -39,13 +40,13 @@ export async function resolveSession(options: {
 
     if (res.error) {
       console.error(
-        pc.yellow(`Session create attempt ${attempt}/${SESSION_CREATE_MAX_RETRIES} failed:`)
+        pc.yellow(t("cli.run.session.createAttemptFailed", { attempt, max: SESSION_CREATE_MAX_RETRIES }))
       )
-      console.error(pc.dim(`  Error: ${serializeError(res.error)}`))
+      console.error(pc.dim(t("cli.run.session.createError", { message: serializeError(res.error) })))
 
       if (attempt < SESSION_CREATE_MAX_RETRIES) {
         const delay = retryDelayMs * attempt
-        console.log(pc.dim(`  Retrying in ${delay}ms...`))
+        console.log(pc.dim(t("cli.run.session.retryingIn", { delay })))
         await new Promise((resolve) => setTimeout(resolve, delay))
       }
       continue

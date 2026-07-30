@@ -3,6 +3,7 @@ import type { RunContext } from "./types"
 import type { EventState } from "./events"
 import { checkCompletionConditions } from "./completion"
 import { isRecord, normalizeSDKResponse } from "../../shared"
+import { t } from "../../shared/i18n"
 
 const DEFAULT_POLL_INTERVAL_MS = 500
 const DEFAULT_REQUIRED_CONSECUTIVE = 1
@@ -83,10 +84,10 @@ export async function pollForCompletion(
       errorCycleCount++
       if (errorCycleCount >= ERROR_GRACE_CYCLES) {
         console.error(
-          pc.red(`\n\nSession ended with error: ${eventState.lastError}`)
+          pc.red(`\n\n${t("cli.run.sessionEndedWithError", { error: eventState.lastError })}`)
         )
         console.error(
-          pc.yellow("Check if todos were completed before the error.")
+          pc.yellow(t("cli.run.checkTodosBeforeError"))
         )
         return 1
       }
@@ -101,9 +102,9 @@ export async function pollForCompletion(
       if (timeSinceLastEvent > eventWatchdogMs) {
         console.log(
           pc.yellow(
-            `\n  No events for ${Math.round(
+            `\n  ${t("cli.run.noEventsVerifying", { seconds: Math.round(
               timeSinceLastEvent / 1000
-            )}s, verifying session status...`
+            ) })}`
           )
         )
 
@@ -156,7 +157,7 @@ export async function pollForCompletion(
         }
 
         console.error(
-          pc.red("\n\nSession never produced assistant output, tool activity, or reasoning after the prompt started.")
+          pc.red(`\n\n${t("cli.run.noMeaningfulWork")}`)
         )
         return 1
       }
@@ -169,9 +170,9 @@ export async function pollForCompletion(
           eventState.hasReceivedMeaningfulWork = true
           console.log(
             pc.yellow(
-              `\n  No meaningful work events for ${Math.round(
+              `\n  ${t("cli.run.noMeaningfulWorkInProgress", { seconds: Math.round(
                 secondaryMeaningfulWorkTimeoutMs / 1000
-              )}s but session has active work - assuming in progress`
+              ) })}`
             )
           )
         }
@@ -195,7 +196,7 @@ export async function pollForCompletion(
 
       consecutiveCompleteChecks++
       if (consecutiveCompleteChecks >= requiredConsecutive) {
-        console.log(pc.green("\n\nAll tasks completed."))
+        console.log(pc.green(`\n\n${t("cli.run.allTasksCompleted")}`))
         return 0
       }
     } else {

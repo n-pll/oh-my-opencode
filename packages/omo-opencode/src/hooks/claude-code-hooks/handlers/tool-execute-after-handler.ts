@@ -11,6 +11,7 @@ import { getToolInput } from "../tool-input-cache"
 import { appendTranscriptEntry, getTranscriptPath } from "../transcript"
 import type { PluginConfig } from "../types"
 import { isHookDisabled, log } from "../../../shared"
+import { t } from "../../../shared/i18n"
 import { normalizeHookText, normalizeHookTextList } from "../hook-text"
 
 
@@ -136,8 +137,8 @@ export function createToolExecuteAfterHandler(ctx: PluginInput, config: PluginCo
 			ctx.client.tui
 				.showToast({
 					body: {
-						title: "PostToolUse Hook Warning",
-						message: result.reason ?? "Hook returned warning",
+						title: t("hooks.claudeCodeHooks.title.postToolUseWarning"),
+						message: result.reason ?? t("hooks.claudeCodeHooks.hookReturnedWarning"),
 						variant: "warning",
 						duration: 4000,
 					},
@@ -167,7 +168,7 @@ export function createToolExecuteAfterHandler(ctx: PluginInput, config: PluginCo
 			ctx.client.tui
 				.showToast({
 					body: {
-						title: "PostToolUse Hook Executed",
+						title: t("hooks.claudeCodeHooks.title.postToolUseExecuted"),
 						message: `▶ ${result.toolName ?? input.tool} ${result.hookName}: ${
 							result.elapsedMs ?? 0
 						}ms`,

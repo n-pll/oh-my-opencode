@@ -1,5 +1,6 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 import { releasePromptAsyncReservation } from "../shared/prompt-async-gate"
 import { buildVerificationFailurePrompt } from "./continuation-prompt-builder"
 import { HOOK_NAME } from "./constants"
@@ -117,8 +118,10 @@ export async function handleFailedVerification(
 			})
 			loopState.clear()
 			showToastBestEffort(ctx, {
-				title: "Ralph Loop Failed",
-				message: `Verification continuation rejected: ${String(promptResult.error)}`,
+				title: t("hooks.ralphLoop.title.ralphLoopFailed"),
+				message: t("hooks.ralphLoop.verificationContinuationRejected", {
+					error: String(promptResult.error),
+				}),
 				variant: "warning",
 				duration: 5000,
 			})
@@ -132,8 +135,10 @@ export async function handleFailedVerification(
 		})
 		loopState.clear()
 		showToastBestEffort(ctx, {
-			title: "Ralph Loop Failed",
-			message: `Verification continuation rejected: ${errorText}`,
+			title: t("hooks.ralphLoop.title.ralphLoopFailed"),
+			message: t("hooks.ralphLoop.verificationContinuationRejected", {
+				error: errorText,
+			}),
 			variant: "warning",
 			duration: 5000,
 		})
@@ -163,8 +168,8 @@ export async function handleFailedVerification(
 		log(`[${HOOK_NAME}] Failed to commit iteration after verification restart`, { parentSessionID })
 		loopState.clear()
 		showToastBestEffort(ctx, {
-			title: "Ralph Loop Failed",
-			message: "Verification continuation dispatched but iteration commit failed",
+			title: t("hooks.ralphLoop.title.ralphLoopFailed"),
+			message: t("hooks.ralphLoop.verificationContinuationDispatchedCommitFailed"),
 			variant: "warning",
 			duration: 5000,
 		})
@@ -173,8 +178,8 @@ export async function handleFailedVerification(
 
 	await ctx.client.tui?.showToast?.({
 		body: {
-			title: "ULTRAWORK LOOP",
-			message: "Oracle verification failed. Continuing ULTRAWORK loop.",
+			title: t("hooks.ralphLoop.title.ultraworkLoop"),
+			message: t("hooks.ralphLoop.oracleVerificationFailed"),
 			variant: "warning",
 			duration: 5000,
 		},

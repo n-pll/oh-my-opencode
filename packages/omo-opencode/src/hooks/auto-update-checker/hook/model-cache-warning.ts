@@ -1,5 +1,6 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { isModelCacheAvailable } from "../../../shared/model-availability"
+import { t } from "../../../shared/i18n"
 import { log } from "../../../shared/logger"
 import { ignoreToastError } from "./ignore-toast-error"
 
@@ -9,9 +10,8 @@ export async function showModelCacheWarningIfNeeded(ctx: PluginInput): Promise<v
   await ctx.client.tui
     .showToast({
       body: {
-        title: "Model Cache Not Found",
-        message:
-          "Run 'opencode models --refresh' or restart OpenCode to populate the models cache for optimal agent model selection.",
+        title: t("hooks.autoUpdateChecker.modelCacheMissing.title"),
+        message: t("hooks.autoUpdateChecker.modelCacheMissing.message"),
         variant: "warning" as const,
         duration: 10000,
       },

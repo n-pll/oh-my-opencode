@@ -1,5 +1,6 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 import { buildContinuationPrompt } from "./continuation-prompt-builder"
 import { HOOK_NAME } from "./constants"
 import { injectContinuationPrompt } from "./continuation-prompt-injector"
@@ -65,8 +66,10 @@ export async function handleDetectedCompletion(
 			})
 			loopState.clear()
 			showToastBestEffort(ctx, {
-				title: "Ralph Loop Failed",
-				message: `Verification dispatch rejected: ${String(promptResult.error)}`,
+				title: t("hooks.ralphLoop.title.ralphLoopFailed"),
+				message: t("hooks.ralphLoop.verificationDispatchRejected", {
+					error: String(promptResult.error),
+				}),
 				variant: "error",
 				duration: 5000,
 			})
@@ -74,8 +77,8 @@ export async function handleDetectedCompletion(
 		}
 
 		showToastBestEffort(ctx, {
-			title: "ULTRAWORK LOOP",
-			message: "DONE detected. Oracle verification is now required.",
+			title: t("hooks.ralphLoop.title.ultraworkLoop"),
+			message: t("hooks.ralphLoop.doneDetected"),
 			variant: "info",
 			duration: 5000,
 		})
@@ -84,9 +87,11 @@ export async function handleDetectedCompletion(
 
 	loopState.clear()
 
-	const title = state.ultrawork ? "ULTRAWORK LOOP COMPLETE!" : "Ralph Loop Complete!"
+	const title = state.ultrawork
+		? t("hooks.ralphLoop.title.ultraworkLoopComplete")
+		: t("hooks.ralphLoop.title.ralphLoopComplete")
 	const message = state.ultrawork
-		? `JUST ULW ULW! Task completed after ${state.iteration} iteration(s)`
-		: `Task completed after ${state.iteration} iteration(s)`
+		? t("hooks.ralphLoop.ulwJustComplete", { iteration: state.iteration })
+		: t("hooks.ralphLoop.taskComplete", { iteration: state.iteration })
 	showToastBestEffort(ctx, { title, message, variant: "success", duration: 5000 })
 }

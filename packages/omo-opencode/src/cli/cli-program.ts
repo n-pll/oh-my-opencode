@@ -13,6 +13,7 @@ import type { RunOptions } from "./run"
 import type { GetLocalVersionOptions } from "./get-local-version/types"
 import type { DoctorOptions } from "./doctor"
 import packageJson from "../../../../package.json" with { type: "json" }
+import { t } from "../shared/i18n"
 
 const VERSION = packageJson.version
 
@@ -89,53 +90,53 @@ export { resolveCleanupPlatform }
 
 program
   .name("oh-my-opencode")
-  .description("The ultimate OpenCode plugin - multi-model orchestration, LSP tools, and more")
-  .version(VERSION, "-v, --version", "Show version number")
-  .helpOption("-h, --help", "Display help for command")
-  .addOption(new Option("--platform <platform>", `Install target platform: ${availableInstallPlatforms().join(", ")}`).choices(availableInstallPlatforms()).hideHelp())
+  .description(t("cli.program.description"))
+  .version(VERSION, "-v, --version", t("cli.program.help.version"))
+  .helpOption("-h, --help", t("cli.program.help.help"))
+  .addOption(new Option("--platform <platform>", t("cli.program.option.platform", { platforms: availableInstallPlatforms().join(", ") })).choices(availableInstallPlatforms()).hideHelp())
   .enablePositionalOptions()
 
 program
   .command("install")
   .alias("setup")
-  .description("Install and configure oh-my-opencode with interactive setup")
-  .option("--no-tui", "Run in non-interactive mode (requires all options)")
-  .option("--claude <value>", "Claude subscription: no, yes, max20")
-  .option("--openai <value>", "OpenAI/ChatGPT subscription: no, yes (default: no)")
-  .option("--gemini <value>", "Gemini integration: no, yes")
-  .option("--copilot <value>", "GitHub Copilot subscription: no, yes")
-  .addOption(new Option("--platform <platform>", `Install target platform: ${availableInstallPlatforms().join(", ")}`).choices(availableInstallPlatforms()))
-  .option("--opencode-zen <value>", "OpenCode Zen access: no, yes (default: no)")
-  .option("--zai-coding-plan <value>", "Z.ai Coding Plan subscription: no, yes (default: no)")
-  .option("--kimi-for-coding <value>", "Kimi For Coding subscription: no, yes (default: no)")
-  .option("--opencode-go <value>", "OpenCode Go subscription: no, yes (default: no)")
-  .option("--bailian-coding-plan <value>", "Bailian Coding Plan subscription: no, yes (default: no)")
-  .option("--minimax-cn-coding-plan <value>", "MiniMax Coding Plan (minimaxi.com) subscription: no, yes (default: no)")
-  .option("--minimax-coding-plan <value>", "MiniMax Coding Plan (minimax.io) subscription: no, yes (default: no)")
-  .option("--vercel-ai-gateway <value>", "Vercel AI Gateway: no, yes (default: no)")
-  .option("--codex-autonomous", "Configure Codex with approval never, full filesystem access, and network enabled")
-  .option("--no-codex-autonomous", "Leave existing Codex permission settings unchanged")
-  .option("--skip-auth", "Skip authentication setup hints")
+  .description(t("cli.program.install.description"))
+  .option("--no-tui", t("cli.program.install.option.noTui"))
+  .option("--claude <value>", t("cli.program.install.option.claude"))
+  .option("--openai <value>", t("cli.program.install.option.openai"))
+  .option("--gemini <value>", t("cli.program.install.option.gemini"))
+  .option("--copilot <value>", t("cli.program.install.option.copilot"))
+  .addOption(new Option("--platform <platform>", t("cli.program.option.platform", { platforms: availableInstallPlatforms().join(", ") })).choices(availableInstallPlatforms()))
+  .option("--opencode-zen <value>", t("cli.program.install.option.opencodeZen"))
+  .option("--zai-coding-plan <value>", t("cli.program.install.option.zaiCodingPlan"))
+  .option("--kimi-for-coding <value>", t("cli.program.install.option.kimiForCoding"))
+  .option("--opencode-go <value>", t("cli.program.install.option.opencodeGo"))
+  .option("--bailian-coding-plan <value>", t("cli.program.install.option.bailianCodingPlan"))
+  .option("--minimax-cn-coding-plan <value>", t("cli.program.install.option.minimaxCnCodingPlan"))
+  .option("--minimax-coding-plan <value>", t("cli.program.install.option.minimaxCodingPlan"))
+  .option("--vercel-ai-gateway <value>", t("cli.program.install.option.vercelAiGateway"))
+  .option("--codex-autonomous", t("cli.program.install.option.codexAutonomous"))
+  .option("--no-codex-autonomous", t("cli.program.install.option.noCodexAutonomous"))
+  .option("--skip-auth", t("cli.program.install.option.skipAuth"))
 .addHelpText("after", `
-Examples:
+${t("cli.program.install.help.examples")}
   $ bunx oh-my-opencode install
   $ npx lazycodex-ai install --no-tui
   $ bunx oh-my-opencode install --no-tui --platform=both --claude=max20 --openai=yes --gemini=yes --copilot=no
   $ omo install --platform=codex --codex-autonomous
   $ bunx oh-my-opencode install --no-tui --claude=no --gemini=no --copilot=yes --opencode-zen=yes
 
-Model Providers (Priority: Native > Copilot > OpenCode Zen > Z.ai > Kimi > Bailian > MiniMax > Vercel):
-  Claude        Native anthropic/ models (Opus, Sonnet, Haiku)
-  OpenAI        Native openai/ models (GPT-5.6 Sol for Oracle)
-  Gemini        Native google/ models (Gemini 3.1 Pro, Flash)
-  Copilot       github-copilot/ models (fallback)
-  OpenCode Zen  opencode/ models (opencode/claude-opus-5, etc.)
-  Z.ai          zai-coding-plan/glm-5.2 (visual-engineering fallback)
-  Kimi          kimi-for-coding/kimi-k3 (Sisyphus/Prometheus fallback)
-  Bailian       bailian-coding-plan/ models (Qwen, GLM, Kimi fallback)
-  MiniMax       minimax-coding-plan/MiniMax-M3 (utility fallback)
-  MiniMax CN    minimax-cn-coding-plan/MiniMax-M3 (utility fallback)
-  Vercel        vercel/ models (universal proxy, always last fallback)
+${t("cli.program.install.help.modelProviders")}
+${t("cli.program.install.help.provider.claude")}
+${t("cli.program.install.help.provider.openai")}
+${t("cli.program.install.help.provider.gemini")}
+${t("cli.program.install.help.provider.copilot")}
+${t("cli.program.install.help.provider.opencodeZen")}
+${t("cli.program.install.help.provider.zai")}
+${t("cli.program.install.help.provider.kimi")}
+${t("cli.program.install.help.provider.bailian")}
+${t("cli.program.install.help.provider.minimax")}
+${t("cli.program.install.help.provider.minimaxCn")}
+${t("cli.program.install.help.provider.vercel")}
 `)
   .action(async (options: InstallCommandOptions) => {
     const rootOptions = program.opts<RootCommandOptions>()
@@ -150,19 +151,19 @@ program
    .command("run <message>")
    .allowUnknownOption()
    .passThroughOptions()
-  .description("Run opencode with todo/background task completion enforcement")
-  .option("-a, --agent <name>", "Agent to use (default: from CLI/env/config, fallback: Sisyphus)")
-  .option("-m, --model <provider/model>", "Model override (e.g., anthropic/claude-sonnet-4)")
-  .option("-d, --directory <path>", "Working directory")
-  .option("-p, --port <port>", "Server port (attaches if port already in use)", parseInt)
-  .option("--attach <url>", "Attach to existing opencode server URL")
-  .option("--on-complete <command>", "Shell command to run after completion")
-  .option("--json", "Output structured JSON result to stdout")
-  .option("--no-timestamp", "Disable timestamp prefix in run output")
-  .option("--verbose", "Show full event stream (default: messages/tools only)")
-  .option("--session-id <id>", "Resume existing session instead of creating new one")
+  .description(t("cli.program.run.description"))
+  .option("-a, --agent <name>", t("cli.program.run.option.agent"))
+  .option("-m, --model <provider/model>", t("cli.program.run.option.model"))
+  .option("-d, --directory <path>", t("cli.program.run.option.directory"))
+  .option("-p, --port <port>", t("cli.program.run.option.port"), parseInt)
+  .option("--attach <url>", t("cli.program.run.option.attach"))
+  .option("--on-complete <command>", t("cli.program.run.option.onComplete"))
+  .option("--json", t("cli.program.run.option.json"))
+  .option("--no-timestamp", t("cli.program.run.option.noTimestamp"))
+  .option("--verbose", t("cli.program.run.option.verbose"))
+  .option("--session-id <id>", t("cli.program.run.option.sessionId"))
   .addHelpText("after", `
-Examples:
+${t("cli.program.run.help.examples")}
   $ bunx oh-my-opencode run "Fix the bug in index.ts"
   $ bunx oh-my-opencode run --agent Sisyphus "Implement feature X"
   $ bunx oh-my-opencode run --port 4321 "Fix the bug"
@@ -173,22 +174,22 @@ Examples:
   $ bunx oh-my-opencode run --model anthropic/claude-sonnet-4 "Fix the bug"
   $ bunx oh-my-opencode run --agent Sisyphus --model openai/gpt-5.6-sol "Implement feature X"
 
-Agent resolution order:
-  1) --agent flag
-  2) OPENCODE_DEFAULT_AGENT
-  3) .omo/omo.jsonc "default_run_agent"
-  4) Sisyphus (fallback)
+${t("cli.program.run.help.agentResolution")}
+${t("cli.program.run.help.agentResolution.flag")}
+${t("cli.program.run.help.agentResolution.env")}
+${t("cli.program.run.help.agentResolution.config")}
+${t("cli.program.run.help.agentResolution.fallback")}
 
-Available core agents:
-  Sisyphus, Hephaestus, Prometheus, Atlas
+${t("cli.program.run.help.availableAgents")}
+${t("cli.program.run.help.availableAgentsList")}
 
-Unlike 'opencode run', this command waits until:
-  - All todos are completed or cancelled
-  - All child sessions (background tasks) are idle
+${t("cli.program.run.help.waitsUntil")}
+${t("cli.program.run.help.waitsUntil.todos")}
+${t("cli.program.run.help.waitsUntil.sessions")}
 `)
   .action(async (message: string, options) => {
     if (options.port && options.attach) {
-      console.error("Error: --port and --attach are mutually exclusive")
+      console.error(t("cli.program.run.error.portAttachExclusive"))
       process.exit(1)
     }
     const runOptions: RunOptions = {
@@ -210,20 +211,20 @@ Unlike 'opencode run', this command waits until:
 
 program
   .command("get-local-version")
-  .description("Show current installed version and check for updates")
-  .option("-d, --directory <path>", "Working directory to check config from")
-  .option("--json", "Output in JSON format for scripting")
+  .description(t("cli.program.getLocalVersion.description"))
+  .option("-d, --directory <path>", t("cli.program.getLocalVersion.option.directory"))
+  .option("--json", t("cli.program.getLocalVersion.option.json"))
   .addHelpText("after", `
-Examples:
+${t("cli.program.getLocalVersion.help.examples")}
   $ bunx oh-my-opencode get-local-version
   $ bunx oh-my-opencode get-local-version --json
   $ bunx oh-my-opencode get-local-version --directory /path/to/project
 
-This command shows:
-  - Current installed version
-  - Latest available version on npm
-  - Whether you're up to date
-  - Special modes (local dev, pinned version)
+${t("cli.program.getLocalVersion.help.shows")}
+${t("cli.program.getLocalVersion.help.shows.currentVersion")}
+${t("cli.program.getLocalVersion.help.shows.latestVersion")}
+${t("cli.program.getLocalVersion.help.shows.upToDate")}
+${t("cli.program.getLocalVersion.help.shows.specialModes")}
 `)
   .action(async (options) => {
     const versionOptions: GetLocalVersionOptions = {
@@ -236,18 +237,18 @@ This command shows:
 
 program
   .command("doctor")
-  .description("Check oh-my-opencode installation health and diagnose issues")
-  .option("--status", "Show compact system dashboard")
-  .option("--verbose", "Show detailed diagnostic information")
-  .option("--json", "Output results in JSON format")
-  .addOption(new Option("--platform <platform>", "Doctor target platform: opencode, codex").choices(["opencode", "codex"]))
+  .description(t("cli.program.doctor.description"))
+  .option("--status", t("cli.program.doctor.option.status"))
+  .option("--verbose", t("cli.program.doctor.option.verbose"))
+  .option("--json", t("cli.program.doctor.option.json"))
+  .addOption(new Option("--platform <platform>", t("cli.program.doctor.option.platform")).choices(["opencode", "codex"]))
   .addHelpText("after", `
-Examples:
-  $ bunx oh-my-opencode doctor            # Show problems only
-  $ bunx oh-my-opencode doctor --status   # Compact dashboard
-  $ bunx oh-my-opencode doctor --verbose  # Deep diagnostics
-  $ bunx oh-my-opencode doctor --json     # JSON output
-  $ omo doctor --platform=codex           # Codex/LazyCodex diagnostics only
+${t("cli.program.doctor.help.examples")}
+${t("cli.program.doctor.help.showProblems")}
+${t("cli.program.doctor.help.dashboard")}
+${t("cli.program.doctor.help.diagnostics")}
+${t("cli.program.doctor.help.jsonOutput")}
+${t("cli.program.doctor.help.codex")}
 `)
   .action(async (options: DoctorCommandOptions) => {
     const rootOptions = program.opts<RootCommandOptions>()

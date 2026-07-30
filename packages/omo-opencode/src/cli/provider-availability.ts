@@ -1,6 +1,7 @@
 import type { InstallConfig } from "./types"
 import type { ProviderAvailability } from "./model-fallback-types"
 import { ULTIMATE_FALLBACK } from "./model-fallback"
+import { t } from "../shared/i18n"
 
 export function toProviderAvailability(config: InstallConfig): ProviderAvailability {
 	return {
@@ -59,5 +60,5 @@ export function hasAnyConfiguredProvider(config: InstallConfig): boolean {
 }
 
 export function getNoModelProvidersWarning(): string {
-	return `No model providers configured. Using ${ULTIMATE_FALLBACK} as fallback.`
+	return t("cli.providerAvailability.noProvidersWarning", { fallback: ULTIMATE_FALLBACK })
 }

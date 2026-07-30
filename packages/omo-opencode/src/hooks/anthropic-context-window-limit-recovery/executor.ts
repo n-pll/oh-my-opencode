@@ -11,6 +11,7 @@ import {
 } from "./recovery-strategy";
 import { isSessionActive } from "../shared/session-idle-settle";
 import { log } from "../../shared/logger";
+import { t } from "../../shared/i18n";
 
 export { getLastAssistant } from "./message-builder";
 
@@ -27,9 +28,9 @@ export async function executeCompact(
     await client.tui
       .showToast({
         body: {
-          title: "Compact In Progress",
+          title: t("hooks.contextRecovery.compactInProgressTitle"),
           message:
-            "Recovery already running. Please wait or start new session if stuck.",
+            t("hooks.contextRecovery.compactInProgressMessage"),
           variant: "warning",
           duration: 5000,
         },

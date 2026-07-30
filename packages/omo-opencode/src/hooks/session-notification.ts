@@ -8,6 +8,7 @@ import { hasPendingSessionWork } from "./session-todo-status"
 import { createIdleNotificationScheduler } from "./session-notification-scheduler"
 import { createSessionNotificationInit } from "./session-notification-init"
 import { resolveSessionEventID } from "../shared/event-session-id"
+import { t } from "../shared/i18n"
 
 interface SessionNotificationConfig {
   title?: string
@@ -29,8 +30,8 @@ interface SessionNotificationConfig {
 
 export function createSessionNotification(ctx: PluginInput, config: SessionNotificationConfig = {}) {
   const mergedConfig = {
-    title: "OpenCode",
-    message: "Agent is ready for input",
+    title: t("hooks.sessionNotification.title"),
+    message: t("hooks.sessionNotification.readyMessage"),
     questionMessage: "Agent is asking a question",
     permissionMessage: "Agent needs permission to continue",
     playSound: false,

@@ -12,6 +12,7 @@ import {
   isSyntheticOrInternalOnlyTextParts,
   log,
 } from "../../shared"
+import { t } from "../../shared/i18n"
 import {
   isSystemDirective,
   removeSystemReminders,
@@ -125,8 +126,8 @@ export function createKeywordDetectorHook(
           ctx.client.tui
             .showToast({
               body: {
-                title: "Ultrawork Mode Activated",
-                message: "Default ultrawork mode enabled. All agents at your disposal.",
+                title: t("hooks.keywordDetector.ultraworkDefault.title"),
+                message: t("hooks.keywordDetector.ultraworkDefault.message"),
                 variant: "success" as const,
                 duration: 3000,
               },
@@ -173,10 +174,10 @@ export function createKeywordDetectorHook(
         ctx.client.tui
           .showToast({
             body: {
-              title: "Ultrawork Mode Activated",
+              title: t("hooks.keywordDetector.ultrawork.title"),
               message: isRuntimeMax
-                ? "Maximum precision engaged. All agents at your disposal."
-                : "Runtime variant preserved. All agents at your disposal.",
+                ? t("hooks.keywordDetector.ultrawork.messageMax")
+                : t("hooks.keywordDetector.ultrawork.messageRuntime"),
               variant: "success" as const,
               duration: 3000,
             },
@@ -199,8 +200,8 @@ export function createKeywordDetectorHook(
         ctx.client.tui
           .showToast({
             body: {
-              title: "Hyperplan Mode Activated",
-              message: "Adversarial planning engaged. 5 hostile members will cross-critique.",
+              title: t("hooks.keywordDetector.hyperplan.title"),
+              message: t("hooks.keywordDetector.hyperplan.message"),
               variant: "success" as const,
               duration: 3000,
             },
@@ -219,8 +220,8 @@ export function createKeywordDetectorHook(
         ctx.client.tui
           .showToast({
             body: {
-              title: "Hyperplan Ultrawork Mode Activated",
-              message: "Ultrawork execution with adversarial hyperplan workflow.",
+              title: t("hooks.keywordDetector.hyperplanUltrawork.title"),
+              message: t("hooks.keywordDetector.hyperplanUltrawork.message"),
               variant: "success" as const,
               duration: 3000,
             },

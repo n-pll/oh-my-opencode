@@ -2,6 +2,7 @@ import type { PluginInput } from "@opencode-ai/plugin"
 
 import type { BackgroundManager } from "../../features/background-agent"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 
 import {
   COUNTDOWN_SECONDS,
@@ -20,8 +21,8 @@ async function showCountdownToast(
   await ctx.client.tui
     .showToast({
       body: {
-        title: "Todo Continuation",
-        message: `Resuming in ${seconds}s... (${incompleteCount} tasks remaining)`,
+        title: t("hooks.todoContinuation.title"),
+        message: t("hooks.todoContinuation.resumingIn", { seconds, incompleteCount }),
         variant: "warning" as const,
         duration: TOAST_DURATION_MS,
       },

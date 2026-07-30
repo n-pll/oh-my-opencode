@@ -1,5 +1,6 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { getConfigLoadErrors, clearConfigLoadErrors } from "../../../shared/config-errors"
+import { t } from "../../../shared/i18n"
 import { log } from "../../../shared/logger"
 import { ignoreToastError } from "./ignore-toast-error"
 
@@ -11,8 +12,8 @@ export async function showConfigErrorsIfAny(ctx: PluginInput): Promise<void> {
   await ctx.client.tui
     .showToast({
       body: {
-        title: "Config Load Error",
-        message: `Failed to load config:\n${errorMessages}`,
+        title: t("hooks.autoUpdateChecker.configError.title"),
+        message: t("hooks.autoUpdateChecker.configError.message", { errorMessages }),
         variant: "error" as const,
         duration: 10000,
       },

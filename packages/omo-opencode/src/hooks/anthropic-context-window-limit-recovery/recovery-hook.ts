@@ -9,6 +9,7 @@ import { clearSessionState } from "./state"
 import { clearAllSessionTimeouts, clearSessionTimeout } from "./session-timeout-map"
 import { resolveMessageEventSessionID, resolveSessionEventID } from "../../shared/event-session-id"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 
 export interface AnthropicContextWindowLimitRecoveryOptions {
   experimental?: ExperimentalConfig
@@ -100,8 +101,8 @@ export function createAnthropicContextWindowLimitRecoveryHook(
         await ctx.client.tui
           .showToast({
             body: {
-              title: "Context Limit Hit",
-              message: "Truncating large tool outputs and recovering...",
+              title: t("hooks.contextRecovery.contextLimitHitTitle"),
+              message: t("hooks.contextRecovery.contextLimitHitMessage"),
               variant: "warning" as const,
               duration: 3000,
             },
@@ -173,8 +174,8 @@ export function createAnthropicContextWindowLimitRecoveryHook(
       await ctx.client.tui
         .showToast({
           body: {
-            title: "Auto Compact",
-            message: "Token limit exceeded. Attempting recovery...",
+            title: t("hooks.contextRecovery.autoCompactTitle"),
+            message: t("hooks.contextRecovery.tokenLimitExceededMessage"),
             variant: "warning" as const,
             duration: 3000,
           },

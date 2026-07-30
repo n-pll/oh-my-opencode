@@ -7,6 +7,7 @@ import {
   resolveDefaultCodexHome,
   RUNTIME_WRAPPER_MARKER,
 } from "@oh-my-opencode/omo-codex/install"
+import { t } from "../shared/i18n"
 
 /**
  * Sentinel forwarded to every delegated ulw-loop child. A delegation chain is
@@ -55,7 +56,7 @@ export function resolveCodexUlwLoopCommand(input: ResolveCodexUlwLoopCommandInpu
 export async function codexUlwLoop(args: readonly string[]): Promise<number> {
   const command = resolveCodexUlwLoopCommand()
   if (command === null) {
-    console.error("Codex ulw-loop is not installed. Run: npx lazycodex-ai@latest install --no-tui")
+    console.error(t("cli.codexUlwLoop.notInstalled"))
     return 1
   }
 

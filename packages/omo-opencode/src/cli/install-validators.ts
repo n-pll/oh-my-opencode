@@ -7,6 +7,7 @@ import type {
   InstallConfig,
   InstallPlatform,
 } from "./types"
+import { t } from "../shared/i18n"
 
 export const SYMBOLS = {
   check: color.green("[OK]"),
@@ -30,47 +31,55 @@ function formatProvider(name: string, enabled: boolean, detail?: string): string
 export function formatConfigSummary(config: InstallConfig): string {
   const lines: string[] = []
 
-  lines.push(color.bold(color.white("Configuration Summary")))
+  lines.push(color.bold(color.white(t("cli.install.config.summary"))))
   lines.push("")
-  lines.push(`  ${SYMBOLS.info} Platform: ${config.platform}`)
+  lines.push(`  ${SYMBOLS.info} ${t("cli.install.config.platform", { platform: config.platform })}`)
   if (config.hasCodex) {
-    lines.push(`  ${SYMBOLS.info} Codex autonomous mode: ${config.codexAutonomous ? "enabled" : "disabled"}`)
+    lines.push(
+      `  ${SYMBOLS.info} ${t("cli.install.config.codexAutonomous", {
+        state: config.codexAutonomous ? t("cli.install.config.codexAutonomous.enabled") : t("cli.install.config.codexAutonomous.disabled"),
+      })}`,
+    )
   }
   if (config.hasSenpi) {
-    lines.push(`  ${SYMBOLS.info} Senpi adapter: enabled`)
+    lines.push(`  ${SYMBOLS.info} ${t("cli.install.config.senpiAdapter")}`)
   }
 
   if (!config.hasOpenCode) return lines.join("\n")
 
   lines.push("")
 
-  const claudeDetail = config.hasClaude ? (config.isMax20 ? "max20" : "standard") : undefined
-  lines.push(formatProvider("Claude", config.hasClaude, claudeDetail))
-  lines.push(formatProvider("OpenAI/ChatGPT", config.hasOpenAI, "GPT-5.6 Sol for Oracle"))
-  lines.push(formatProvider("Gemini", config.hasGemini))
-  lines.push(formatProvider("GitHub Copilot", config.hasCopilot, "fallback"))
-  lines.push(formatProvider("OpenCode Zen", config.hasOpencodeZen, "opencode/ models"))
-  lines.push(formatProvider("Z.ai Coding Plan", config.hasZaiCodingPlan, "GLM fallbacks"))
-  lines.push(formatProvider("Kimi For Coding", config.hasKimiForCoding, "Sisyphus/Prometheus fallback"))
-  lines.push(formatProvider("Bailian Coding Plan", config.hasBailianCodingPlan, "Qwen/GLM/Kimi fallback"))
-  lines.push(formatProvider("MiniMax Coding Plan (minimaxi.com)", config.hasMinimaxCnCodingPlan, "MiniMax-M3 fallback"))
-  lines.push(formatProvider("MiniMax Coding Plan (minimax.io)", config.hasMinimaxCodingPlan, "MiniMax-M3 fallback"))
-  lines.push(formatProvider("Vercel AI Gateway", config.hasVercelAiGateway, "universal proxy"))
+  const claudeDetail = config.hasClaude
+    ? config.isMax20
+      ? t("cli.install.config.provider.claudeDetail.max20")
+      : t("cli.install.config.provider.claudeDetail.standard")
+    : undefined
+  lines.push(formatProvider(t("cli.install.config.provider.claude"), config.hasClaude, claudeDetail))
+  lines.push(formatProvider(t("cli.install.config.provider.chatgpt"), config.hasOpenAI, t("cli.install.config.provider.openaiDetail")))
+  lines.push(formatProvider(t("cli.install.config.provider.gemini"), config.hasGemini))
+  lines.push(formatProvider(t("cli.install.config.provider.copilot"), config.hasCopilot, t("cli.install.config.provider.copilotDetail")))
+  lines.push(formatProvider(t("cli.install.config.provider.opencodeZen"), config.hasOpencodeZen, t("cli.install.config.provider.opencodeZenDetail")))
+  lines.push(formatProvider(t("cli.install.config.provider.zaiCodingPlan"), config.hasZaiCodingPlan, t("cli.install.config.provider.zaiCodingPlanDetail")))
+  lines.push(formatProvider(t("cli.install.config.provider.kimiForCoding"), config.hasKimiForCoding, t("cli.install.config.provider.kimiForCodingDetail")))
+  lines.push(formatProvider(t("cli.install.config.provider.bailianCodingPlan"), config.hasBailianCodingPlan, t("cli.install.config.provider.bailianCodingPlanDetail")))
+  lines.push(formatProvider(t("cli.install.config.provider.minimaxCnCodingPlan"), config.hasMinimaxCnCodingPlan, t("cli.install.config.provider.minimaxCnCodingPlanDetail")))
+  lines.push(formatProvider(t("cli.install.config.provider.minimaxCodingPlan"), config.hasMinimaxCodingPlan, t("cli.install.config.provider.minimaxCodingPlanDetail")))
+  lines.push(formatProvider(t("cli.install.config.provider.vercelAiGateway"), config.hasVercelAiGateway, t("cli.install.config.provider.vercelAiGatewayDetail")))
 
   lines.push("")
   lines.push(color.dim("─".repeat(40)))
   lines.push("")
 
-  lines.push(color.bold(color.white("Model Assignment")))
+  lines.push(color.bold(color.white(t("cli.install.modelAssignment"))))
   lines.push("")
-  lines.push(`  ${SYMBOLS.info} Models auto-configured based on provider priority`)
-  lines.push(`  ${SYMBOLS.bullet} Priority: Native > Copilot > OpenCode Zen > Z.ai > Kimi > Bailian > MiniMax > Vercel`)
+  lines.push(`  ${SYMBOLS.info} ${t("cli.install.modelsAutoConfigured")}`)
+  lines.push(`  ${SYMBOLS.bullet} ${t("cli.install.config.priority")}`)
 
   return lines.join("\n")
 }
 
 export function printHeader(isUpdate: boolean): void {
-  const mode = isUpdate ? "Update" : "Install"
+  const mode = isUpdate ? t("cli.install.config.printHeader.update") : t("cli.install.config.printHeader.install")
   console.log()
   console.log(color.bgMagenta(color.white(` oMoMoMoMo... ${mode} `)))
   console.log()
