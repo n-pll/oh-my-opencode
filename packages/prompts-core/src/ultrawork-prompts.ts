@@ -4,7 +4,9 @@ import defaultPrompt from "../prompts/ultrawork/default.md"
 import defaultPromptZh from "../prompts/ultrawork/default.zh.md"
 import geminiPrompt from "../prompts/ultrawork/gemini.md"
 import geminiPromptZh from "../prompts/ultrawork/gemini.zh.md"
+import glmPromptZh from "../prompts/ultrawork/glm.zh.md"
 import gptPromptZh from "../prompts/ultrawork/gpt.zh.md"
+import plannerPromptZh from "../prompts/ultrawork/planner.zh.md"
 import glmPrompt from "../prompts/ultrawork/glm.md"
 import gptPrompt from "../prompts/ultrawork/gpt.md"
 import plannerPrompt from "../prompts/ultrawork/planner.md"
@@ -33,6 +35,7 @@ export const ultraworkPromptVariants = {
     kind: "bundled",
     content: plannerPrompt,
     filePath: "packages/prompts-core/prompts/ultrawork/planner.md",
+    contentByLocale: { zh: plannerPromptZh },
   },
   gpt: {
     kind: "bundled",
@@ -50,6 +53,7 @@ export const ultraworkPromptVariants = {
     kind: "bundled",
     content: glmPrompt,
     filePath: "packages/prompts-core/prompts/ultrawork/glm.md",
+    contentByLocale: { zh: glmPromptZh },
   },
   default: {
     kind: "bundled",
