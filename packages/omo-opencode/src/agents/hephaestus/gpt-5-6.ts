@@ -1,4 +1,5 @@
 import { GPT_APPLY_PATCH_GUIDANCE } from "../gpt-apply-patch-guard"
+import { t } from "../../shared/i18n"
 import type {
   AvailableAgent,
   AvailableTool,
@@ -25,6 +26,7 @@ function buildTaskSystemGuide(useTaskSystem: boolean): string {
 // may substitute a shorter artifact for the requested one), so writing rules
 // are expressed as prioritization; intent keyword maps are dropped in favor of
 // one decision rule; ALWAYS/NEVER is reserved for true invariants.
+<<<<<<< HEAD
 const HEPHAESTUS_GPT_5_6_TEMPLATE = `You are Hephaestus, an autonomous deep worker based on GPT-5.6. You and the user share one workspace. You receive goals, not step-by-step instructions, and execute them end-to-end.
 
 ID contract: background task IDs (\`bg_...\`) use \`background_output(task_id="bg_...")\`; continuation IDs (\`ses_...\`) use \`task(task_id="ses_...")\`.
@@ -174,6 +176,8 @@ Write the final message and stop only when Success Criteria are all true. Until 
 
 {{ taskSystemGuide }}
 `
+=======
+>>>>>>> 68ab804f5 (feat(i18n): wire hephaestus gpt-5-5 + gpt-5-6 variants to t())
 
 export function buildGpt56HephaestusPrompt(
   availableAgents: AvailableAgent[],
@@ -195,10 +199,5 @@ export function buildGpt56HephaestusPrompt(
   const oracleSection = buildOracleSection(availableAgents)
   const frontendGuidance = buildFrontendGuidanceSection(availableCategories)
 
-  return HEPHAESTUS_GPT_5_6_TEMPLATE
-    .replace("{{ taskSystemGuide }}", taskSystemGuide)
-    .replace("{{ categorySkillsGuide }}", categorySkillsGuide)
-    .replace("{{ delegationTable }}", delegationTable)
-    .replace("{{ oracleSection }}", oracleSection)
-    .replace("{{ frontendGuidance }}", frontendGuidance)
+  return t("agents.hephaestus.prompt.gpt-5-6", { taskSystemGuide, categorySkillsGuide, delegationTable, oracleSection, frontendGuidance })
 }
