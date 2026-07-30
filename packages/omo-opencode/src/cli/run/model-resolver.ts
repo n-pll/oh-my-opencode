@@ -1,3 +1,5 @@
+import { t } from "../../shared/i18n"
+
 export function resolveRunModel(
   modelString?: string
 ): { providerID: string; modelID: string } | undefined {
@@ -7,22 +9,22 @@ export function resolveRunModel(
 
   const trimmed = modelString.trim()
   if (trimmed.length === 0) {
-    throw new Error("Model string cannot be empty")
+    throw new Error(t("cli.run.model.empty"))
   }
 
   const parts = trimmed.split("/")
   if (parts.length < 2) {
-    throw new Error("Model string must be in 'provider/model' format")
+    throw new Error(t("cli.run.model.invalidFormat"))
   }
 
   const providerID = parts[0]
   if (providerID.length === 0) {
-    throw new Error("Provider cannot be empty")
+    throw new Error(t("cli.run.model.providerEmpty"))
   }
 
   const modelID = parts.slice(1).join("/")
   if (modelID.length === 0) {
-    throw new Error("Model ID cannot be empty")
+    throw new Error(t("cli.run.model.modelIdEmpty"))
   }
 
   return { providerID, modelID }

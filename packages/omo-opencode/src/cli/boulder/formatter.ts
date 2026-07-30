@@ -2,21 +2,39 @@ import color from "picocolors"
 
 import type { BoulderWorkStatus } from "../../features/boulder-state"
 import type { BoulderCliResult, BoulderCliWork } from "./types"
+import { t } from "../../shared/i18n"
 
-function colorizeStatus(status: BoulderWorkStatus): string {
+function statusLabel(status: BoulderWorkStatus): string {
   if (status === "active") {
-    return color.cyan(status)
+    return t("cli.boulder.status.active")
   }
 
   if (status === "completed") {
-    return color.green(status)
+    return t("cli.boulder.status.completed")
   }
 
   if (status === "paused") {
-    return color.yellow(status)
+    return t("cli.boulder.status.paused")
   }
 
-  return color.red(status)
+  return t("cli.boulder.status.unknown")
+}
+
+function colorizeStatus(status: BoulderWorkStatus): string {
+  const label = statusLabel(status)
+  if (status === "active") {
+    return color.cyan(label)
+  }
+
+  if (status === "completed") {
+    return color.green(label)
+  }
+
+  if (status === "paused") {
+    return color.yellow(label)
+  }
+
+  return color.red(label)
 }
 
 function formatCurrentTask(work: BoulderCliWork): string {
@@ -35,19 +53,19 @@ function formatWorkBlock(work: BoulderCliWork): string {
   const progress = `${work.percentage}% (${work.completed_tasks}/${work.total_tasks})`
 
   return [
-    `plan: ${work.plan_name}`,
-    `status: ${colorizeStatus(work.status)}`,
-    `progress: ${progress}`,
-    `elapsed: ${elapsed}`,
-    `sessions: ${work.session_count}`,
-    `current task: ${formatCurrentTask(work)}`,
+    t("cli.boulder.plan", { name: work.plan_name }),
+    t("cli.boulder.status", { status: colorizeStatus(work.status) }),
+    t("cli.boulder.progress", { progress }),
+    t("cli.boulder.elapsed", { elapsed }),
+    t("cli.boulder.sessions", { count: work.session_count }),
+    t("cli.boulder.currentTask", { task: formatCurrentTask(work) }),
   ].join("\n")
 }
 
 export function formatTextOutput(result: BoulderCliResult): string {
   const separator = color.dim("----------------------------------------")
   const blocks = result.works.map((work) => formatWorkBlock(work))
-  return ["boulder progress", ...blocks].join(`\n${separator}\n`)
+  return [t("cli.boulder.header"), ...blocks].join(`\n${separator}\n`)
 }
 
 export function formatJsonOutput(result: BoulderCliResult): string {
@@ -55,21 +73,23 @@ export function formatJsonOutput(result: BoulderCliResult): string {
 }
 
 export function formatNoBoulderMessage(isJson: boolean | undefined): string {
+  const message = t("cli.boulder.noState")
   if (isJson) {
     return JSON.stringify({
-      error: "No boulder state found.",
+      error: message,
     })
   }
 
-  return "No boulder state found."
+  return message
 }
 
 export function formatReadErrorMessage(isJson: boolean | undefined): string {
+  const message = t("cli.boulder.readFailed")
   if (isJson) {
     return JSON.stringify({
-      error: "Failed to read boulder state.",
+      error: message,
     })
   }
 
-  return "Failed to read boulder state."
+  return message
 }
