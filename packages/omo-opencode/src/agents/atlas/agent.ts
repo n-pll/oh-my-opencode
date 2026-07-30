@@ -26,7 +26,7 @@ import type { AvailableAgent, AvailableSkill, AvailableCategory } from "../dynam
 import { buildAgentIdentitySection, buildCategorySkillsDelegationGuide } from "../dynamic-agent-prompt-builder"
 import type { CategoryConfig } from "../../config/schema"
 import { mergeCategories } from "../../shared/merge-categories"
-import { t } from "../../shared/i18n"
+import { t, getLocale } from "../../shared/i18n"
 
 import {
   getCategoryDescription,
@@ -71,6 +71,7 @@ export function getAtlasPrompt(model?: string): string {
     source: atlasPromptVariants[source],
     name: "atlas",
     variant: source,
+    locale: getLocale(),
   }).body
 }
 
@@ -112,6 +113,7 @@ function buildDynamicOrchestratorPrompt(ctx?: OrchestratorContext): string {
     source: atlasPromptVariants[source],
     name: "atlas",
     variant: source,
+    locale: getLocale(),
     inject: runtimeInjections,
   }).body
 

@@ -1,5 +1,6 @@
 import type { VariantTable } from "./types"
 import defaultPrompt from "../prompts/atlas/default.md"
+import defaultPromptZh from "../prompts/atlas/default.zh.md"
 import geminiPrompt from "../prompts/atlas/gemini.md"
 import glmPrompt from "../prompts/atlas/glm.md"
 import gptPrompt from "../prompts/atlas/gpt.md"
@@ -48,5 +49,6 @@ export const atlasPromptVariants = {
     kind: "bundled",
     content: defaultPrompt,
     filePath: "packages/prompts-core/prompts/atlas/default.md",
+    contentByLocale: { zh: defaultPromptZh },
   },
 } satisfies VariantTable
