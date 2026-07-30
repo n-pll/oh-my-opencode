@@ -5,6 +5,7 @@ import {
   getContinuationState,
   type ContinuationState,
 } from "./continuation-state"
+import { t } from "../../shared/i18n"
 
 export async function checkCompletionConditions(ctx: RunContext): Promise<boolean> {
   try {
@@ -35,7 +36,7 @@ export async function checkCompletionConditions(ctx: RunContext): Promise<boolea
 
     return true
   } catch (err) {
-    console.error(pc.red(`[completion] API error: ${err}`))
+    console.error(pc.red(t("cli.run.completion.apiError", { error: String(err) })))
     return false
   }
 }
@@ -126,5 +127,5 @@ function logWaiting(ctx: RunContext, message: string): void {
     return
   }
 
-  console.log(pc.dim(`  Waiting: ${message}`))
+  console.log(pc.dim(t("cli.run.completion.waiting", { message })))
 }

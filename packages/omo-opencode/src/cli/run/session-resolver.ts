@@ -58,16 +58,16 @@ export async function resolveSession(options: {
 
     console.error(
       pc.yellow(
-        `Session create attempt ${attempt}/${SESSION_CREATE_MAX_RETRIES}: No session ID returned`
+        t("cli.run.session.noIdReturned", { attempt, max: SESSION_CREATE_MAX_RETRIES })
       )
     )
 
     if (attempt < SESSION_CREATE_MAX_RETRIES) {
       const delay = retryDelayMs * attempt
-      console.log(pc.dim(`  Retrying in ${delay}ms...`))
+      console.log(pc.dim(t("cli.run.session.retryingIn", { delay })))
       await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
 
-  throw new Error("Failed to create session after all retries")
+  throw new Error(t("cli.run.session.createFailed"))
 }

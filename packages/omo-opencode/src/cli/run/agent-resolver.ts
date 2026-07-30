@@ -2,6 +2,7 @@ import pc from "picocolors"
 import type { RunOptions } from "./types"
 import type { OhMyOpenCodeConfig } from "../../config"
 import { getAgentConfigKey, getAgentDisplayName } from "../../shared/agent-display-names"
+import { t } from "../../shared/i18n"
 
 const CORE_AGENT_ORDER = ["sisyphus", "hephaestus", "prometheus", "atlas"] as const
 const DEFAULT_AGENT = "sisyphus"
@@ -71,14 +72,14 @@ export const resolveRunAgent = (
     if (fallbackDisabled) {
       console.log(
         pc.yellow(
-          `Requested agent "${resolved.resolvedName}" is disabled and no enabled core agent was found. Proceeding with "${fallbackDisplayName}".`
+          t("cli.run.agent.disabledNoEnabled", { agent: resolved.resolvedName, fallback: fallbackDisplayName })
         )
       )
       return fallback
     }
     console.log(
       pc.yellow(
-        `Requested agent "${resolved.resolvedName}" is disabled. Falling back to "${fallbackDisplayName}".`
+        t("cli.run.agent.fallingBack", { agent: resolved.resolvedName, fallback: fallbackDisplayName })
       )
     )
     return fallback
