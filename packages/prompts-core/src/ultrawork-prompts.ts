@@ -1,5 +1,6 @@
 import type { VariantTable } from "./types"
 import codexPrompt from "../prompts/ultrawork/codex.md"
+import codexPromptZh from "../prompts/ultrawork/codex.zh.md"
 import defaultPrompt from "../prompts/ultrawork/default.md"
 import defaultPromptZh from "../prompts/ultrawork/default.zh.md"
 import geminiPrompt from "../prompts/ultrawork/gemini.md"
@@ -68,5 +69,6 @@ export const codexUltraworkPromptVariants = {
     kind: "bundled",
     content: codexPrompt,
     filePath: "packages/prompts-core/prompts/ultrawork/codex.md",
+    contentByLocale: { zh: codexPromptZh },
   },
 } satisfies VariantTable
