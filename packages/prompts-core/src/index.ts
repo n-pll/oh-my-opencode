@@ -22,6 +22,7 @@ export {
   ULTRAWORK_PLANNER_PROMPT,
   codexUltraworkPromptVariants,
   ultraworkPromptVariants,
+  getUltraworkDefaultPrompt,
 } from "./ultrawork-prompts"
 export { resolveVariant } from "./variant-resolver"
 export type { ResolveVariantInput } from "./variant-resolver"

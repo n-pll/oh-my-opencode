@@ -1,6 +1,7 @@
 import type { VariantTable } from "./types"
 import codexPrompt from "../prompts/ultrawork/codex.md"
 import defaultPrompt from "../prompts/ultrawork/default.md"
+import defaultPromptZh from "../prompts/ultrawork/default.zh.md"
 import geminiPrompt from "../prompts/ultrawork/gemini.md"
 import glmPrompt from "../prompts/ultrawork/glm.md"
 import gptPrompt from "../prompts/ultrawork/gpt.md"
@@ -12,6 +13,18 @@ export const ULTRAWORK_GLM_PROMPT = glmPrompt
 export const ULTRAWORK_GPT_PROMPT = gptPrompt
 export const ULTRAWORK_PLANNER_PROMPT = plannerPrompt
 export const CODEX_ULTRAWORK_PROMPT = codexPrompt
+
+const ULTRAWORK_DEFAULT_BY_LOCALE: Record<string, string> = {
+  zh: defaultPromptZh,
+}
+
+export function getUltraworkDefaultPrompt(locale?: string): string {
+  if (locale !== undefined) {
+    const localized = ULTRAWORK_DEFAULT_BY_LOCALE[locale]
+    if (localized !== undefined) return localized
+  }
+  return ULTRAWORK_DEFAULT_PROMPT
+}
 
 export const ultraworkPromptVariants = {
   planner: {
@@ -38,6 +51,7 @@ export const ultraworkPromptVariants = {
     kind: "bundled",
     content: defaultPrompt,
     filePath: "packages/prompts-core/prompts/ultrawork/default.md",
+    contentByLocale: { zh: defaultPromptZh },
   },
 } satisfies VariantTable
 

@@ -1,7 +1,8 @@
-import { ULTRAWORK_DEFAULT_PROMPT } from "@oh-my-opencode/prompts-core"
+import { getUltraworkDefaultPrompt } from "@oh-my-opencode/prompts-core"
+import { getLocale } from "../../../shared/i18n"
 
-export const ULTRAWORK_DEFAULT_MESSAGE = ULTRAWORK_DEFAULT_PROMPT
+export const ULTRAWORK_DEFAULT_MESSAGE = () => getUltraworkDefaultPrompt(getLocale())
 
 export function getDefaultUltraworkMessage(): string {
-  return ULTRAWORK_DEFAULT_MESSAGE
+  return getUltraworkDefaultPrompt(getLocale())
 }
