@@ -6,12 +6,6 @@ import { CHECK_IDS, CHECK_NAMES } from "../framework/constants"
 import type { CheckResult } from "../framework/types"
 import { promises as fs } from "node:fs"
 import path from "node:path"
-<<<<<<< HEAD
-=======
-import { detectPluginConfigFile, getOpenCodeConfigDir, parseJsonc } from "../../../shared"
-import { CONFIG_BASENAME, LEGACY_CONFIG_BASENAME } from "../../../shared/plugin-identity"
-import { t } from "../../../shared/i18n"
->>>>>>> 1ae0e2923 (feat(i18n): migrate doctor config/telemetry/team-mode checks to t())
 
 export async function checkTeamMode(): Promise<CheckResult> {
   const config = loadTeamModeConfig()

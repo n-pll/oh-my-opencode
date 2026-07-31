@@ -113,12 +113,8 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
 
   if (config.hasOpenCode && !config.hasClaude) {
     p.log.info(
-<<<<<<< HEAD
       `${color.bold("Note:")} Sisyphus agent performs best with Claude Opus 5.\n` +
         `Other models work but may have reduced orchestration quality.`,
-=======
-      t("cli.tui-installer.note.claudeBest", { label: color.bold("Note:") }),
->>>>>>> d101758f0 (feat(i18n): migrate tui-installer.ts interactive flow to t())
     )
   }
 

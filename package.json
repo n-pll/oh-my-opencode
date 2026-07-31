@@ -1,7 +1,7 @@
 {
-  "name": "oh-my-opencode",
-  "version": "4.19.3",
-  "description": "The Best AI Agent Harness - Batteries-Included OpenCode Plugin with Multi-Model Orchestration, Parallel Background Agents, and Crafted LSP/AST Tools",
+  "name": "@npll/omol",
+  "version": "4.19.3-i18n.1",
+  "description": "oh-my-opencode with full Chinese i18n - OpenCode Plugin fork",
   "main": "./dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -36,11 +36,10 @@
     "packages/omo-opencode"
   ],
   "bin": {
+    "omol": "bin/oh-my-opencode.js",
     "oh-my-opencode": "bin/oh-my-opencode.js",
     "oh-my-openagent": "bin/oh-my-opencode.js",
-    "omo": "bin/oh-my-opencode.js",
-    "lazycodex": "bin/oh-my-opencode.js",
-    "lazycodex-ai": "bin/oh-my-opencode.js"
+    "omo": "bin/oh-my-opencode.js"
   },
   "files": [
     "THIRD-PARTY-NOTICES.md",
