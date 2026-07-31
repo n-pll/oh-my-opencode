@@ -12,8 +12,9 @@ function isTranslationKey(key: string): key is TranslationKey {
 }
 
 function detectLocale(): SupportedLocale {
-  const envLang = process.env.LANG ?? ""
-  const lang = envLang.split(".")[0]?.split("_")[0]?.toLowerCase() ?? "en"
+  // Priority: OPENCODE_LOCALE env > LANG env > en
+  const raw = process.env.OPENCODE_LOCALE ?? process.env.LANG ?? ""
+  const lang = raw.split(".")[0]?.split("_")[0]?.toLowerCase() ?? "en"
   const supported: Record<string, SupportedLocale> = { zh: "zh" }
   return supported[lang] ?? "en"
 }

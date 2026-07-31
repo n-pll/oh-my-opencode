@@ -244,7 +244,11 @@ export function createPluginModule(overrides: Partial<PluginModuleDeps> = {}): P
         console.warn(`[runtime-skills] bundled security skill source unavailable; continuing without config.skills.urls: ${detail}`)
       }
     }
-    deps.initI18n(pluginConfig.i18n?.locale ? { locale: pluginConfig.i18n.locale } : undefined)
+    deps.initI18n({
+      locale: (input as { locale?: string }).locale
+        ?? pluginConfig.i18n?.locale
+        ?? undefined,
+    })
     deps.setAgentSortOrder(pluginConfig.agent_order)
 
     if (pluginConfig.openclaw) {
