@@ -40,14 +40,28 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote add upstream https://github.com/code-yeongyu/oh-my-openagent.git || true
           git fetch upstream dev
-          # Check if behind
-          BEHIND=$(git rev-list --count HEAD..upstream/dev || echo "0")
-          if [ "$BEHIND" -gt 0 ]; then
-            echo "Behind upstream by $BEHIND commits, rebasing..."
-            git rebase --onto upstream/dev $(git merge-base HEAD upstream/dev) HEAD
-          else
-            echo "Up to date with upstream"
-          fi
+          # Merge upstream dev, auto-resolving conflicts in favor of fork changes (-X ours).
+          # Fork-specific fields (name/bin/scripts/version) must survive; upstream fixes land
+          # in non-conflicting files. package.json dependency fields are merged explicitly below.
+          git merge -X ours upstream/dev --no-edit
+          # Merge dependency/workspace fields from upstream package.json into ours (union).
+          node -e "
+            const fs = require('fs')
+            const cp = require('child_process')
+            const upstream = JSON.parse(cp.execSync('git show upstream/dev:package.json').toString())
+            const cur = JSON.parse(fs.readFileSync('package.json'))
+            const union = (a, b) => {
+              if (Array.isArray(a) || Array.isArray(b)) return [...new Set([...(a || []), ...(b || [])])]
+              return { ...(a || {}), ...(b || {}) }
+            }
+            for (const k of ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies', 'workspaces']) {
+              cur[k] = union(upstream[k], cur[k])
+            }
+            fs.writeFileSync('package.json', JSON.stringify(cur, null, 2))
+          "
+          git add package.json
+          git diff --cached --quiet || git commit -m "chore(omol): merge upstream dependencies"
+          echo "Synced with upstream dev"
 
       - name: Build plugin
         run: |
@@ -63,7 +77,9 @@ jobs:
           if [ -n "${{ inputs.version }}" ]; then
             VERSION="${{ inputs.version }}"
           else
-            BASE=$(node -p "require('./package.json').version" | sed 's/-.*//')
+            # Base version comes from upstream dev (always ahead of the fork), not from
+            # the merged package.json which keeps the fork's own (stale) version field.
+            BASE=$(git show upstream/dev:package.json | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).version))" | sed 's/-.*//')
             TS=$(date -u +%Y%m%d%H%M)
             VERSION="${BASE}-omol.${TS}"
           fi
