@@ -97,4 +97,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          gh release create "v${{ env.VERSION }}" --title "v${{ env.VERSION }}" --notes "Auto release ${{ env.VERSION }}" || true
+          # Explicit -R: without it gh resolves the repo from git remotes, which after
+          # the upstream sync step can point at code-yeongyu/oh-my-openagent (403).
+          gh release create -R n-pll/oh-my-opencode "v${{ env.VERSION }}" --title "v${{ env.VERSION }}" --notes "Auto release ${{ env.VERSION }}"
