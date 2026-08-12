@@ -1,5 +1,6 @@
 // allow: SIZE_OK - package-root public API barrel contains re-exports only and intentionally preserves one stable root import surface.
 export {
+  isSpawnSpecV1,
   RESIDENCY_STATES,
   RESOLVED_MODEL_SOURCES,
   TASK_STATUSES,
@@ -9,14 +10,18 @@ export {
   transitionTaskRecord,
 } from "./state"
 export type {
+  LegacyProcessSpawnSpec,
   Messageability,
+  PendingSteeringEntry,
   ResidencyState,
   ResolvedModelRecord,
   ResolvedModelSource,
+  SpawnSpecV1,
   TaskNotification,
   TaskRecord,
   TaskRecordInput,
   TaskRunStats,
+  TaskSpawnSpec,
   TaskStatus,
   TaskTransition,
   TaskTransitionAudit,
@@ -32,6 +37,8 @@ export type {
 } from "./store"
 export {
   composeStatusLine,
+  formatLiveSpend,
+  formatRunSpend,
   formatStatusTarget,
   formatTargetIdentity,
   formatTargetWithModel,
@@ -39,7 +46,13 @@ export {
   toolCountSuffix,
 } from "./status-line"
 export type { StatusLineInput, StatusLineStats, StatusTargetInput, TaskIdentityInput } from "./status-line"
-export { assistantLastLine, formatToolActivity } from "./progress"
+export { TASK_SUMMARY_MAX_LENGTH, clampTaskSummary } from "./task-summary"
+export {
+  assistantLastLine,
+  createChildProgress,
+  formatToolActivity,
+  type ToolProgressDetails,
+} from "./progress"
 export { createMinimalSenpiResourceLoader } from "./senpi/minimal-resource-loader"
 export type { MinimalSenpiResourceLoaderOptions } from "./senpi/minimal-resource-loader"
 export {
@@ -70,6 +83,7 @@ export {
   CATEGORY_DESCRIPTIONS,
   CATEGORY_PROMPT_APPENDS,
   DEFAULT_CATEGORIES,
+  resolveAvailableCategoryNames,
   resolveCategory,
 } from "./category"
 export type {
@@ -268,8 +282,10 @@ export type {
   ResidencyRegistry,
   RespawnPort,
   RespawnResult,
+  SuspendFailure,
+  SuspendInput,
+  SuspendSummary,
   TaskLifecycle,
-  TeardownSummary,
 } from "./lifecycle"
 export { DEFAULT_SEND_DELIVERY, createSteeringEngine } from "./steering"
 export type {
@@ -300,7 +316,7 @@ export {
   linesComponent,
   listTaskAgents,
   listTaskCategories,
-  normalizeRendererText,
+  normalizeRendererText, recordSummary,
   rendererVisibleWidth,
   statusThemeColor,
   taskCallLines,
@@ -380,6 +396,7 @@ export type {
   OutputManager,
   RenderOptions,
   RenderedTranscript,
+  SuspendedDetails,
   TaskOutputDeps,
   TaskOutputDetails,
   TaskOutputInput,
