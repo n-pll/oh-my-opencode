@@ -1,10 +1,16 @@
+# Fork 发布 workflow（由 release-pipeline 技能 05-gen-release-files.sh 渲染，勿手改）
+# 自包含内联: 同步/构建/编译/版本/发布/建 release 全在本文件, 不依赖仓库内任何脚本。
+# 同步策略: 无条件接受上游 (-X theirs), 只重放 PKG_OVERRIDES 字段。
+# 渲染器占位符见 05-gen-release-files.sh: FORK_REPO / UPSTREAM_REPO /
+# UPSTREAM_BRANCH / RELEASE_BRANCH / VERSION_SUFFIX / RUNNER / BUN_VERSION /
+# NODE_VERSION / INSTALL_CMD / BUILD_CMD / COMPILE_BLOCK / PUBLISH_ARGS / REGISTRY / PKG_OVERRIDES
 name: publish-omol
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version suffix after base (e.g. 4.19.3-omol.YYYYMMDDHHMM). Leave empty to auto-generate."
+        description: "完整版本号覆盖 (如 4.19.4-omol.202608070216)。留空自动生成。"
         required: false
         type: string
 
@@ -31,45 +37,42 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
+        shell: bash
         run: bun install --ignore-scripts
 
-      - name: Sync with upstream dev
+      # 同步上游。无条件接受上游版本 (-X theirs): 冲突一律采用上游, fork 私有改动若被
+      # 覆盖, 由本地发版流程 (阶段 2) 分析上游代码后决定召回并重新提交到发版分支;
+      # 本步骤只机械重放 fork 基础设施字段 (PKG_OVERRIDES, 如 name/bin)。
+      # 注意: windows runner 默认 shell 是 PowerShell, 多行 bash 必须显式 shell: bash。
+      - name: Sync with upstream
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote add upstream https://github.com/code-yeongyu/oh-my-openagent.git || true
           git fetch upstream dev
-          # Merge upstream dev, auto-resolving conflicts in favor of fork changes (-X ours).
-          # Fork-specific fields (name/bin/scripts/version) must survive; upstream fixes land
-          # in non-conflicting files. package.json dependency fields are merged explicitly below.
-          git merge -X ours upstream/dev --no-edit
-          # Merge dependency/workspace fields from upstream package.json into ours (union).
-          node -e "
+          git merge -X theirs upstream/dev --no-edit
+          # JSON 经环境变量传给 node (Git Bash 下内嵌双引号字符串会坏)
+          PKG_OVERRIDES='{"name":"@npll/omol","bin":{"omol":"bin/omol.js"}}' node -e "
             const fs = require('fs')
-            const cp = require('child_process')
-            const upstream = JSON.parse(cp.execSync('git show upstream/dev:package.json').toString())
             const cur = JSON.parse(fs.readFileSync('package.json'))
-            const union = (a, b) => {
-              if (Array.isArray(a) || Array.isArray(b)) return [...new Set([...(a || []), ...(b || [])])]
-              return { ...(a || {}), ...(b || {}) }
-            }
-            for (const k of ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies', 'workspaces']) {
-              cur[k] = union(upstream[k], cur[k])
-            }
+            Object.assign(cur, JSON.parse(process.env.PKG_OVERRIDES))
             fs.writeFileSync('package.json', JSON.stringify(cur, null, 2))
           "
           git add package.json
-          git diff --cached --quiet || git commit -m "chore(omol): merge upstream dependencies"
+          git diff --cached --quiet || git commit -m "chore(omol): re-apply fork package overrides"
           echo "Synced with upstream dev"
 
-      - name: Build plugin
+      - name: Build
+        shell: bash
         run: |
           bun build packages/omo-opencode/src/index.ts --outdir dist --target bun --format esm --external zod
           bun build packages/omo-opencode/src/cli/index.ts --outdir dist/cli --target bun --format esm
 
-      - name: Compile Windows binary
-        run: bun build packages/omo-opencode/src/cli/index.ts --compile --target=bun-windows-x64 --outfile bin/omol.exe
+      - name: Compile binary
+        shell: bash
+        run: |
+          bun build packages/omo-opencode/src/cli/index.ts --compile --target=bun-windows-x64 --outfile bin/omol.exe
 
       - name: Set version
         shell: bash
@@ -77,9 +80,10 @@ jobs:
           if [ -n "${{ inputs.version }}" ]; then
             VERSION="${{ inputs.version }}"
           else
-            # Base version comes from upstream dev (always ahead of the fork), not from
-            # the merged package.json which keeps the fork's own (stale) version field.
-            BASE=$(git show upstream/dev:package.json | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).version))" | sed 's/-.*//')
+            # 版本基准必须从上游读: fork 的 package.json version 字段是 stale 的(合并策略保留
+            # fork 侧版本号)。直接取完整版本(含 prerelease 如 5.0.0-beta.6, 不要 sed 切后缀,
+            # 否则 beta 信息丢失)。格式: {上游版本}-{suffix}.{UTC时间戳}。
+            BASE=$(git show upstream/dev:package.json | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).version))")
             TS=$(date -u +%Y%m%d%H%M)
             VERSION="${BASE}-omol.${TS}"
           fi
@@ -88,15 +92,16 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Publish
+        shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --ignore-scripts --tag latest --registry https://registry.npmjs.org
 
+      # gh release create 必须显式 -R: 不带 -R 时 gh 从 git remote 解析仓库, 经过上游
+      # sync 步骤后可能解析到上游仓库导致 403。步骤不要加 '|| true' —— 会吞掉错误。
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          # Explicit -R: without it gh resolves the repo from git remotes, which after
-          # the upstream sync step can point at code-yeongyu/oh-my-openagent (403).
           gh release create -R n-pll/oh-my-opencode "v${{ env.VERSION }}" --title "v${{ env.VERSION }}" --notes "Auto release ${{ env.VERSION }}"
