@@ -1,5 +1,5 @@
 {
-  "name": "oh-my-opencode",
+  "name": "@npll/omol",
   "version": "5.0.0-beta.6",
   "description": "The Best AI Agent Harness - Batteries-Included OpenCode Plugin with Multi-Model Orchestration, Parallel Background Agents, and Crafted LSP/AST Tools",
   "main": "./dist/index.js",
@@ -39,11 +39,7 @@
     "packages/omo-native"
   ],
   "bin": {
-    "oh-my-opencode": "bin/oh-my-opencode.js",
-    "oh-my-openagent": "bin/oh-my-opencode.js",
-    "omo-agent-toolkit": "bin/oh-my-opencode.js",
-    "lazycodex": "bin/oh-my-opencode.js",
-    "lazycodex-ai": "bin/oh-my-opencode.js"
+    "omol": "bin/omol.js"
   },
   "files": [
     "dist",
