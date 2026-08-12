@@ -58,7 +58,8 @@ export function resolveInstallArgs(
   options: InstallCommandOptions,
   invocationName: string | undefined = process.env.OMO_INVOCATION_NAME,
 ): InstallArgs {
-  const defaultPlatform = invocationName === "lazycodex" || invocationName === "lazycodex-ai" ? "codex" : undefined
+  const defaultPlatform =
+    process.env.OMO_EDITION === "codex" || invocationName === "lazycodex" || invocationName === "lazycodex-ai" ? "codex" : undefined
   const platform = options.platform ?? defaultPlatform
   if (platform === "senpi" && !isSenpiPlatformEnabled()) {
     throw new Error(
@@ -122,7 +123,7 @@ ${t("cli.program.install.help.examples")}
   $ bunx oh-my-opencode install
   $ npx lazycodex-ai install --no-tui
   $ bunx oh-my-opencode install --no-tui --platform=both --claude=max20 --openai=yes --gemini=yes --copilot=no
-  $ omo install --platform=codex --codex-autonomous
+  $ omo-agent-toolkit install --platform=codex --codex-autonomous
   $ bunx oh-my-opencode install --no-tui --claude=no --gemini=no --copilot=yes --opencode-zen=yes
 
 ${t("cli.program.install.help.modelProviders")}
@@ -243,12 +244,12 @@ program
   .option("--json", t("cli.program.doctor.option.json"))
   .addOption(new Option("--platform <platform>", t("cli.program.doctor.option.platform")).choices(["opencode", "codex"]))
   .addHelpText("after", `
-${t("cli.program.doctor.help.examples")}
-${t("cli.program.doctor.help.showProblems")}
-${t("cli.program.doctor.help.dashboard")}
-${t("cli.program.doctor.help.diagnostics")}
-${t("cli.program.doctor.help.jsonOutput")}
-${t("cli.program.doctor.help.codex")}
+Examples:
+  $ bunx oh-my-opencode doctor            # Show problems only
+  $ bunx oh-my-opencode doctor --status   # Compact dashboard
+  $ bunx oh-my-opencode doctor --verbose  # Deep diagnostics
+  $ bunx oh-my-opencode doctor --json     # JSON output
+  $ omo-agent-toolkit doctor --platform=codex   # Codex/LazyCodex diagnostics only
 `)
   .action(async (options: DoctorCommandOptions) => {
     const rootOptions = program.opts<RootCommandOptions>()

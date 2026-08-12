@@ -139,6 +139,7 @@ describe("buildTaskExecute spawn", () => {
             max_depth: 1,
             residency_max_children: 8,
             ttl_ms: 86400000,
+            resume_children: true,
             wait: { min_ms: 5000, default_ms: 60000, max_ms: 600000 },
             warnings: { unavailable_categories: true },
             team: { max_members: 8, max_parallel_members: 4, max_wall_clock_minutes: 120 },
@@ -197,7 +198,12 @@ describe("buildTaskExecute spawn", () => {
     })
     const execute = buildTaskExecute(
       makeDeps(manager, {
-        resolveSkillInvocations: () => ({ hasInvoked: (skill: string) => skill === "ulw-plan" }),
+        resolveSkillInvocations: () => ({
+          hasInvoked: (skill: string) => skill === "ulw-plan",
+          hasUserRequested: (skill: string) => skill === "ulw-plan",
+          hasPlanArtifact: () => true,
+          planArtifactReferences: () => [{ path: ".omo/plans/spawn-plan.md", count: 1, lastTouchedAt: 1 }],
+        }),
       }),
     )
 
