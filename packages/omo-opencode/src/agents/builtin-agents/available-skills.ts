@@ -3,6 +3,8 @@ import type { BrowserAutomationProvider } from "../../config/schema"
 import type { LoadedSkill, SkillScope } from "../../features/opencode-skill-loader/types"
 import { isDisabledSkillAlias } from "../../features/opencode-skill-loader"
 import { createBuiltinSkills } from "../../features/builtin-skills"
+import { selectLocalizedField } from "../../features/builtin-skills/types"
+import { getLocale } from "../../shared/i18n"
 
 function mapScopeToLocation(scope: SkillScope): AvailableSkill["location"] {
   if (scope === "user" || scope === "opencode") return "user"
@@ -17,12 +19,13 @@ export function buildAvailableSkills(
   teamModeEnabled?: boolean,
   agentName?: string,
 ): AvailableSkill[] {
-  const builtinSkills = createBuiltinSkills({ browserProvider, disabledSkills, teamModeEnabled })
+  const locale = getLocale()
+  const builtinSkills = createBuiltinSkills({ browserProvider, disabledSkills, teamModeEnabled, locale })
   const builtinSkillNames = new Set(builtinSkills.map(s => s.name))
 
   const builtinAvailable: AvailableSkill[] = builtinSkills.map((skill) => ({
     name: skill.name,
-    description: skill.description,
+    description: selectLocalizedField(skill.description, skill.descriptionByLocale, locale),
     location: "plugin" as const,
   }))
 

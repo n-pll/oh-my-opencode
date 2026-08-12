@@ -11,20 +11,32 @@ import type {
 } from "../dynamic-agent-prompt-builder";
 import {
   buildKeyTriggersSection,
+  buildKeyTriggersSectionZh,
   buildToolSelectionTable,
+  buildToolSelectionTableZh,
   buildExploreSection,
+  buildExploreSectionZh,
   buildLibrarianSection,
+  buildLibrarianSectionZh,
   buildDelegationTable,
+  buildDelegationTableZh,
   buildCategorySkillsDelegationGuide,
+  buildCategorySkillsDelegationGuideZh,
   buildOracleSection,
+  buildOracleSectionZh,
   buildHardBlocksSection,
+  buildHardBlocksSectionZh,
   buildAntiPatternsSection,
+  buildAntiPatternsSectionZh,
   buildParallelDelegationSection,
+  buildParallelDelegationSectionZh,
   buildNonClaudePlannerSection,
+  buildNonClaudePlannerSectionZh,
   buildAntiDuplicationSection,
+  buildAntiDuplicationSectionZh,
   categorizeTools,
 } from "../dynamic-agent-prompt-builder";
-import { t } from "../../shared/i18n";
+import { t, getLocale } from "../../shared/i18n";
 
 export function buildTaskManagementSection(useTaskSystem: boolean): string {
   if (useTaskSystem) {
@@ -144,24 +156,25 @@ export function buildDefaultSisyphusPrompt(
   availableCategories: AvailableCategory[] = [],
   useTaskSystem = false,
 ): string {
-  const keyTriggers = buildKeyTriggersSection(availableAgents, availableSkills);
-  const toolSelection = buildToolSelectionTable(
+  const zh = getLocale() === "zh";
+  const keyTriggers = (zh ? buildKeyTriggersSectionZh : buildKeyTriggersSection)(availableAgents, availableSkills);
+  const toolSelection = (zh ? buildToolSelectionTableZh : buildToolSelectionTable)(
     availableAgents,
     availableTools,
     availableSkills,
   );
-  const exploreSection = buildExploreSection(availableAgents);
-  const librarianSection = buildLibrarianSection(availableAgents);
-  const categorySkillsGuide = buildCategorySkillsDelegationGuide(
+  const exploreSection = (zh ? buildExploreSectionZh : buildExploreSection)(availableAgents);
+  const librarianSection = (zh ? buildLibrarianSectionZh : buildLibrarianSection)(availableAgents);
+  const categorySkillsGuide = (zh ? buildCategorySkillsDelegationGuideZh : buildCategorySkillsDelegationGuide)(
     availableCategories,
     availableSkills,
   );
-  const delegationTable = buildDelegationTable(availableAgents);
-  const oracleSection = buildOracleSection(availableAgents);
-  const hardBlocks = buildHardBlocksSection();
-  const antiPatterns = buildAntiPatternsSection();
-  const parallelDelegationSection = buildParallelDelegationSection(model, availableCategories);
-  const nonClaudePlannerSection = buildNonClaudePlannerSection(model);
+  const delegationTable = (zh ? buildDelegationTableZh : buildDelegationTable)(availableAgents);
+  const oracleSection = (zh ? buildOracleSectionZh : buildOracleSection)(availableAgents);
+  const hardBlocks = (zh ? buildHardBlocksSectionZh : buildHardBlocksSection)();
+  const antiPatterns = (zh ? buildAntiPatternsSectionZh : buildAntiPatternsSection)();
+  const parallelDelegationSection = (zh ? buildParallelDelegationSectionZh : buildParallelDelegationSection)(model, availableCategories);
+  const nonClaudePlannerSection = (zh ? buildNonClaudePlannerSectionZh : buildNonClaudePlannerSection)(model);
   const taskManagementSection = buildTaskManagementSection(useTaskSystem);
   const todoHookNote = useTaskSystem
     ? "YOUR TASK CREATION WOULD BE TRACKED BY HOOK([SYSTEM REMINDER - TASK CONTINUATION])"
@@ -180,7 +193,7 @@ export function buildDefaultSisyphusPrompt(
     taskManagementSection,
     hardBlocks,
     antiPatterns,
-    antiDuplication: buildAntiDuplicationSection(),
+    antiDuplication: (zh ? buildAntiDuplicationSectionZh : buildAntiDuplicationSection)(),
     todoHookNote,
   });
 }

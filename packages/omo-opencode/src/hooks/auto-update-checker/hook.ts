@@ -1,6 +1,7 @@
 import type { PluginInput } from "@opencode-ai/plugin"
 import { isRecord } from "@oh-my-opencode/utils"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 import type { AutoUpdateCheckerOptions } from "./types"
 import { getBundledVersion, getCachedVersion, getLocalDevVersion } from "./checker"
 import { runBackgroundUpdateCheck } from "./hook/background-update-check"
@@ -66,12 +67,12 @@ export function createAutoUpdateCheckerHook(
   const getToastMessage = (isUpdate: boolean, latestVersion?: string): string => {
     if (isSisyphusEnabled) {
       return isUpdate
-        ? `Sisyphus on steroids is steering OpenCode.\nv${latestVersion} available. Restart to apply.`
-        : "Sisyphus on steroids is steering OpenCode."
+        ? t("hooks.autoUpdateChecker.steeringSisyphusUpdate", { latestVersion })
+        : t("hooks.autoUpdateChecker.steeringSisyphus")
     }
     return isUpdate
-      ? `OpenCode is now on Steroids. oMoMoMoMo...\nv${latestVersion} available. Restart OpenCode to apply.`
-      : "OpenCode is now on Steroids. oMoMoMoMo..."
+      ? t("hooks.autoUpdateChecker.steroidsUpdate", { latestVersion })
+      : t("hooks.autoUpdateChecker.steroids")
   }
 
   let hasChecked = false

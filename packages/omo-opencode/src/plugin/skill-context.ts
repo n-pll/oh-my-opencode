@@ -24,6 +24,7 @@ import {
 import { resolveActiveBuiltinSkills } from "../features/builtin-skills"
 import { getSystemMcpServerNames } from "../features/claude-code-mcp-loader"
 import { adaptHostSkillConfig } from "../shared/host-skill-config"
+import { getLocale } from "../shared/i18n"
 
 export type SkillContext = {
   mergedSkills: LoadedSkill[]
@@ -88,6 +89,7 @@ export async function createSkillContext(args: {
   const playwrightMcpArgs = pluginConfig.browser_automation_engine?.playwright_mcp_args
 
   const disabledSkills = collectDisabledSkillAliases(pluginConfig)
+  const locale = getLocale()
 
   const builtinSkills = resolveActiveBuiltinSkills({
     browserProvider,
@@ -95,6 +97,7 @@ export async function createSkillContext(args: {
     teamModeEnabled: pluginConfig.team_mode?.enabled ?? false,
     playwrightMcpArgs,
     systemMcpNames: getSystemMcpServerNames(),
+    locale,
   })
 
   const includeClaudeSkills = pluginConfig.claude_code?.skills !== false
@@ -187,6 +190,7 @@ export async function createSkillContext(args: {
     {
       configDir: directory,
       isConfigEntryAllowed: (name) => !isDisabledConfigSkillEntryName(name, disabledSkills),
+      locale,
     },
   )
 

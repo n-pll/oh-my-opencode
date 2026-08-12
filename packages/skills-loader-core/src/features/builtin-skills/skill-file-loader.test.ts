@@ -1,7 +1,7 @@
 /// <reference path="../../../../../bun-test.d.ts" />
 
 import { describe, expect, test } from "bun:test"
-import { normalize } from "node:path"
+import { normalize, sep } from "node:path"
 import { parseFrontmatter } from "@oh-my-opencode/utils"
 import { createBuiltinSkills } from "./skills"
 import { createSharedSkillTemplateLoader, loadSharedSkillTemplate } from "./skill-file-loader"
@@ -76,5 +76,66 @@ describe("shared builtin skill file loader", () => {
     })
 
     expect(() => loader("__missing__")).toThrow("ENOENT missing SKILL.md")
+  })
+
+  test("#given a localized skill file #when loading with a locale #then the zh variant is preferred", () => {
+    // given
+    const files: Record<string, string> = {
+      [normalize(`/skills/my-skill/SKILL.md`)]: "---\nname: my-skill\n---\nEnglish body",
+      [normalize(`/skills/my-skill/SKILL.zh.md`)]: "---\nname: my-skill\n---\nChinese body",
+    }
+    const missingError = (): Error => Object.assign(new Error("ENOENT"), { code: "ENOENT" })
+    const loader = createSharedSkillTemplateLoader(
+      (path) => path in files ? files[path] : (() => { throw missingError() })(),
+      `/skills`,
+    )
+
+    // when
+    const enBody = loader("my-skill", "en")
+    const zhBody = loader("my-skill", "zh")
+
+    // then
+    expect(enBody).toBe("English body")
+    expect(zhBody).toBe("Chinese body")
+  })
+
+  test("#given no localized file exists #when loading with a locale #then falls back to SKILL.md", () => {
+    // given
+    const files: Record<string, string> = {
+      [normalize(`/skills/my-skill/SKILL.md`)]: "---\nname: my-skill\n---\nEnglish-only body",
+    }
+    const missingError = (): Error => Object.assign(new Error("ENOENT"), { code: "ENOENT" })
+    const loader = createSharedSkillTemplateLoader(
+      (path) => path in files ? files[path] : (() => { throw missingError() })(),
+      `/skills`,
+    )
+
+    // when
+    const zhBody = loader("my-skill", "zh")
+
+    // then - gracefully falls back to English
+    expect(zhBody).toBe("English-only body")
+  })
+
+  test("#given different locales #when loading the same skill #then the cache keeps them separate", () => {
+    // given
+    const reads: string[] = []
+    let counter = 0
+    const loader = createSharedSkillTemplateLoader((path) => {
+      reads.push(path)
+      counter += 1
+      return `---\nname: x\n---\nbody-${counter}`
+    })
+
+    // when
+    const firstEn = loader("cached", "en")
+    const secondEn = loader("cached", "en")
+    const firstZh = loader("cached", "zh")
+
+    // then
+    expect(firstEn).toBe("body-1")
+    expect(secondEn).toBe("body-1") // cached
+    expect(firstZh).toBe("body-2") // different locale = separate cache entry
+    expect(reads).toHaveLength(2)
   })
 })

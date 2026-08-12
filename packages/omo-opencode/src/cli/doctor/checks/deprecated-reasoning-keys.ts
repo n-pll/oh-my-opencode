@@ -4,6 +4,7 @@ import { join } from "node:path"
 
 import { CHECK_IDS, CHECK_NAMES } from "../framework/constants"
 import type { CheckResult, DoctorIssue } from "../framework/types"
+import { t } from "../../../shared/i18n"
 
 const CANONICAL_REPLACEMENT = new Map([
   ["variant", "reasoning"],
@@ -77,8 +78,8 @@ export async function checkDeprecatedReasoningKeys(): Promise<CheckResult> {
     name: CHECK_NAMES[CHECK_IDS.CONFIG],
     status: issues.length > 0 ? "warn" : "pass",
     message: issues.length > 0
-      ? `${issues.length} deprecated reasoning key(s) found`
-      : "No deprecated reasoning keys found",
+      ? t("cli.doctor.deprecatedReasoningKeys.found", { count: String(issues.length) })
+      : t("cli.doctor.deprecatedReasoningKeys.noneFound"),
     ...(scanned.length > 0 ? { details: scanned.map((path) => `Scanned: ${path}`) } : {}),
     issues,
   }

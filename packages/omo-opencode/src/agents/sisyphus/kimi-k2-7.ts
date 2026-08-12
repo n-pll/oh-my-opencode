@@ -21,20 +21,32 @@ import type {
 import { KIMI_TOOL_LOOP_GUARD } from "../kimi-tool-loop-guard";
 import {
   buildAgentIdentitySection,
+  buildAgentIdentitySectionZh,
   buildKeyTriggersSection,
+  buildKeyTriggersSectionZh,
   buildToolSelectionTable,
+  buildToolSelectionTableZh,
   buildExploreSection,
+  buildExploreSectionZh,
   buildLibrarianSection,
+  buildLibrarianSectionZh,
   buildDelegationTable,
+  buildDelegationTableZh,
   buildCategorySkillsDelegationGuide,
+  buildCategorySkillsDelegationGuideZh,
   buildOracleSection,
+  buildOracleSectionZh,
   buildHardBlocksSection,
+  buildHardBlocksSectionZh,
   buildAntiPatternsSection,
+  buildAntiPatternsSectionZh,
   buildAntiDuplicationSection,
+  buildAntiDuplicationSectionZh,
   buildNonClaudePlannerSection,
+  buildNonClaudePlannerSectionZh,
   categorizeTools,
 } from "../dynamic-agent-prompt-builder";
-import { t } from "../../shared/i18n"
+import { t, getLocale } from "../../shared/i18n"
 
 function buildKimiK27TasksSection(useTaskSystem: boolean): string {
   if (useTaskSystem) {
@@ -64,17 +76,44 @@ export function buildKimiK27SisyphusPrompt(
   availableCategories: AvailableCategory[] = [],
   useTaskSystem = false,
 ): string {
-  const keyTriggers = buildKeyTriggersSection(availableAgents, availableSkills);
-  const toolSelection = buildToolSelectionTable(availableAgents, availableTools, availableSkills);
-  const exploreSection = buildExploreSection(availableAgents);
-  const librarianSection = buildLibrarianSection(availableAgents);
-  const categorySkillsGuide = buildCategorySkillsDelegationGuide(availableCategories, availableSkills);
-  const delegationTable = buildDelegationTable(availableAgents);
-  const oracleSection = buildOracleSection(availableAgents);
-  const hardBlocks = buildHardBlocksSection();
-  const antiPatterns = buildAntiPatternsSection();
-  const nonClaudePlannerSection = buildNonClaudePlannerSection(model);
-  return t("agents.sisyphus.prompt.kimi-k2-7", { agentIdentity: agentIdentity, constraintsBlock: constraintsBlock, delegationBlock: delegationBlock, executionBlock: executionBlock, explorationBlock: explorationBlock, intentBlock: intentBlock, operatingRulesBlock: operatingRulesBlock, roleBlock: roleBlock, styleBlock: styleBlock, tasksSection: tasksSection });
+  const zh = getLocale() === "zh";
+  const keyTriggers = (zh ? buildKeyTriggersSectionZh : buildKeyTriggersSection)(availableAgents, availableSkills);
+  const toolSelection = (zh ? buildToolSelectionTableZh : buildToolSelectionTable)(availableAgents, availableTools, availableSkills);
+  const exploreSection = (zh ? buildExploreSectionZh : buildExploreSection)(availableAgents);
+  const librarianSection = (zh ? buildLibrarianSectionZh : buildLibrarianSection)(availableAgents);
+  const categorySkillsGuide = (zh ? buildCategorySkillsDelegationGuideZh : buildCategorySkillsDelegationGuide)(availableCategories, availableSkills);
+  const delegationTable = (zh ? buildDelegationTableZh : buildDelegationTable)(availableAgents);
+  const oracleSection = (zh ? buildOracleSectionZh : buildOracleSection)(availableAgents);
+  const hardBlocks = (zh ? buildHardBlocksSectionZh : buildHardBlocksSection)();
+  const antiPatterns = (zh ? buildAntiPatternsSectionZh : buildAntiPatternsSection)();
+  const nonClaudePlannerSection = (zh ? buildNonClaudePlannerSectionZh : buildNonClaudePlannerSection)(model);
+  const tasksSection = buildKimiK27TasksSection(useTaskSystem);
+  const todoHookNote = useTaskSystem
+    ? "YOUR TASK CREATION WOULD BE TRACKED BY HOOK([SYSTEM REMINDER - TASK CONTINUATION])"
+    : "YOUR TODO CREATION WOULD BE TRACKED BY HOOK([SYSTEM REMINDER - TODO CONTINUATION])";
+
+  const agentIdentity = (zh ? buildAgentIdentitySectionZh : buildAgentIdentitySection)(
+    "Sisyphus",
+    "Powerful AI Agent with orchestration capabilities from OhMyOpenCode",
+  );
+
+  return t("agents.sisyphus.prompt.kimi-k2-7", {
+    agentIdentity,
+    todoHookNote,
+    keyTriggers,
+    toolSelection,
+    exploreSection,
+    librarianSection,
+    categorySkillsGuide,
+    delegationTable,
+    oracleSection,
+    hardBlocks,
+    antiPatterns,
+    nonClaudePlannerSection,
+    KIMI_TOOL_LOOP_GUARD,
+    tasksSection,
+    buildAntiDuplicationSection: (zh ? buildAntiDuplicationSectionZh : buildAntiDuplicationSection)(),
+  });
 
 }
 

@@ -2,21 +2,21 @@ import type { BuiltinSkill } from "./types"
 import type { BrowserAutomationProvider } from "../../types"
 
 import {
-  agentBrowserSkill,
+  createAgentBrowserSkill,
   createPlaywrightSkill,
   playwrightSkill,
-  playwrightCliSkill,
-  frontendSkill,
-  gitMasterSkill,
-  devBrowserSkill,
-  initDeepSkill,
-  debuggingSkill,
-  removeAiSlopsSkill,
-  reviewWorkSkill,
-  securityResearchSkill,
-  securityReviewSkill,
-  visualQaSkill,
-  teamModeSkill,
+  createPlaywrightCliSkill,
+  createFrontendSkill,
+  createGitMasterSkill,
+  createDevBrowserSkill,
+  createReviewWorkSkill,
+  createRemoveAiSlopsSkill,
+  createInitDeepSkill,
+  createDebuggingSkill,
+  createSecurityResearchSkill,
+  createSecurityReviewSkill,
+  createVisualQaSkill,
+  createTeamModeSkill,
 } from "./skills/index"
 
 export interface CreateBuiltinSkillsOptions {
@@ -31,6 +31,13 @@ export interface CreateBuiltinSkillsOptions {
    * ignore this option.
    */
   playwrightMcpArgs?: readonly string[]
+  /**
+   * Locale code (e.g. "en", "zh"). When set, built-in skills whose templates
+   * or descriptions have locale overrides will use them, gracefully falling
+   * back to English when a translation is missing. Mirrors the `locale`
+   * parameter on prompts-core's `loadPrompt`.
+   */
+  locale?: string
 }
 
 export function createBuiltinSkills(options: CreateBuiltinSkillsOptions = {}): BuiltinSkill[] {
@@ -39,36 +46,39 @@ export function createBuiltinSkills(options: CreateBuiltinSkillsOptions = {}): B
     disabledSkills,
     teamModeEnabled = false,
     playwrightMcpArgs,
+    locale,
   } = options
 
-  let browserSkill: BuiltinSkill
+	let browserSkill: BuiltinSkill
 	if (browserProvider === "agent-browser") {
-		browserSkill = agentBrowserSkill
+		browserSkill = createAgentBrowserSkill(locale)
 	} else if (browserProvider === "dev-browser") {
-		browserSkill = devBrowserSkill
+		browserSkill = createDevBrowserSkill(locale)
 	} else if (browserProvider === "playwright-cli") {
-		browserSkill = playwrightCliSkill
+		browserSkill = createPlaywrightCliSkill(locale)
 	} else {
 		browserSkill = playwrightMcpArgs?.length
 			? createPlaywrightSkill({ mcp_args: playwrightMcpArgs })
-			: playwrightSkill
+			: locale
+				? createPlaywrightSkill()
+				: playwrightSkill
 	}
 
 	const skills = [
 		browserSkill,
-		frontendSkill,
-		gitMasterSkill,
-		reviewWorkSkill,
-		removeAiSlopsSkill,
-		initDeepSkill,
-		debuggingSkill,
-		securityResearchSkill,
-		securityReviewSkill,
-		visualQaSkill,
+		createFrontendSkill(locale),
+		createGitMasterSkill(locale),
+		createReviewWorkSkill(locale),
+		createRemoveAiSlopsSkill(locale),
+		createInitDeepSkill(locale),
+		createDebuggingSkill(locale),
+		createSecurityResearchSkill(locale),
+		createSecurityReviewSkill(locale),
+		createVisualQaSkill(locale),
 	]
 
   if (teamModeEnabled && !disabledSkills?.has("team-mode")) {
-    skills.push(teamModeSkill)
+    skills.push(createTeamModeSkill(locale))
   }
 
   if (!disabledSkills) {

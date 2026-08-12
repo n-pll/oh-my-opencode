@@ -1,5 +1,6 @@
-/**
 import { t } from "../../shared/i18n"
+
+/**
  * Gemini-specific overlay sections for Sisyphus prompt.
  *
  * Gemini models are aggressively optimistic and tend to:

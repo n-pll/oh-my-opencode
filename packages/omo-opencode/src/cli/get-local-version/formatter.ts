@@ -46,16 +46,16 @@ export function formatVersionOutput(info: VersionInfo): string {
       lines.push(`  ${color.dim(t("cli.version.usingFileProtocol"))}`)
       break
     case "dev":
-      lines.push(`  ${SYMBOLS.dev} ${color.cyan("Running a local dev build")}`)
-      lines.push(`  ${color.dim("Installed from source; update checks are skipped")}`)
+      lines.push(`  ${SYMBOLS.dev} ${color.cyan(t("cli.version.localDevBuild"))}`)
+      lines.push(`  ${color.dim(t("cli.version.localDevSkipUpdates"))}`)
       break
     case "pinned":
       lines.push(`  ${SYMBOLS.pin} ${color.magenta(t("cli.version.versionPinned", { version: info.pinnedVersion }))}`)
       lines.push(`  ${color.dim(t("cli.version.updateCheckSkipped"))}`)
       break
     case "pinned-mismatch":
-      lines.push(`  ${SYMBOLS.warn} ${color.yellow(`Version pinned to ${info.pinnedVersion} but running ${info.currentVersion}`)}`)
-      lines.push(`  ${color.dim("The pin only skips the update check; it does not control which version OpenCode loads")}`)
+      lines.push(`  ${SYMBOLS.warn} ${color.yellow(t("cli.version.pinnedMismatch", { pinned: info.pinnedVersion, current: info.currentVersion }))}`)
+      lines.push(`  ${color.dim(t("cli.version.pinOnlySkipsCheck"))}`)
       break
     case "error":
       lines.push(`  ${SYMBOLS.cross} ${color.red(t("cli.version.unableToCheckUpdates"))}`)

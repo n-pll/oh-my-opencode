@@ -26,6 +26,7 @@ type ResolveSkillContentOptions = {
   nativeSkills?: DelegateTaskToolOptions["nativeSkills"]
   nativeSkillEntries?: NativeSkillEntry[]
   getLoadedSkills?: DelegateTaskToolOptions["getLoadedSkills"]
+  locale?: string
 }
 
 function isSkillAllowedForTargetAgent(skill: LoadedSkill, targetAgent: string | undefined): boolean {

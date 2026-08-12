@@ -6,6 +6,7 @@ import { formatAgentsMdContextBlock } from "@oh-my-opencode/agents-md-core"
 import { createDynamicTruncator } from "../../shared/dynamic-truncator"
 import type { ContextLimitModelCacheState } from "../../shared/context-limit-resolver"
 import { getAgentConfigKey } from "../../shared/agent-display-names"
+import { getLocale } from "../../shared/i18n"
 import { resolveSessionEventID } from "../../shared/event-session-id"
 import { isRealUserTextPart } from "../../shared"
 
@@ -85,6 +86,7 @@ export function createHephaestusAgentsMdInjectorHook(
         agentsPath,
         content: result,
         truncated,
+        locale: getLocale(),
       }))
     }
 

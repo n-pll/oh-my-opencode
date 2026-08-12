@@ -2,6 +2,7 @@ import { existsSync } from "node:fs"
 import { join } from "node:path"
 import { sharedSkillsRootPath } from "@oh-my-opencode/shared-skills"
 import type { BuiltinSkill } from "../../builtin-skills/types"
+import { selectLocalizedField } from "../../builtin-skills/types"
 import type { CommandDefinition } from "@oh-my-opencode/claude-code-compat-core/claude-code-command-loader/types"
 import type { LoadedSkill } from "../types"
 
@@ -12,11 +13,13 @@ function resolveBuiltinSkillPath(builtin: BuiltinSkill): string | undefined {
   return existsSync(sharedSkillPath) ? sharedSkillPath : undefined
 }
 
-export function builtinToLoadedSkill(builtin: BuiltinSkill): LoadedSkill {
+export function builtinToLoadedSkill(builtin: BuiltinSkill, locale?: string): LoadedSkill {
+  const template = selectLocalizedField(builtin.template, builtin.templateByLocale, locale)
+  const description = selectLocalizedField(builtin.description, builtin.descriptionByLocale, locale)
   const definition: CommandDefinition = {
     name: builtin.name,
-    description: `(opencode - Skill) ${builtin.description}`,
-    template: builtin.template,
+    description: `(opencode - Skill) ${description}`,
+    template,
     model: builtin.model,
     agent: builtin.agent,
     subtask: builtin.subtask,

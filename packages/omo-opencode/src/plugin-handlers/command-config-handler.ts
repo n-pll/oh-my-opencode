@@ -33,6 +33,7 @@ import {
 import type { PluginComponents } from "./plugin-components-loader";
 import { adaptHostSkillConfig } from "../shared/host-skill-config";
 import { collectDisabledSkillAliases } from "../plugin/skill-context";
+import { getLocale } from "../shared/i18n";
 import type { LoadedSkill } from "../features/opencode-skill-loader/types";
 
 export async function applyCommandConfig(params: {
@@ -46,13 +47,16 @@ export async function applyCommandConfig(params: {
     useRegisteredAgents: true,
     teamModeEnabled: params.pluginConfig.team_mode?.enabled ?? false,
   });
+  const locale = getLocale();
   const builtinSkillCommands = builtinSkillsToCommandDefinitionRecord(
     resolveActiveBuiltinSkills({
       browserProvider: params.pluginConfig.browser_automation_engine?.provider ?? "playwright",
       disabledSkills,
       teamModeEnabled: params.pluginConfig.team_mode?.enabled ?? false,
       systemMcpNames: getSystemMcpServerNames(),
+      locale,
     }),
+    locale,
   );
   for (const disabledCommand of params.pluginConfig.disabled_commands ?? []) {
     delete builtinSkillCommands[disabledCommand];

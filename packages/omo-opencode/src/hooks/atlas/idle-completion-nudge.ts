@@ -16,7 +16,8 @@ import { isAmbiguousPostDispatchPromptFailure } from "../../shared/prompt-failur
 import { dispatchInternalPrompt, isInternalPromptDispatchAccepted } from "../shared/prompt-async-gate"
 import { shouldPromptAfterSessionIdle } from "../shared/session-idle-settle"
 import { HOOK_NAME } from "./hook-name"
-import { BOULDER_COMPLETE_PROMPT } from "./system-reminder-templates"
+import { getBoulderCompletePrompt } from "./system-reminder-templates"
+import { getLocale } from "../../shared/i18n"
 import type { AtlasHookOptions, SessionState } from "./types"
 
 function getTaskLabelSortValue(taskLabel: string): number {
@@ -73,6 +74,7 @@ export async function handleCompletedBoulderIdle(input: {
 
   const elapsedMilliseconds = work.elapsed_ms ?? (Date.now() - new Date(work.started_at).getTime())
   const elapsedHuman = formatDurationHuman(elapsedMilliseconds)
+  const zh = getLocale() === "zh"
 
   const taskBreakdown = Object.values(work.task_sessions ?? {})
     .sort((left, right) => {
@@ -89,14 +91,14 @@ export async function handleCompletedBoulderIdle(input: {
         return `- ${task.task_label} ${task.task_title}: ${formatDurationHuman(task.elapsed_ms)}`
       }
 
-      return `- ${task.task_label} ${task.task_title}: (no timing)`
+      return `- ${task.task_label} ${task.task_title}: ${zh ? "(无计时)" : "(no timing)"}`
     })
     .join("\n")
 
-  const prompt = BOULDER_COMPLETE_PROMPT
+  const prompt = getBoulderCompletePrompt()
     .replace(/{PLAN_NAME}/g, work.plan_name)
     .replace(/{ELAPSED_HUMAN}/g, elapsedHuman)
-    .replace(/{TASK_BREAKDOWN}/g, taskBreakdown.length > 0 ? taskBreakdown : "- (no task timings)")
+    .replace(/{TASK_BREAKDOWN}/g, taskBreakdown.length > 0 ? taskBreakdown : zh ? "- (无任务计时)" : "- (no task timings)")
 
   const atlasAgent = resolveRegisteredAgentName(
     boulderState.agent ?? (isAgentRegistered("atlas") ? "atlas" : undefined),

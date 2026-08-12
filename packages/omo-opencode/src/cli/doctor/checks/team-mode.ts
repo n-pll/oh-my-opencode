@@ -4,6 +4,7 @@ import { checkTeamModeDependencies } from "../../../features/team-mode/deps"
 import { resolveBaseDir } from "../../../features/team-mode/team-registry/paths"
 import { CHECK_IDS, CHECK_NAMES } from "../framework/constants"
 import type { CheckResult } from "../framework/types"
+import { t } from "../../../shared/i18n"
 import { promises as fs } from "node:fs"
 import path from "node:path"
 

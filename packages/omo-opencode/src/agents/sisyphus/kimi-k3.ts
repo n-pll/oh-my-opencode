@@ -23,19 +23,32 @@ import type {
 import { KIMI_TOOL_LOOP_GUARD } from "../kimi-tool-loop-guard";
 import {
   buildAgentIdentitySection,
+  buildAgentIdentitySectionZh,
   buildKeyTriggersSection,
+  buildKeyTriggersSectionZh,
   buildToolSelectionTable,
+  buildToolSelectionTableZh,
   buildExploreSection,
+  buildExploreSectionZh,
   buildLibrarianSection,
+  buildLibrarianSectionZh,
   buildDelegationTable,
+  buildDelegationTableZh,
   buildCategorySkillsDelegationGuide,
+  buildCategorySkillsDelegationGuideZh,
   buildOracleSection,
+  buildOracleSectionZh,
   buildHardBlocksSection,
+  buildHardBlocksSectionZh,
   buildAntiPatternsSection,
+  buildAntiPatternsSectionZh,
   buildAntiDuplicationSection,
+  buildAntiDuplicationSectionZh,
   buildNonClaudePlannerSection,
+  buildNonClaudePlannerSectionZh,
   categorizeTools,
 } from "../dynamic-agent-prompt-builder";
+import { getLocale } from "../../shared/i18n"
 
 function buildKimiK3TasksSection(useTaskSystem: boolean): string {
   if (useTaskSystem) {
@@ -65,22 +78,23 @@ export function buildKimiK3SisyphusPrompt(
   availableCategories: AvailableCategory[] = [],
   useTaskSystem = false,
 ): string {
-  const keyTriggers = buildKeyTriggersSection(availableAgents, availableSkills);
-  const toolSelection = buildToolSelectionTable(availableAgents, availableTools, availableSkills);
-  const exploreSection = buildExploreSection(availableAgents);
-  const librarianSection = buildLibrarianSection(availableAgents);
-  const categorySkillsGuide = buildCategorySkillsDelegationGuide(availableCategories, availableSkills);
-  const delegationTable = buildDelegationTable(availableAgents);
-  const oracleSection = buildOracleSection(availableAgents);
-  const hardBlocks = buildHardBlocksSection();
-  const antiPatterns = buildAntiPatternsSection();
-  const nonClaudePlannerSection = buildNonClaudePlannerSection(model);
+  const zh = getLocale() === "zh";
+  const keyTriggers = (zh ? buildKeyTriggersSectionZh : buildKeyTriggersSection)(availableAgents, availableSkills);
+  const toolSelection = (zh ? buildToolSelectionTableZh : buildToolSelectionTable)(availableAgents, availableTools, availableSkills);
+  const exploreSection = (zh ? buildExploreSectionZh : buildExploreSection)(availableAgents);
+  const librarianSection = (zh ? buildLibrarianSectionZh : buildLibrarianSection)(availableAgents);
+  const categorySkillsGuide = (zh ? buildCategorySkillsDelegationGuideZh : buildCategorySkillsDelegationGuide)(availableCategories, availableSkills);
+  const delegationTable = (zh ? buildDelegationTableZh : buildDelegationTable)(availableAgents);
+  const oracleSection = (zh ? buildOracleSectionZh : buildOracleSection)(availableAgents);
+  const hardBlocks = (zh ? buildHardBlocksSectionZh : buildHardBlocksSection)();
+  const antiPatterns = (zh ? buildAntiPatternsSectionZh : buildAntiPatternsSection)();
+  const nonClaudePlannerSection = (zh ? buildNonClaudePlannerSectionZh : buildNonClaudePlannerSection)(model);
   const tasksSection = buildKimiK3TasksSection(useTaskSystem);
   const todoHookNote = useTaskSystem
     ? "Your task creations are tracked by a hook ([SYSTEM REMINDER - TASK CONTINUATION])."
     : "Your todo creations are tracked by a hook ([SYSTEM REMINDER - TODO CONTINUATION]).";
 
-  const agentIdentity = buildAgentIdentitySection(
+  const agentIdentity = (zh ? buildAgentIdentitySectionZh : buildAgentIdentitySection)(
     "Sisyphus",
     "Powerful AI Agent with orchestration capabilities from OhMyOpenCode",
   );
@@ -166,7 +180,7 @@ Budget the search to the task: a clear single target is zero to two calls; a kno
 
 Fire explore and librarian agents in the background (\`run_in_background=true\`), always in parallel. Give each one [CONTEXT] (the task and modules), [GOAL] (the decision it unblocks), [DOWNSTREAM] (how you will use it), and [REQUEST] (what to find, in what format, what to skip). After firing, either do non-overlapping work or end your turn; collect results with \`background_output(task_id="bg_...")\` only after the system's completion reminder arrives, never before. Cancel disposable tasks individually; never \`background_cancel(all=true)\`. Continue a subagent's session with \`task(task_id="ses_...")\`.
 
-${buildAntiDuplicationSection()}
+${(zh ? buildAntiDuplicationSectionZh : buildAntiDuplicationSection)()}
 </exploration>`;
 
   const executionBlock = `<execution>

@@ -7,13 +7,8 @@ import {
 } from "../../features/claude-code-session-state"
 import { log } from "../../shared"
 import { getAgentConfigKey } from "../../shared/agent-display-names"
+import { t } from "../../shared/i18n"
 
-const TOAST_TITLE = "NEVER Use Hephaestus with Non-GPT"
-const TOAST_MESSAGE = [
-  "Hephaestus is designed exclusively for GPT models.",
-  "Hephaestus is trash without GPT.",
-  "For Claude/Kimi/GLM models, always use Sisyphus.",
-].join("\n")
 type NoHephaestusNonGptHookOptions = {
   allowNonGptModel?: boolean
 }
@@ -21,8 +16,8 @@ type NoHephaestusNonGptHookOptions = {
 function showToast(ctx: PluginInput, sessionID: string, variant: "error" | "warning"): void {
   ctx.client.tui.showToast({
     body: {
-      title: TOAST_TITLE,
-      message: TOAST_MESSAGE,
+      title: t("toast.no_hephaestus_non_gpt_title"),
+      message: t("toast.no_hephaestus_non_gpt_message"),
       variant,
       duration: 10000,
     },

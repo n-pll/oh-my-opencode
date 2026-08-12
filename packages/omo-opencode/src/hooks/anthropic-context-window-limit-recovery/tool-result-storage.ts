@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 
 import { getMessageIds } from "./message-storage-directory"
-import { PART_STORAGE_DIR, TRUNCATION_MESSAGE } from "./storage-paths"
+import { PART_STORAGE_DIR, getTruncationMessage } from "./storage-paths"
 import type { StoredToolPart, ToolResultInfo } from "./tool-part-types"
 import { isSqliteBackend } from "../../shared/opencode-storage-detection"
 import { log } from "../../shared/logger"
@@ -76,7 +76,7 @@ export function truncateToolResult(partPath: string): {
 
 		part.truncated = true
 		part.originalSize = originalSize
-		part.state.output = TRUNCATION_MESSAGE
+		part.state.output = getTruncationMessage()
 
 		if (!part.state.time) {
 			part.state.time = { start: Date.now() }

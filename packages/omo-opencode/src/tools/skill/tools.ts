@@ -18,7 +18,7 @@ import {
   matchSkillByName,
 } from "./skill-matcher"
 import { extractSkillBody } from "./skill-body"
-import { t } from "../../shared/i18n"
+import { t, getLocale } from "../../shared/i18n"
 import {
   isPromiseLike,
   loadedSkillToInfo,
@@ -44,6 +44,7 @@ export function createSkillTool(options: SkillLoadOptions): ToolDefinition {
       browserProvider: options?.browserProvider,
       teamModeEnabled: options?.teamModeEnabled,
       directory: options.directory,
+      locale: getLocale(),
     })) ?? []
     return options.skills ? [...options.skills] : discovered
   }

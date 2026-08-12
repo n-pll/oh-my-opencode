@@ -6,6 +6,7 @@ import glmPromptZh from "../prompts/atlas/glm.zh.md"
 import gptPromptZh from "../prompts/atlas/gpt.zh.md"
 import kimiPromptZh from "../prompts/atlas/kimi.zh.md"
 import kimiK27PromptZh from "../prompts/atlas/kimi-k2-7.zh.md"
+import kimiK3PromptZh from "../prompts/atlas/kimi-k3.zh.md"
 import opus47PromptZh from "../prompts/atlas/opus-4-7.zh.md"
 import geminiPrompt from "../prompts/atlas/gemini.md"
 import glmPrompt from "../prompts/atlas/glm.md"
@@ -38,6 +39,7 @@ export const atlasPromptVariants = {
     kind: "bundled",
     content: kimiK3Prompt,
     filePath: "packages/prompts-core/prompts/atlas/kimi-k3.md",
+    contentByLocale: { zh: kimiK3PromptZh },
   },
   "kimi-k2-7": {
     kind: "bundled",

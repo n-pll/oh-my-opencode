@@ -1,7 +1,8 @@
-import { ULTRAWORK_GEMINI_PROMPT } from "@oh-my-opencode/prompts-core"
+import { getUltraworkGeminiPrompt } from "@oh-my-opencode/prompts-core"
+import { getLocale } from "../../../shared/i18n"
 
-export const ULTRAWORK_GEMINI_MESSAGE = ULTRAWORK_GEMINI_PROMPT
+export const ULTRAWORK_GEMINI_MESSAGE = getUltraworkGeminiPrompt()
 
 export function getGeminiUltraworkMessage(): string {
-  return ULTRAWORK_GEMINI_MESSAGE
+  return getUltraworkGeminiPrompt(getLocale())
 }

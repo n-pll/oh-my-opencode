@@ -1,6 +1,7 @@
 import { tool, type ToolDefinition } from "@opencode-ai/plugin"
 import type { DelegatedModelConfig, ToolContextWithMetadata, DelegateTaskToolOptions } from "./types"
 import { log } from "../../shared/logger"
+import { getLocale } from "../../shared/i18n"
 import { buildSystemContent } from "./prompt-builder"
 import {
   resolveSkillContent,
@@ -99,6 +100,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         targetAgent: delegateTaskArgs.subagent_type,
         nativeSkills: options.nativeSkills,
         getLoadedSkills: options.getLoadedSkills,
+        locale: getLocale(),
       })
       if (skillError) {
         return skillError

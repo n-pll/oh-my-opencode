@@ -1,6 +1,8 @@
 import { isPlainRecord } from "@oh-my-opencode/utils"
 import type { RuntimeSkillConfig } from "../../types"
-import { securityResearchSkill, securityReviewSkill } from "../builtin-skills/skills/index"
+import { createSecurityResearchSkill, createSecurityReviewSkill } from "../builtin-skills/skills/index"
+import type { BuiltinSkill } from "../builtin-skills/types"
+import { selectLocalizedField } from "../builtin-skills/types"
 import { collectDisabledSkillAliases } from "../opencode-skill-loader/skill-disable-config"
 import { createOpenCodeSkillMarkdown, type OpenCodeSkillMarkdown } from "./skill-markdown"
 
@@ -30,21 +32,22 @@ function appendUnique(values: readonly string[], next: string): string[] {
 
 export function selectRuntimeSecuritySkills(
   pluginConfig: RuntimeSkillConfig = {},
+  locale?: string,
 ): RuntimeSkillSourceEntry[] {
   const disabledSkills = collectDisabledSkillAliases(pluginConfig)
   const includeResearch = !disabledSkills.has("security-research")
   const includeReview = !disabledSkills.has("security-review")
   if (!includeResearch && !includeReview) return []
 
-  const skills = []
+  const skills: BuiltinSkill[] = []
   if (includeResearch) {
-    skills.push(securityResearchSkill)
+    skills.push(createSecurityResearchSkill(locale))
   }
   if (includeReview) {
-    skills.push(securityReviewSkill)
+    skills.push(createSecurityReviewSkill(locale))
   }
 
-  return skills.map((skill) => createOpenCodeSkillMarkdown(skill))
+  return skills.map((skill) => createOpenCodeSkillMarkdown(skill, locale))
 }
 
 export function applyRuntimeSkillSourceConfig(params: {

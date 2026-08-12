@@ -43,6 +43,8 @@ export const ORACLE_PROMPT_METADATA: AgentPromptMetadata = {
  * XML-tagged structure with extended thinking support.
  */
 const ORACLE_DEFAULT_PROMPT = t("agents.oracle.prompt.default");
+const ORACLE_GPT_PROMPT = t("agents.oracle.prompt.gpt");
+const ORACLE_GPT_5_5_PROMPT = t("agents.oracle.prompt.gpt55");
 
 
 export function createOracleAgent(model: string): AgentConfig {

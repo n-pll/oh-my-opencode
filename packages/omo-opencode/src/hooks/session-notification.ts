@@ -32,8 +32,8 @@ export function createSessionNotification(ctx: PluginInput, config: SessionNotif
   const mergedConfig = {
     title: t("hooks.sessionNotification.title"),
     message: t("hooks.sessionNotification.readyMessage"),
-    questionMessage: "Agent is asking a question",
-    permissionMessage: "Agent needs permission to continue",
+    questionMessage: t("hooks.sessionNotification.questionMessage"),
+    permissionMessage: t("hooks.sessionNotification.permissionMessage"),
     playSound: false,
     soundPath: "",
     idleConfirmationDelay: 1500,

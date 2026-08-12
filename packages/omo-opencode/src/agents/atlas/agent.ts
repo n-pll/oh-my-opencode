@@ -23,7 +23,12 @@ import {
 } from "@oh-my-opencode/prompts-core"
 import type { AgentMode, AgentPromptMetadata } from "../types"
 import type { AvailableAgent, AvailableSkill, AvailableCategory } from "../dynamic-agent-prompt-builder"
-import { buildAgentIdentitySection, buildCategorySkillsDelegationGuide } from "../dynamic-agent-prompt-builder"
+import {
+  buildAgentIdentitySection,
+  buildAgentIdentitySectionZh,
+  buildCategorySkillsDelegationGuide,
+  buildCategorySkillsDelegationGuideZh,
+} from "../dynamic-agent-prompt-builder"
 import type { CategoryConfig } from "../../config/schema"
 import { mergeCategories } from "../../shared/merge-categories"
 import { t, getLocale } from "../../shared/i18n"
@@ -31,9 +36,13 @@ import { t, getLocale } from "../../shared/i18n"
 import {
   getCategoryDescription,
   buildAgentSelectionSection,
+  buildAgentSelectionSectionZh,
   buildCategorySection,
+  buildCategorySectionZh,
   buildSkillsSection,
+  buildSkillsSectionZh,
   buildDecisionMatrix,
+  buildDecisionMatrixZh,
 } from "./prompt-section-builder"
 
 const MODE: AgentMode = "primary"
@@ -80,6 +89,7 @@ function isAtlasPromptSource(variant: string): variant is AtlasPromptSource {
 }
 
 function buildDynamicOrchestratorPrompt(ctx?: OrchestratorContext): string {
+  const zh = getLocale() === "zh"
   const agents = ctx?.availableAgents ?? []
   const skills = ctx?.availableSkills ?? []
   const userCategories = ctx?.userCategories
@@ -91,11 +101,11 @@ function buildDynamicOrchestratorPrompt(ctx?: OrchestratorContext): string {
     description: getCategoryDescription(name, userCategories),
   }))
 
-  const categorySection = buildCategorySection(userCategories)
-  const agentSection = buildAgentSelectionSection(agents)
-  const decisionMatrix = buildDecisionMatrix(agents, userCategories)
-  const skillsSection = buildSkillsSection(skills)
-  const categorySkillsGuide = buildCategorySkillsDelegationGuide(availableCategories, skills)
+  const categorySection = (zh ? buildCategorySectionZh : buildCategorySection)(userCategories)
+  const agentSection = (zh ? buildAgentSelectionSectionZh : buildAgentSelectionSection)(agents)
+  const decisionMatrix = (zh ? buildDecisionMatrixZh : buildDecisionMatrix)(agents, userCategories)
+  const skillsSection = (zh ? buildSkillsSectionZh : buildSkillsSection)(skills)
+  const categorySkillsGuide = (zh ? buildCategorySkillsDelegationGuideZh : buildCategorySkillsDelegationGuide)(availableCategories, skills)
   const source = getAtlasPromptSource(model)
   const runtimeInjections = [
     { placeholder: "{CATEGORY_SECTION}", resolver: () => categorySection },
@@ -105,7 +115,7 @@ function buildDynamicOrchestratorPrompt(ctx?: OrchestratorContext): string {
     { placeholder: "{{CATEGORY_SKILLS_DELEGATION_GUIDE}}", resolver: () => categorySkillsGuide },
   ] satisfies readonly SyncRuntimeInjection[]
 
-  const agentIdentity = buildAgentIdentitySection(
+  const agentIdentity = (zh ? buildAgentIdentitySectionZh : buildAgentIdentitySection)(
     "Atlas",
     "Master Orchestrator agent from OhMyOpenCode that coordinates specialized agents to complete todo lists",
   )

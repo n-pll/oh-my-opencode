@@ -234,7 +234,7 @@ export function createPluginModule(overrides: Partial<PluginModuleDeps> = {}): P
     deps.initLiveServerRoute({ serverUrl: input.serverUrl, directory: input.directory, inProcessClient: input.client })
     deps.setLiveParentWakeRoutingDisabled(pluginConfig.experimental?.disable_live_parent_wake_routing === true)
     deps.warmLiveServerProbe()
-    const runtimeSecuritySkills = selectRuntimeSecuritySkills(pluginConfig)
+    const runtimeSecuritySkills = selectRuntimeSecuritySkills(pluginConfig, (input as { locale?: string }).locale ?? pluginConfig.i18n?.locale)
     let runtimeSkillSource: Awaited<ReturnType<PluginModuleDeps["createRuntimeSkillSourceServer"]>> | undefined
     if (runtimeSecuritySkills.length > 0) {
       try {

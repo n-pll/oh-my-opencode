@@ -1,8 +1,8 @@
 import type { AgentConfig } from "@opencode-ai/sdk"
 import type { AgentMode, AgentPromptMetadata } from "./types"
 import { buildClaudeThinkingConfig, isKimiK27Model } from "./types"
-import { buildAntiDuplicationSection } from "./dynamic-agent-prompt-builder"
-import { t } from "../shared/i18n"
+import { buildAntiDuplicationSection, buildAntiDuplicationSectionZh } from "./dynamic-agent-prompt-builder"
+import { t, getLocale } from "../shared/i18n"
 import { createAgentToolRestrictions } from "../shared/permission-compat"
 
 const MODE: AgentMode = "subagent"
@@ -21,9 +21,11 @@ const MODE: AgentMode = "subagent"
  * - Prepare directives for the planner agent
  */
 
-export const METIS_SYSTEM_PROMPT = t("agents.metis.prompt.default", { antiDuplication: buildAntiDuplicationSection() });
+const zh = getLocale() === "zh"
 
-export const METIS_K2_7_SYSTEM_PROMPT = t("agents.metis.prompt.k2_7", { antiDuplication: buildAntiDuplicationSection() });
+export const METIS_SYSTEM_PROMPT = t("agents.metis.prompt.default", { antiDuplication: (zh ? buildAntiDuplicationSectionZh : buildAntiDuplicationSection)() });
+
+export const METIS_K2_7_SYSTEM_PROMPT = t("agents.metis.prompt.k2_7", { antiDuplication: (zh ? buildAntiDuplicationSectionZh : buildAntiDuplicationSection)() });
 
 const metisRestrictions = createAgentToolRestrictions([
   "write",

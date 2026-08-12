@@ -1,13 +1,14 @@
 import type { CommandDefinition } from "../claude-code-command-loader"
 import { isAgentRegistered } from "../claude-code-session-state"
 import type { BuiltinCommandName, BuiltinCommands } from "./types"
-import { GOAL_TEMPLATE } from "./templates/goal"
-import { STOP_CONTINUATION_TEMPLATE } from "./templates/stop-continuation"
-import { REFACTOR_TEMPLATE, REFACTOR_TEAM_MODE_ADDENDUM } from "./templates/refactor"
-import { START_WORK_TEMPLATE } from "./templates/start-work"
-import { HANDOFF_TEMPLATE } from "./templates/handoff"
-import { REMOVE_AI_SLOPS_TEMPLATE, REMOVE_AI_SLOPS_TEAM_MODE_ADDENDUM } from "./templates/remove-ai-slops"
-import { HYPERPLAN_TEMPLATE } from "./templates/hyperplan"
+import { getLocale } from "../../shared/i18n"
+import { GOAL_TEMPLATE, GOAL_TEMPLATE_ZH } from "./templates/goal"
+import { STOP_CONTINUATION_TEMPLATE, STOP_CONTINUATION_TEMPLATE_ZH } from "./templates/stop-continuation"
+import { REFACTOR_TEMPLATE, REFACTOR_TEAM_MODE_ADDENDUM, REFACTOR_TEMPLATE_ZH, REFACTOR_TEAM_MODE_ADDENDUM_ZH } from "./templates/refactor"
+import { START_WORK_TEMPLATE, START_WORK_TEMPLATE_ZH } from "./templates/start-work"
+import { HANDOFF_TEMPLATE, HANDOFF_TEMPLATE_ZH } from "./templates/handoff"
+import { REMOVE_AI_SLOPS_TEMPLATE, REMOVE_AI_SLOPS_TEAM_MODE_ADDENDUM, REMOVE_AI_SLOPS_TEMPLATE_ZH, REMOVE_AI_SLOPS_TEAM_MODE_ADDENDUM_ZH } from "./templates/remove-ai-slops"
+import { HYPERPLAN_TEMPLATE, HYPERPLAN_TEMPLATE_ZH } from "./templates/hyperplan"
 
 interface LoadBuiltinCommandsOptions {
   useRegisteredAgents?: boolean
@@ -30,18 +31,51 @@ function createBuiltinCommandDefinitions(
   options?: LoadBuiltinCommandsOptions,
 ): Record<BuiltinCommandName, Omit<CommandDefinition, "name">> {
   const teamModeEnabled = options?.teamModeEnabled ?? false
-  const refactorContent = withTeamModeAddendum(REFACTOR_TEMPLATE, REFACTOR_TEAM_MODE_ADDENDUM, teamModeEnabled)
+  const zh = getLocale() === "zh"
+  const goalTemplate = zh ? GOAL_TEMPLATE_ZH : GOAL_TEMPLATE
+  const refactorBase = zh ? REFACTOR_TEMPLATE_ZH : REFACTOR_TEMPLATE
+  const refactorAddendum = zh ? REFACTOR_TEAM_MODE_ADDENDUM_ZH : REFACTOR_TEAM_MODE_ADDENDUM
+  const removeAiSlopsBase = zh ? REMOVE_AI_SLOPS_TEMPLATE_ZH : REMOVE_AI_SLOPS_TEMPLATE
+  const removeAiSlopsAddendum = zh ? REMOVE_AI_SLOPS_TEAM_MODE_ADDENDUM_ZH : REMOVE_AI_SLOPS_TEAM_MODE_ADDENDUM
+  const startWorkTemplate = zh ? START_WORK_TEMPLATE_ZH : START_WORK_TEMPLATE
+  const handoffTemplate = zh ? HANDOFF_TEMPLATE_ZH : HANDOFF_TEMPLATE
+  const hyperplanTemplate = zh ? HYPERPLAN_TEMPLATE_ZH : HYPERPLAN_TEMPLATE
+  const stopContinuationTemplate = zh ? STOP_CONTINUATION_TEMPLATE_ZH : STOP_CONTINUATION_TEMPLATE
+
+  const refactorContent = withTeamModeAddendum(refactorBase, refactorAddendum, teamModeEnabled)
   const removeAiSlopsContent = withTeamModeAddendum(
-    REMOVE_AI_SLOPS_TEMPLATE,
-    REMOVE_AI_SLOPS_TEAM_MODE_ADDENDUM,
+    removeAiSlopsBase,
+    removeAiSlopsAddendum,
     teamModeEnabled,
   )
 
+  const goalDescription = zh
+    ? "(内置) 设置、查看、暂停、恢复或清除当前线程目标"
+    : "(builtin) Set, show, pause, resume, or clear the active thread goal"
+  const refactorDescription = zh
+    ? "(内置) 智能重构命令，集成 LSP、AST-grep、架构分析、代码地图和 TDD 验证。"
+    : "(builtin) Intelligent refactoring command with LSP, AST-grep, architecture analysis, codemap, and TDD verification."
+  const startWorkDescription = zh
+    ? "(内置) 从 Prometheus 计划启动 Atlas 工作会话"
+    : "(builtin) Start Atlas work session from Prometheus plan"
+  const stopContinuationDescription = zh
+    ? "(内置) 停止本会话的所有续接机制（ralph loop、todo 续接、boulder）"
+    : "(builtin) Stop all continuation mechanisms (ralph loop, todo continuation, boulder) for this session"
+  const removeAiSlopsDescription = zh
+    ? "(内置) 从分支改动中移除 AI 生成的代码坏味道，并批判性评审结果"
+    : "(builtin) Remove AI-generated code smells from branch changes and critically review the results"
+  const handoffDescription = zh
+    ? "(内置) 创建详细的上下文摘要，以便在新会话中继续工作"
+    : "(builtin) Create a detailed context summary for continuing work in a new session"
+  const hyperplanDescription = zh
+    ? "(内置) 通过 team-mode 进行对抗性多 agent 规划（5 个敌意 category 成员交叉批判，lead 综合）"
+    : "(builtin) Adversarial multi-agent planning via team-mode (5 hostile category members cross-critique, lead synthesizes)"
+
   return {
     goal: {
-      description: "(builtin) Set, show, pause, resume, or clear the active thread goal",
+      description: goalDescription,
       template: `<command-instruction>
-${GOAL_TEMPLATE}
+${goalTemplate}
 </command-instruction>
 
 <user-task>
@@ -50,18 +84,17 @@ $ARGUMENTS
       argumentHint: "<objective> | pause | resume | clear",
     },
     refactor: {
-      description:
-        "(builtin) Intelligent refactoring command with LSP, AST-grep, architecture analysis, codemap, and TDD verification.",
+      description: refactorDescription,
       template: `<command-instruction>
 ${refactorContent}
 </command-instruction>`,
       argumentHint: "<refactoring-target> [--scope=<file|module|project>] [--strategy=<safe|aggressive>]",
     },
     "start-work": {
-      description: "(builtin) Start Atlas work session from Prometheus plan",
+      description: startWorkDescription,
       agent: resolveStartWorkAgent(options),
       template: `<command-instruction>
-${START_WORK_TEMPLATE}
+${startWorkTemplate}
 </command-instruction>
 
 <session-context>
@@ -75,13 +108,13 @@ $ARGUMENTS
       argumentHint: "[plan-name] [--worktree <path>] [--make-pr] [--ship]",
     },
     "stop-continuation": {
-      description: "(builtin) Stop all continuation mechanisms (ralph loop, todo continuation, boulder) for this session",
+      description: stopContinuationDescription,
       template: `<command-instruction>
-${STOP_CONTINUATION_TEMPLATE}
+${stopContinuationTemplate}
 </command-instruction>`,
     },
     "remove-ai-slops": {
-      description: "(builtin) Remove AI-generated code smells from branch changes and critically review the results",
+      description: removeAiSlopsDescription,
       template: `<command-instruction>
 ${removeAiSlopsContent}
 </command-instruction>
@@ -91,9 +124,9 @@ $ARGUMENTS
 </user-request>`,
     },
     handoff: {
-      description: "(builtin) Create a detailed context summary for continuing work in a new session",
+      description: handoffDescription,
       template: `<command-instruction>
-${HANDOFF_TEMPLATE}
+${handoffTemplate}
 </command-instruction>
 
 <session-context>
@@ -107,9 +140,9 @@ $ARGUMENTS
       argumentHint: "[goal]",
     },
     hyperplan: {
-      description: "(builtin) Adversarial multi-agent planning via team-mode (5 hostile category members cross-critique, lead synthesizes)",
+      description: hyperplanDescription,
       template: `<command-instruction>
-${HYPERPLAN_TEMPLATE}
+${hyperplanTemplate}
 </command-instruction>`,
       argumentHint: "[planning-request]",
     },

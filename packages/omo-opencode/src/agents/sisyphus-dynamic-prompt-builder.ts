@@ -9,6 +9,11 @@ import { renderExplorationSection } from "./sisyphus-dynamic-prompt-exploration"
 import { renderRoleAndIntentSections } from "./sisyphus-dynamic-prompt-role";
 import { buildSisyphusDynamicPromptSections } from "./sisyphus-dynamic-prompt-sections";
 import { renderToneAndConstraintsSection } from "./sisyphus-dynamic-prompt-style";
+import { renderExecutionSectionsZh } from "./sisyphus-dynamic-prompt-execution";
+import { renderExplorationSectionZh } from "./sisyphus-dynamic-prompt-exploration";
+import { renderRoleAndIntentSectionsZh } from "./sisyphus-dynamic-prompt-role";
+import { buildSisyphusDynamicPromptSectionsZh } from "./sisyphus-dynamic-prompt-sections";
+import { renderToneAndConstraintsSectionZh } from "./sisyphus-dynamic-prompt-style";
 
 export function buildSisyphusDynamicPromptContent(
   model: string,
@@ -34,4 +39,30 @@ ${renderExplorationSection(sections)}
 ${renderExecutionSections(sections)}
 
 ${renderToneAndConstraintsSection(sections)}`;
+}
+
+export function buildSisyphusDynamicPromptContentZh(
+  model: string,
+  availableAgents: AvailableAgent[],
+  availableTools: AvailableTool[],
+  availableSkills: AvailableSkill[],
+  availableCategories: AvailableCategory[],
+  useTaskSystem: boolean,
+): string {
+  const sections = buildSisyphusDynamicPromptSectionsZh(
+    model,
+    availableAgents,
+    availableTools,
+    availableSkills,
+    availableCategories,
+    useTaskSystem,
+  );
+
+  return `${renderRoleAndIntentSectionsZh(sections)}
+
+${renderExplorationSectionZh(sections)}
+
+${renderExecutionSectionsZh(sections)}
+
+${renderToneAndConstraintsSectionZh(sections)}`;
 }

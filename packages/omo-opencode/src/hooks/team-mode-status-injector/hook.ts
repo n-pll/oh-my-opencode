@@ -1,6 +1,7 @@
 import type { KeywordDetectorConfig } from "../../config/schema/keyword-detector"
 import type { TeamModeConfig } from "../../config/schema/team-mode"
 import { isRealUserMessage } from "../../shared/internal-initiator-marker"
+import { getLocale } from "../../shared/i18n"
 import { detectKeywordsWithType, extractPromptText } from "../keyword-detector/detector"
 
 type TransformPart = {
@@ -99,6 +100,14 @@ function latestUserMessageRequestsTeamMode(
 }
 
 function buildTeamModeStatusContent(): string {
+  const zh = getLocale() === "zh"
+  if (zh) {
+    return `${TEAM_MODE_STATUS_MARKER}
+本会话已启用 Team mode。team_* 工具的存在是权威证明；不要检查配置文件来验证。
+关闭不变量：你打开的每个团队都由你负责关闭。每次 team_task_update 完成或失败一个任务后，调用 team_task_list({ teamRunId })；如果所有任务都处于终态，则对每个活跃成员运行 team_shutdown_request + team_approve_shutdown，然后 team_delete —— 在同一轮次中执行，不要等用户要求。遗留的团队是缺陷。
+加载 team-mode 技能以获取完整的关闭契约和关闭序列。
+</team_mode_status>`
+  }
   return `${TEAM_MODE_STATUS_MARKER}
 Team mode is ENABLED for this session. Presence of the team_* tools is authoritative proof; do not inspect config files to verify.
 Closure invariant: every team you open is yours to close. After each team_task_update that completes or fails a task, call team_task_list({ teamRunId }); if every task is terminal, run team_shutdown_request + team_approve_shutdown per active member, then team_delete — in the same turn, without waiting for the user to ask. Lingering teams are a defect.

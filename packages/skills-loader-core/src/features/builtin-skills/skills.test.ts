@@ -373,4 +373,45 @@ describe("createBuiltinSkills", () => {
 		// #then
 		expect(playwright?.mcpConfig?.playwright?.args).toEqual(["@playwright/mcp@latest"])
 	})
+
+	test("#given locale zh #when creating builtin skills #then descriptions have zh overrides", () => {
+		// #given
+		const locale = "zh"
+
+		// #when
+		const skills = createBuiltinSkills({ locale })
+		const gitMaster = skills.find((s) => s.name === "git-master")
+
+		// #then
+		expect(gitMaster?.descriptionByLocale?.zh).toBeDefined()
+		expect(gitMaster?.descriptionByLocale?.zh).not.toBe(gitMaster?.description)
+	})
+
+	test("#given locale zh #when creating builtin skills #then inline skills expose zh template overrides", () => {
+		// #given
+		const locale = "zh"
+
+		// #when
+		const skills = createBuiltinSkills({ locale })
+		const teamMode = skills.find((s) => s.name === "team-mode") ?? (() => {
+			// team-mode is conditional; re-create with it enabled
+			const withTeam = createBuiltinSkills({ locale, teamModeEnabled: true })
+			return withTeam.find((s) => s.name === "team-mode")
+		})()
+
+		// then
+		expect(teamMode?.templateByLocale?.zh).toBeDefined()
+		expect(teamMode?.templateByLocale?.zh).not.toBe(teamMode?.template)
+	})
+
+	test("#given no locale #when creating builtin skills #then descriptionByLocale is still present for translated skills", () => {
+		// #given - default options (no locale)
+
+		// #when
+		const skills = createBuiltinSkills()
+		const debugging = skills.find((s) => s.name === "debugging")
+
+		// #then - the override map is present regardless of locale
+		expect(debugging?.descriptionByLocale?.zh).toBeDefined()
+	})
 })

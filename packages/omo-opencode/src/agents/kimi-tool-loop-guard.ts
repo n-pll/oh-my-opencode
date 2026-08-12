@@ -3,3 +3,9 @@ Never call the same tool with the same arguments more than twice in a row.
 If a third identical call seems necessary, stop calling tools and report the blocker, missing evidence, or changed input that would justify another attempt.
 Repeated identical tool calls are a loop signal, not persistence.
 </tool_loop_guard>`;
+
+export const KIMI_TOOL_LOOP_GUARD_ZH = `<tool_loop_guard>
+不要连续两次以上用相同的参数调用同一个工具。
+如果第三次相同的调用看似必要，请停止调用工具，并报告阻塞点、缺失的证据或能证明再次尝试合理的新输入。
+重复的相同工具调用是循环信号，而不是坚持不懈。
+</tool_loop_guard>`;

@@ -6,20 +6,32 @@ import type {
 } from "../dynamic-agent-prompt-builder";
 import {
   buildAgentIdentitySection,
+  buildAgentIdentitySectionZh,
   buildKeyTriggersSection,
+  buildKeyTriggersSectionZh,
   buildToolSelectionTable,
+  buildToolSelectionTableZh,
   buildExploreSection,
+  buildExploreSectionZh,
   buildLibrarianSection,
+  buildLibrarianSectionZh,
   buildDelegationTable,
+  buildDelegationTableZh,
   buildCategorySkillsDelegationGuide,
+  buildCategorySkillsDelegationGuideZh,
   buildOracleSection,
+  buildOracleSectionZh,
   buildHardBlocksSection,
+  buildHardBlocksSectionZh,
   buildAntiPatternsSection,
+  buildAntiPatternsSectionZh,
   buildAntiDuplicationSection,
+  buildAntiDuplicationSectionZh,
   buildNonClaudePlannerSection,
+  buildNonClaudePlannerSectionZh,
   categorizeTools,
 } from "../dynamic-agent-prompt-builder";
-import { t } from "../../shared/i18n"
+import { t, getLocale } from "../../shared/i18n"
 
 function buildGlm52TasksSection(useTaskSystem: boolean): string {
   const noun = useTaskSystem ? "tasks" : "todos";
@@ -44,27 +56,51 @@ export function buildGlm52SisyphusPrompt(
   availableCategories: AvailableCategory[] = [],
   useTaskSystem = false,
 ): string {
-  const keyTriggers = buildKeyTriggersSection(availableAgents, availableSkills);
-  const toolSelection = buildToolSelectionTable(availableAgents, availableTools, availableSkills);
-  const exploreSection = buildExploreSection(availableAgents);
-  const librarianSection = buildLibrarianSection(availableAgents);
-  const categorySkillsGuide = buildCategorySkillsDelegationGuide(
+  const zh = getLocale() === "zh";
+  const keyTriggers = (zh ? buildKeyTriggersSectionZh : buildKeyTriggersSection)(availableAgents, availableSkills);
+  const toolSelection = (zh ? buildToolSelectionTableZh : buildToolSelectionTable)(availableAgents, availableTools, availableSkills);
+  const exploreSection = (zh ? buildExploreSectionZh : buildExploreSection)(availableAgents);
+  const librarianSection = (zh ? buildLibrarianSectionZh : buildLibrarianSection)(availableAgents);
+  const categorySkillsGuide = (zh ? buildCategorySkillsDelegationGuideZh : buildCategorySkillsDelegationGuide)(
     availableCategories,
     availableSkills,
   );
-  const delegationTable = buildDelegationTable(availableAgents);
-  const oracleSection = buildOracleSection(availableAgents);
-  const hardBlocks = buildHardBlocksSection();
-  const antiPatterns = buildAntiPatternsSection();
-  const nonClaudePlannerSection = buildNonClaudePlannerSection(model);
+  const delegationTable = (zh ? buildDelegationTableZh : buildDelegationTable)(availableAgents);
+  const oracleSection = (zh ? buildOracleSectionZh : buildOracleSection)(availableAgents);
+  const hardBlocks = (zh ? buildHardBlocksSectionZh : buildHardBlocksSection)();
+  const antiPatterns = (zh ? buildAntiPatternsSectionZh : buildAntiPatternsSection)();
+  const nonClaudePlannerSection = (zh ? buildNonClaudePlannerSectionZh : buildNonClaudePlannerSection)(model);
   const tasksSection = buildGlm52TasksSection(useTaskSystem);
 
-  const agentIdentity = buildAgentIdentitySection(
+  const agentIdentity = (zh ? buildAgentIdentitySectionZh : buildAgentIdentitySection)(
     "Sisyphus",
     "Powerful AI Agent with orchestration capabilities from OhMyOpenCode",
   );
 
-  return t("agents.sisyphus.prompt.glm-5-2", { agentIdentity: agentIdentity, antiPatterns: antiPatterns, categorySkillsGuide: categorySkillsGuide, delegationTable: delegationTable, exploreSection: exploreSection, hardBlocks: hardBlocks, keyTriggers: keyTriggers, librarianSection: librarianSection, nonClaudePlannerSection: nonClaudePlannerSection, noun: noun, tasksSection: tasksSection, toolSelection: toolSelection });
+  const noun = useTaskSystem ? "tasks" : "todos";
+  const create = useTaskSystem ? "task_create" : "todowrite";
+  const update = useTaskSystem ? "task_update" : "todowrite";
+  const hook = useTaskSystem ? "TASK CONTINUATION" : "TODO CONTINUATION";
+
+  return t("agents.sisyphus.prompt.glm-5-2", {
+    agentIdentity,
+    keyTriggers,
+    toolSelection,
+    exploreSection,
+    librarianSection,
+    categorySkillsGuide,
+    delegationTable,
+    oracleSection,
+    nonClaudePlannerSection,
+    noun,
+    create,
+    update,
+    hook,
+    tasksSection,
+    hardBlocks,
+    antiPatterns,
+    buildAntiDuplicationSection: (zh ? buildAntiDuplicationSectionZh : buildAntiDuplicationSection)(),
+  });
 
 }
 

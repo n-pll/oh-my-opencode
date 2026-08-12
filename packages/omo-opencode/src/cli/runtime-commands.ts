@@ -4,6 +4,7 @@ import { boulder } from "./boulder"
 import { codexUlwLoop } from "./codex-ulw-loop"
 import { refreshModelCapabilities } from "./refresh-model-capabilities"
 import { PLUGIN_NAME } from "../shared"
+import { t } from "../shared/i18n"
 import packageJson from "../../../../package.json" with { type: "json" }
 
 const VERSION = packageJson.version
@@ -11,10 +12,10 @@ const VERSION = packageJson.version
 export function configureRuntimeCommands(program: Command): void {
   program
     .command("refresh-model-capabilities")
-    .description("Refresh the cached models.dev-based model capabilities snapshot")
-    .option("-d, --directory <path>", "Working directory to read oh-my-opencode config from")
-    .option("--source-url <url>", "Override the models.dev source URL")
-    .option("--json", "Output refresh summary as JSON")
+    .description(t("cli.program.refresh.description"))
+    .option("-d, --directory <path>", t("cli.program.refresh.option.directory"))
+    .option("--source-url <url>", t("cli.program.refresh.option.sourceUrl"))
+    .option("--json", t("cli.program.refresh.option.json"))
     .action(async (options: { readonly directory?: string; readonly sourceUrl?: string; readonly json?: boolean }) => {
       const exitCode = await refreshModelCapabilities({
         directory: options.directory,
@@ -26,17 +27,17 @@ export function configureRuntimeCommands(program: Command): void {
 
   program
     .command("version")
-    .description("Show version information")
+    .description(t("cli.program.version.description"))
     .action(() => {
       console.log(`${PLUGIN_NAME} v${VERSION}`)
     })
 
   program
     .command("boulder")
-    .description("Show boulder progress, elapsed time, and per-task statistics")
-    .option("-d, --directory <path>", "Working directory")
-    .option("-w, --work-id <id>", "Filter to a specific work")
-    .option("--json", "Output as JSON")
+    .description(t("cli.program.boulder.description"))
+    .option("-d, --directory <path>", t("cli.program.boulder.option.directory"))
+    .option("-w, --work-id <id>", t("cli.program.boulder.option.workId"))
+    .option("--json", t("cli.program.boulder.option.json"))
     .action(async (options: { readonly directory?: string; readonly workId?: string; readonly json?: boolean }) => {
       const exitCode = await boulder({
         directory: options.directory,
@@ -50,7 +51,7 @@ export function configureRuntimeCommands(program: Command): void {
     .command("ulw-loop [args...]")
     .allowUnknownOption()
     .passThroughOptions()
-    .description("Run the Codex LazyCodex ulw-loop CLI")
+    .description(t("cli.program.ulwLoop.description"))
     .action(async (args: string[] = []) => {
       const exitCode = await codexUlwLoop(args)
       process.exit(exitCode)

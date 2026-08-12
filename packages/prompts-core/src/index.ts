@@ -23,6 +23,11 @@ export {
   codexUltraworkPromptVariants,
   ultraworkPromptVariants,
   getUltraworkDefaultPrompt,
+  getUltraworkGptPrompt,
+  getUltraworkGeminiPrompt,
+  getUltraworkGlmPrompt,
+  getUltraworkPlannerPrompt,
+  getCodexUltraworkPrompt,
 } from "./ultrawork-prompts"
 export { resolveVariant } from "./variant-resolver"
 export type { ResolveVariantInput } from "./variant-resolver"

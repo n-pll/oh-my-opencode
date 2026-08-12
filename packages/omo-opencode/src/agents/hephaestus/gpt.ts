@@ -1,7 +1,7 @@
 /** Generic GPT Hephaestus prompt - fallback for GPT models without a model-specific variant */
 
 import { GPT_FILE_EDIT_GUIDANCE } from "../gpt-apply-patch-guard"
-import { t } from "../../shared/i18n"
+import { t, getLocale } from "../../shared/i18n"
 import type {
   AvailableAgent,
   AvailableTool,
@@ -10,15 +10,25 @@ import type {
 } from "../dynamic-agent-prompt-builder";
 import {
   buildKeyTriggersSection,
+  buildKeyTriggersSectionZh,
   buildToolSelectionTable,
+  buildToolSelectionTableZh,
   buildExploreSection,
+  buildExploreSectionZh,
   buildLibrarianSection,
+  buildLibrarianSectionZh,
   buildCategorySkillsDelegationGuide,
+  buildCategorySkillsDelegationGuideZh,
   buildDelegationTable,
+  buildDelegationTableZh,
   buildOracleSection,
+  buildOracleSectionZh,
   buildHardBlocksSection,
+  buildHardBlocksSectionZh,
   buildAntiPatternsSection,
+  buildAntiPatternsSectionZh,
   buildAntiDuplicationSection,
+  buildAntiDuplicationSectionZh,
 } from "../dynamic-agent-prompt-builder";
 
 function buildTodoDisciplineSection(useTaskSystem: boolean): string {
@@ -70,27 +80,29 @@ export function buildHephaestusPrompt(
   availableCategories: AvailableCategory[] = [],
   useTaskSystem = false,
 ): string {
-  const keyTriggers = buildKeyTriggersSection(availableAgents, availableSkills);
-  const toolSelection = buildToolSelectionTable(
+  const zh = getLocale() === "zh";
+  const keyTriggers = (zh ? buildKeyTriggersSectionZh : buildKeyTriggersSection)(availableAgents, availableSkills);
+  const toolSelection = (zh ? buildToolSelectionTableZh : buildToolSelectionTable)(
     availableAgents,
     availableTools,
     availableSkills,
   );
-  const exploreSection = buildExploreSection(availableAgents);
-  const librarianSection = buildLibrarianSection(availableAgents);
-  const categorySkillsGuide = buildCategorySkillsDelegationGuide(
+  const exploreSection = (zh ? buildExploreSectionZh : buildExploreSection)(availableAgents);
+  const librarianSection = (zh ? buildLibrarianSectionZh : buildLibrarianSection)(availableAgents);
+  const categorySkillsGuide = (zh ? buildCategorySkillsDelegationGuideZh : buildCategorySkillsDelegationGuide)(
     availableCategories,
     availableSkills,
   );
-  const delegationTable = buildDelegationTable(availableAgents);
-  const oracleSection = buildOracleSection(availableAgents);
-  const hardBlocks = buildHardBlocksSection();
-  const antiPatterns = buildAntiPatternsSection();
+  const delegationTable = (zh ? buildDelegationTableZh : buildDelegationTable)(availableAgents);
+  const oracleSection = (zh ? buildOracleSectionZh : buildOracleSection)(availableAgents);
+  const hardBlocks = (zh ? buildHardBlocksSectionZh : buildHardBlocksSection)();
+  const antiPatterns = (zh ? buildAntiPatternsSectionZh : buildAntiPatternsSection)();
   const todoDiscipline = buildTodoDisciplineSection(useTaskSystem);
 
   return t("agents.hephaestus.prompt.gpt", {
     GPT_FILE_EDIT_GUIDANCE: GPT_FILE_EDIT_GUIDANCE,
     antiPatterns: antiPatterns,
+    buildAntiDuplicationSection: (zh ? buildAntiDuplicationSectionZh : buildAntiDuplicationSection)(),
     categorySkillsGuide: categorySkillsGuide,
     delegationTable: delegationTable,
     exploreSection: exploreSection,

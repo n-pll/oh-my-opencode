@@ -2,6 +2,7 @@ import type { AutoRetryHelpers } from "./auto-retry"
 import type { AutoRetryDispatchOutcome, HookDeps, FallbackState } from "./types"
 import { HOOK_NAME } from "./constants"
 import { log } from "../../shared/logger"
+import { t } from "../../shared/i18n"
 import { prepareFallback } from "./fallback-state"
 import { restoreFallbackState, snapshotFallbackState } from "./fallback-state-snapshot"
 
@@ -15,9 +16,9 @@ type DispatchFallbackRetryOptions = {
 
 function resolveDispatchMessage(result: AutoRetryDispatchOutcome, newModel: string): string {
   const modelName = newModel.split("/").pop() || newModel
-  if (result.status === "queued") return `Fallback queued for ${modelName}`
-  if (result.status === "possibly-accepted") return `Fallback dispatch may have been accepted for ${modelName}`
-  return `Switched to ${modelName} for next request`
+  if (result.status === "queued") return t("toast.fallback_queued", { model: modelName })
+  if (result.status === "possibly-accepted") return t("toast.fallback_dispatch_maybe_accepted", { model: modelName })
+  return t("toast.fallback_switched", { model: modelName })
 }
 
 export async function dispatchFallbackRetry(
@@ -64,7 +65,7 @@ export async function dispatchFallbackRetry(
       await deps.ctx.client.tui
         .showToast({
           body: {
-            title: "Model Fallback",
+            title: t("toast.model_fallback_title"),
             message: resolveDispatchMessage(dispatchOutcome, result.newModel),
             variant: "warning",
             duration: 5000,

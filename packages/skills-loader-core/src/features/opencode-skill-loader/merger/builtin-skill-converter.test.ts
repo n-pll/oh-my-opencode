@@ -75,4 +75,70 @@ describe("builtinToLoadedSkill", () => {
     // then
     expect(loaded.resolvedPath).toBeUndefined()
   })
+
+  // #given a built-in skill with locale overrides and a locale
+  // #when converted to loaded skill
+  // #then the description and template resolve to the locale-specific version
+  test("#given locale overrides and a locale #when converted #then description and template use the locale", () => {
+    // given
+    const builtin: BuiltinSkill = {
+      ...baseBuiltin,
+      description: "English description",
+      descriptionByLocale: { zh: "Chinese description" },
+      template: "English template",
+      templateByLocale: { zh: "Chinese template" },
+    }
+
+    // when
+    const loadedZh = builtinToLoadedSkill(builtin, "zh")
+    const loadedEn = builtinToLoadedSkill(builtin, "en")
+    const loadedDefault = builtinToLoadedSkill(builtin)
+
+    // then
+    expect(loadedZh.definition.description).toBe("(opencode - Skill) Chinese description")
+    expect(loadedZh.definition.template).toBe("Chinese template")
+    expect(loadedEn.definition.description).toBe("(opencode - Skill) English description")
+    expect(loadedEn.definition.template).toBe("English template")
+    expect(loadedDefault.definition.description).toBe("(opencode - Skill) English description")
+  })
+
+  // #given a built-in skill with locale overrides but locale undefined
+  // #when converted to loaded skill without locale
+  // #then falls back to English gracefully
+  test("#given locale overrides but no locale #when converted #then falls back to English", () => {
+    // given
+    const builtin: BuiltinSkill = {
+      ...baseBuiltin,
+      description: "English description",
+      descriptionByLocale: { zh: "Chinese description" },
+      template: "English template",
+      templateByLocale: { zh: "Chinese template" },
+    }
+
+    // when
+    const loaded = builtinToLoadedSkill(builtin)
+
+    // then
+    expect(loaded.definition.description).toBe("(opencode - Skill) English description")
+    expect(loaded.definition.template).toBe("English template")
+  })
+
+  // #given a built-in skill without zh overrides
+  // #when converted with locale zh
+  // #then falls back to English
+  test("#given no zh overrides #when converted with locale zh #then falls back to English", () => {
+    // given
+    const builtin: BuiltinSkill = {
+      ...baseBuiltin,
+      description: "English-only description",
+      template: "English-only template",
+    }
+
+    // when
+    const loaded = builtinToLoadedSkill(builtin, "zh")
+
+    // then
+    expect(loaded.definition.description).toBe("(opencode - Skill) English-only description")
+    expect(loaded.definition.template).toBe("English-only template")
+  })
 })

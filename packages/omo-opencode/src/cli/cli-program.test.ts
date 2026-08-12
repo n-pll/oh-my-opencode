@@ -107,13 +107,14 @@ test("program configures explicit '-h, --help' help option for consistent help-f
   )
 
   // when
+  // Match chained calls with balanced parentheses (e.g. t("cli.program.help.help")).
   const programBlock = cliProgramSource.match(
-    /program\s*\n((?:\s*\.\w+\([^)]*\)\s*\n?)*)/,
+    /program\s*\n((?:\s*\.\w+\((?:[^()]|\([^)]*\))*\)\s*\n?)*)/,
   )
 
   // then
   expect(programBlock).not.toBeNull()
-  expect(programBlock?.[1]).toContain('.helpOption("-h, --help", "Display help for command")')
+  expect(programBlock?.[1]).toContain('.helpOption("-h, --help", t("cli.program.help.help"))')
 })
 
 test("program registers runtime commands", async () => {

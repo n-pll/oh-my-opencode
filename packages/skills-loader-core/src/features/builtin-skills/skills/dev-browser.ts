@@ -1,14 +1,15 @@
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import type { BuiltinSkill } from "../types"
+import { DEV_BROWSER_TEMPLATE_ZH } from "./dev-browser-template.zh"
 
 const CURRENT_DIR = dirname(fileURLToPath(import.meta.url))
 
-export const devBrowserSkill: BuiltinSkill = {
-  name: "dev-browser",
-  description:
-    "Browser automation with persistent page state. Use when users ask to navigate websites, fill forms, take screenshots, extract web data, test web apps, or automate browser workflows. Trigger phrases include 'go to [url]', 'click on', 'fill out the form', 'take a screenshot', 'scrape', 'automate', 'test the website', 'log into', or any browser interaction request.",
-  template: `# Dev Browser Skill
+const DEV_BROWSER_DESCRIPTION = "Browser automation with persistent page state. Use when users ask to navigate websites, fill forms, take screenshots, extract web data, test web apps, or automate browser workflows. Trigger phrases include 'go to [url]', 'click on', 'fill out the form', 'take a screenshot', 'scrape', 'automate', 'test the website', 'log into', or any browser interaction request."
+
+const DEV_BROWSER_DESCRIPTION_ZH = "带持久页面状态的浏览器自动化。当用户要求导航网站、填写表单、截图、提取网页数据、测试 Web 应用或自动化浏览器工作流时使用。触发短语包括 '前往 [url]'、'点击'、'填写表单'、'截图'、'抓取'、'自动化'、'测试网站'、'登录' 或任何浏览器交互请求。"
+
+const DEV_BROWSER_TEMPLATE = `# Dev Browser Skill
 
 Browser automation that maintains page state across script executions. Write small, focused scripts to accomplish tasks incrementally. Once you've proven out part of a workflow and there is repeated work to be done, you can write a script to do the repeated work in a single execution.
 
@@ -221,6 +222,18 @@ console.log({
 
 await client.disconnect();
 EOF
-\`\`\``,
-  resolvedPath: join(CURRENT_DIR, "..", "dev-browser"),
+\`\`\``
+
+export function createDevBrowserSkill(locale?: string): BuiltinSkill {
+  return {
+    name: "dev-browser",
+    description: DEV_BROWSER_DESCRIPTION,
+    descriptionByLocale: { zh: DEV_BROWSER_DESCRIPTION_ZH },
+    template: DEV_BROWSER_TEMPLATE,
+    templateByLocale: { zh: DEV_BROWSER_TEMPLATE_ZH },
+    resolvedPath: join(CURRENT_DIR, "..", "dev-browser"),
+  }
 }
+
+/** Backward-compatible English-default singleton. */
+export const devBrowserSkill: BuiltinSkill = createDevBrowserSkill()

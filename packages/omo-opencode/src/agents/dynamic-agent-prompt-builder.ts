@@ -20,7 +20,22 @@ export {
   buildParallelDelegationSection,
 } from "./dynamic-agent-core-sections"
 
+export {
+  buildAgentIdentitySectionZh,
+  buildKeyTriggersSectionZh,
+  buildToolSelectionTableZh,
+  buildExploreSectionZh,
+  buildLibrarianSectionZh,
+  buildDelegationTableZh,
+  buildOracleSectionZh,
+  buildFrontendGuidanceSectionZh,
+  buildNonClaudePlannerSectionZh,
+  buildParallelDelegationSectionZh,
+} from "./dynamic-agent-core-sections"
+
 export { buildCategorySkillsDelegationGuide } from "./dynamic-agent-category-skills-guide"
+
+export { buildCategorySkillsDelegationGuideZh } from "./dynamic-agent-category-skills-guide"
 
 export {
   buildHardBlocksSection,
@@ -28,4 +43,12 @@ export {
   buildToolCallFormatSection,
   buildUltraworkSection,
   buildAntiDuplicationSection,
+} from "./dynamic-agent-policy-sections"
+
+export {
+  buildHardBlocksSectionZh,
+  buildAntiPatternsSectionZh,
+  buildToolCallFormatSectionZh,
+  buildUltraworkSectionZh,
+  buildAntiDuplicationSectionZh,
 } from "./dynamic-agent-policy-sections"

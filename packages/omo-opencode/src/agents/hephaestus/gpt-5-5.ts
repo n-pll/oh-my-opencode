@@ -1,5 +1,5 @@
 import { GPT_APPLY_PATCH_GUIDANCE } from "../gpt-apply-patch-guard"
-import { t } from "../../shared/i18n"
+import { t, getLocale } from "../../shared/i18n"
 import type {
   AvailableAgent,
   AvailableTool,
@@ -8,9 +8,13 @@ import type {
 } from "../dynamic-agent-prompt-builder"
 import {
   buildCategorySkillsDelegationGuide,
+  buildCategorySkillsDelegationGuideZh,
   buildDelegationTable,
+  buildDelegationTableZh,
   buildOracleSection,
+  buildOracleSectionZh,
   buildFrontendGuidanceSection,
+  buildFrontendGuidanceSectionZh,
 } from "../dynamic-agent-prompt-builder"
 
 function buildTaskSystemGuide(useTaskSystem: boolean): string {
@@ -29,18 +33,19 @@ export function buildGpt55HephaestusPrompt(
   availableCategories: AvailableCategory[] = [],
   useTaskSystem = false,
 ): string {
+  const zh = getLocale() === "zh"
   const taskSystemGuide = buildTaskSystemGuide(useTaskSystem)
-  const categorySkillsGuide = buildCategorySkillsDelegationGuide(
+  const categorySkillsGuide = (zh ? buildCategorySkillsDelegationGuideZh : buildCategorySkillsDelegationGuide)(
     availableCategories,
     availableSkills,
   )
-  const delegationTable = buildDelegationTable(
+  const delegationTable = (zh ? buildDelegationTableZh : buildDelegationTable)(
     availableAgents.filter((agent) =>
       ["explore", "librarian", "oracle"].includes(agent.name),
     ),
   )
-  const oracleSection = buildOracleSection(availableAgents)
-  const frontendGuidance = buildFrontendGuidanceSection(availableCategories)
+  const oracleSection = (zh ? buildOracleSectionZh : buildOracleSection)(availableAgents)
+  const frontendGuidance = (zh ? buildFrontendGuidanceSectionZh : buildFrontendGuidanceSection)(availableCategories)
 
-  return t("agents.hephaestus.prompt.gpt-5-5", { taskSystemGuide, categorySkillsGuide, delegationTable, oracleSection, frontendGuidance })
+  return t("agents.hephaestus.prompt.gpt-5-5", { taskSystemGuide, categorySkillsGuide, delegationTable, oracleSection, frontendGuidance, GPT_APPLY_PATCH_GUIDANCE })
 }

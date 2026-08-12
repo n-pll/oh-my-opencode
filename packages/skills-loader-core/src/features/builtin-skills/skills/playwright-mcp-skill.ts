@@ -18,6 +18,20 @@ export interface PlaywrightSkillOptions {
 
 const BASE_MCP_ARGS = ["@playwright/mcp@latest"] as const
 
+const PLAYWRIGHT_MCP_DESCRIPTION =
+  "MUST USE for any browser-related tasks. Browser automation via Playwright MCP - verification, browsing, information gathering, web scraping, testing, screenshots, and all browser interactions."
+
+const PLAYWRIGHT_MCP_DESCRIPTION_ZH =
+  "任何浏览器相关任务都必须使用。通过 Playwright MCP 进行浏览器自动化 - 验证、浏览、信息收集、网页抓取、测试、截图和所有浏览器交互。"
+
+const PLAYWRIGHT_MCP_TEMPLATE = `# Playwright Browser Automation
+
+This skill provides browser automation capabilities via the Playwright MCP server.`
+
+const PLAYWRIGHT_MCP_TEMPLATE_ZH = `# Playwright 浏览器自动化
+
+此技能通过 Playwright MCP 服务器提供浏览器自动化能力。`
+
 /**
  * Factory returning the `playwright` built-in skill. When `options.mcp_args` is
  * provided the values are appended after `@playwright/mcp@latest`, so the
@@ -28,11 +42,10 @@ export function createPlaywrightSkill(options: PlaywrightSkillOptions = {}): Bui
   const extraArgs = options.mcp_args ?? []
   return {
     name: "playwright",
-    description:
-      "MUST USE for any browser-related tasks. Browser automation via Playwright MCP - verification, browsing, information gathering, web scraping, testing, screenshots, and all browser interactions.",
-    template: `# Playwright Browser Automation
-
-This skill provides browser automation capabilities via the Playwright MCP server.`,
+    description: PLAYWRIGHT_MCP_DESCRIPTION,
+    descriptionByLocale: { zh: PLAYWRIGHT_MCP_DESCRIPTION_ZH },
+    template: PLAYWRIGHT_MCP_TEMPLATE,
+    templateByLocale: { zh: PLAYWRIGHT_MCP_TEMPLATE_ZH },
     mcpConfig: {
       playwright: {
         command: "npx",

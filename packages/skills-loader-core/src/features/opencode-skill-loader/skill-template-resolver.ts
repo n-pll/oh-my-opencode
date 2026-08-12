@@ -10,6 +10,7 @@ import {
 	getOpenCodeSkillDirs,
 } from "../../shared"
 import { createBuiltinSkills } from "../builtin-skills/skills"
+import { selectLocalizedField } from "../builtin-skills/types"
 import { injectGitMasterConfig } from "./git-master-template-injection"
 import { extractSkillTemplate } from "./loaded-skill-template-extractor"
 import { loadSkillFromPath } from "./loaded-skill-from-path"
@@ -22,15 +23,18 @@ export function resolveSkillContent(skillName: string, options?: SkillResolution
 		browserProvider: options?.browserProvider,
 		disabledSkills: options?.disabledSkills,
 		teamModeEnabled: options?.teamModeEnabled,
+		locale: options?.locale,
 	})
 	const skill = skills.find((builtinSkill) => builtinSkill.name === skillName)
 	if (!skill) return null
 
+	const template = selectLocalizedField(skill.template, skill.templateByLocale, options?.locale)
+
 	if (skill.name === "git-master") {
-		return injectGitMasterConfig(skill.template, options?.gitMasterConfig)
+		return injectGitMasterConfig(template, options?.gitMasterConfig)
 	}
 
-	return skill.template
+	return template
 }
 
 export function resolveMultipleSkills(
@@ -41,6 +45,7 @@ export function resolveMultipleSkills(
 		browserProvider: options?.browserProvider,
 		disabledSkills: options?.disabledSkills,
 		teamModeEnabled: options?.teamModeEnabled,
+		locale: options?.locale,
 	})
 	const skillMap = new Map(skills.map((skill) => [skill.name, skill]))
 
@@ -50,10 +55,11 @@ export function resolveMultipleSkills(
 	for (const name of skillNames) {
 		const match = skillMap.get(name)
 		if (match) {
+			const template = selectLocalizedField(match.template, match.templateByLocale, options?.locale)
 			if (match.name === "git-master") {
-				resolved.set(name, injectGitMasterConfig(match.template, options?.gitMasterConfig))
+				resolved.set(name, injectGitMasterConfig(template, options?.gitMasterConfig))
 			} else {
-				resolved.set(name, match.template)
+				resolved.set(name, template)
 			}
 		} else {
 			notFound.push(name)
@@ -121,11 +127,13 @@ async function resolveBuiltinSkillTemplate(skillName: string, options?: SkillRes
 		browserProvider: options?.browserProvider,
 		disabledSkills: options?.disabledSkills,
 		teamModeEnabled: options?.teamModeEnabled,
+		locale: options?.locale,
 	})
 	const skill = skills.find((builtinSkill) => builtinSkill.name === skillName)
 	if (!skill) return null
 
-	return injectGitMasterConfig(skill.template, options?.gitMasterConfig)
+	const template = selectLocalizedField(skill.template, skill.templateByLocale, options?.locale)
+	return injectGitMasterConfig(template, options?.gitMasterConfig)
 }
 
 export async function resolveSkillContentAsync(

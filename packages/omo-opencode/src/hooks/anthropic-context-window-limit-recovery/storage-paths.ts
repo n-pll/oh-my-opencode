@@ -1,6 +1,8 @@
+import { t } from "../../shared/i18n"
 import { MESSAGE_STORAGE, PART_STORAGE } from "../../shared"
 
 export { MESSAGE_STORAGE as MESSAGE_STORAGE_DIR, PART_STORAGE as PART_STORAGE_DIR }
 
-export const TRUNCATION_MESSAGE =
-	"[TOOL RESULT TRUNCATED - Context limit exceeded. Original output was too large and has been truncated to recover the session. Please re-run this tool if you need the full output.]"
+export function getTruncationMessage(): string {
+	return t("hooks.contextWindowLimit.truncationMessage")
+}

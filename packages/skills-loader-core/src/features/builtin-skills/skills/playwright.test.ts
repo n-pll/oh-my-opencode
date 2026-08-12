@@ -18,7 +18,7 @@ function orderedIndexes(source: string, markers: readonly string[]): readonly nu
 describe("playwright browser skill facade", () => {
   test("#given split browser skill modules #when importing through the facade #then it preserves exported skill identity", () => {
     // given
-    const expectedExports = ["agentBrowserSkill", "createPlaywrightSkill", "playwrightSkill"]
+    const expectedExports = ["agentBrowserSkill", "createAgentBrowserSkill", "createPlaywrightSkill", "playwrightSkill"]
 
     // when
     const exportNames = Object.keys(playwrightFacade).sort()

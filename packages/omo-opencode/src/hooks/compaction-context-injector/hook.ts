@@ -5,7 +5,7 @@ import {
 } from "../../shared/compaction-agent-config-checkpoint"
 import { resolveMessageEventSessionID } from "../../shared/event-session-id"
 import { log } from "../../shared/logger"
-import { COMPACTION_CONTEXT_PROMPT } from "./compaction-context-prompt"
+import { getCompactionContextPrompt } from "./compaction-context-prompt"
 import { resolveSessionPromptConfig } from "./session-prompt-config-resolver"
 import { finalizeTrackedAssistantMessage, shouldTreatAssistantPartAsOutput, trackAssistantOutput, type TailMonitorState } from "./tail-monitor"
 import { resolveSessionID } from "./session-id"
@@ -64,7 +64,7 @@ export function createCompactionContextInjector(options?: {
   }
 
   const inject = (sessionID?: string): string => {
-    let prompt = COMPACTION_CONTEXT_PROMPT
+    let prompt = getCompactionContextPrompt()
 
     if (backgroundManager && sessionID) {
       const history = backgroundManager.taskHistory.formatForCompaction(sessionID)

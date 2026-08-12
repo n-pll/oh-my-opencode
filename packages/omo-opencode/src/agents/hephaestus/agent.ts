@@ -7,9 +7,9 @@ import type {
   AvailableSkill,
   AvailableCategory,
 } from "../dynamic-agent-prompt-builder";
-import { categorizeTools, buildAgentIdentitySection } from "../dynamic-agent-prompt-builder";
+import { categorizeTools, buildAgentIdentitySection, buildAgentIdentitySectionZh } from "../dynamic-agent-prompt-builder";
 import { getFrontierToolSchemaPermission } from "../frontier-tool-schema-guard";
-import { t } from "../../shared/i18n";
+import { t, getLocale } from "../../shared/i18n";
 
 import { buildHephaestusPrompt as buildGptPrompt } from "./gpt";
 import { buildHephaestusPrompt as buildGpt54Prompt } from "./gpt-5-4";
@@ -90,6 +90,7 @@ export function getHephaestusPrompt(
 }
 
 function buildDynamicHephaestusPrompt(ctx?: HephaestusContext): string {
+  const zh = getLocale() === "zh"
   const agents = ctx?.availableAgents ?? [];
   const tools = ctx?.availableTools ?? [];
   const skills = ctx?.availableSkills ?? [];
@@ -140,7 +141,7 @@ function buildDynamicHephaestusPrompt(ctx?: HephaestusContext): string {
       break;
   }
 
-  const agentIdentity = buildAgentIdentitySection(
+  const agentIdentity = (zh ? buildAgentIdentitySectionZh : buildAgentIdentitySection)(
     "Hephaestus",
     "Autonomous deep worker for software engineering from OhMyOpenCode",
   );

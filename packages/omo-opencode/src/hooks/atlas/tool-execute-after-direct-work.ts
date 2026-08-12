@@ -8,7 +8,7 @@ import {
 import { log } from "../../shared/logger"
 import { HOOK_NAME } from "./hook-name"
 import { isOmoPath } from "./omo-path"
-import { DIRECT_WORK_REMINDER } from "./system-reminder-templates"
+import { getDirectWorkReminder } from "./system-reminder-templates"
 import { parseCheckedTopLevelTaskKeys, readCheckedTaskKeysFromPlan } from "./tool-execute-after-plan-tasks"
 import type { ToolExecuteAfterInput, ToolExecuteAfterOutput } from "./types"
 import { isWriteOrEditToolName } from "./write-edit-tool-policy"
@@ -55,7 +55,7 @@ export async function handleDirectWorkToolAfter(input: {
   }
 
   if (filePath && !isOmoPath(filePath)) {
-    toolOutput.output = (toolOutput.output || "") + DIRECT_WORK_REMINDER
+    toolOutput.output = (toolOutput.output || "") + getDirectWorkReminder()
     log(`[${HOOK_NAME}] Direct work reminder appended`, {
       sessionID: toolInput.sessionID,
       tool: toolInput.tool,

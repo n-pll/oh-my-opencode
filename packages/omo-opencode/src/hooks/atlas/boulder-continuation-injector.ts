@@ -10,7 +10,8 @@ import { isAmbiguousPostDispatchPromptFailure } from "../../shared/prompt-failur
 import { dispatchInternalPrompt, isInternalPromptDispatchAccepted } from "../shared/prompt-async-gate"
 import { CONTINUATION_COOLDOWN_MS } from "./idle-constants"
 import { HOOK_NAME } from "./hook-name"
-import { BOULDER_CONTINUATION_PROMPT } from "./system-reminder-templates"
+import { getBoulderContinuationPrompt } from "./system-reminder-templates"
+import { getLocale } from "../../shared/i18n"
 import { markContinuationInjectedAwaitingToolProgress } from "./tool-progress"
 import { resolveRecentPromptContextForSession } from "./recent-model-resolver"
 import type { BackgroundTaskStatusProvider, SessionState } from "./types"
@@ -62,13 +63,14 @@ export async function injectBoulderContinuation(input: {
     return "skipped_background_tasks"
   }
 
-  const worktreeContext = worktreePath ? `\n\n[Worktree: ${worktreePath}]` : ""
+  const zh = getLocale() === "zh"
+  const worktreeContext = worktreePath ? `\n\n[${zh ? "工作区" : "Worktree"}: ${worktreePath}]` : ""
   const preferredSessionContext = preferredTaskSessionId
-    ? `\n\n[Preferred reuse session for current top-level plan task${preferredTaskTitle ? `: ${preferredTaskTitle}` : ""}: ${preferredTaskSessionId}]`
+    ? `\n\n[${zh ? "当前顶层计划任务的首选复用会话" : "Preferred reuse session for current top-level plan task"}${preferredTaskTitle ? `: ${preferredTaskTitle}` : ""}: ${preferredTaskSessionId}]`
     : ""
 	const prompt =
-		BOULDER_CONTINUATION_PROMPT.replace(/{PLAN_NAME}/g, planName) +
-		`\n\n[Status: ${total - remaining}/${total} completed, ${remaining} remaining]` +
+		getBoulderContinuationPrompt().replace(/{PLAN_NAME}/g, planName) +
+		`\n\n[Status: ${total - remaining}/${total} ${zh ? "已完成" : "completed"}, ${remaining} ${zh ? "剩余" : "remaining"}]` +
 		preferredSessionContext +
 		worktreeContext
 	const resolvedContinuationAgent = resolveRegisteredAgentName(

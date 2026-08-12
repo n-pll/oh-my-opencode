@@ -1,6 +1,7 @@
 import { Option, type Command } from "commander"
 import { cleanup, resolveCleanupPlatform } from "./cleanup"
 import type { CleanupOptions } from "./cleanup"
+import { t } from "../shared/i18n"
 
 type CleanupCommandOptions = {
   readonly platform?: CleanupOptions["platform"]
@@ -19,11 +20,11 @@ export function configureCleanupCommand(program: Command): void {
   program
     .command("cleanup")
     .alias("uninstall")
-    .description("Clean managed Codex Light state and repair project-local legacy Codex artifacts")
-    .addOption(new Option("--platform <platform>", "Cleanup target platform: codex").choices(["codex"]))
-    .option("--codex-home <path>", "Codex home to clean (defaults to CODEX_HOME or ~/.codex)")
-    .option("--project <path>", "Project directory to inspect for project-local .codex artifacts")
-    .option("--json", "Output structured JSON result")
+    .description(t("cli.cleanup.description"))
+    .addOption(new Option("--platform <platform>", t("cli.cleanup.option.platform")).choices(["codex"]))
+    .option("--codex-home <path>", t("cli.cleanup.option.codexHome"))
+    .option("--project <path>", t("cli.cleanup.option.project"))
+    .option("--json", t("cli.cleanup.option.json"))
     .addHelpText("after", `
 Examples:
   $ npx lazycodex-ai uninstall

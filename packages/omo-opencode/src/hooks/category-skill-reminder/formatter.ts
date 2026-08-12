@@ -1,4 +1,5 @@
 import type { AvailableSkill } from "../../agents/dynamic-agent-prompt-builder"
+import { getLocale } from "../../shared/i18n"
 
 function formatSkillNames(skills: AvailableSkill[], limit: number): string {
   if (skills.length === 0) return "(none)"
@@ -18,20 +19,36 @@ export function buildReminderMessage(availableSkills: AvailableSkill[]): string 
   const exampleSkillName = customSkills[0]?.name ?? builtinSkills[0]?.name
   const loadSkills = exampleSkillName ? `["${exampleSkillName}"]` : "[]"
 
-  const lines = [
-    "",
-    "[Category+Skill Reminder]",
-    "",
-    `**Built-in**: ${builtinText}`,
-    `**⚡ YOUR SKILLS (PRIORITY)**: ${customText}`,
-    "",
-    "> User-installed skills OVERRIDE built-in defaults. ALWAYS prefer YOUR SKILLS when domain matches.",
-    "",
-    "```typescript",
-    `task(category=\"visual-engineering\", load_skills=${loadSkills}, run_in_background=true)`,
-    "```",
-    "",
-  ]
+  const zh = getLocale() === "zh"
+  const lines = zh
+    ? [
+        "",
+        "[Category+Skill 提醒]",
+        "",
+        `**内置**: ${builtinText}`,
+        `**⚡ 你的技能（优先）**: ${customText}`,
+        "",
+        "> 用户安装的技能会覆盖内置默认值。领域匹配时始终优先使用你的技能。",
+        "",
+        "```typescript",
+        `task(category=\"visual-engineering\", load_skills=${loadSkills}, run_in_background=true)`,
+        "```",
+        "",
+      ]
+    : [
+        "",
+        "[Category+Skill Reminder]",
+        "",
+        `**Built-in**: ${builtinText}`,
+        `**⚡ YOUR SKILLS (PRIORITY)**: ${customText}`,
+        "",
+        "> User-installed skills OVERRIDE built-in defaults. ALWAYS prefer YOUR SKILLS when domain matches.",
+        "",
+        "```typescript",
+        `task(category=\"visual-engineering\", load_skills=${loadSkills}, run_in_background=true)`,
+        "```",
+        "",
+      ]
 
   return lines.join("\n")
 }

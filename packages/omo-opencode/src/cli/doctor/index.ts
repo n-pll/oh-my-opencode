@@ -2,6 +2,7 @@ import type { DoctorOptions } from "./framework/types"
 import { runDoctor } from "./runner"
 import { PUBLISHED_PACKAGE_NAME } from "../../shared"
 import { EXIT_CODES } from "./framework/constants"
+import { t } from "../../shared/i18n"
 
 export async function doctor(options: DoctorOptions = { mode: "default" }): Promise<number> {
   try {
@@ -17,11 +18,11 @@ export async function doctor(options: DoctorOptions = { mode: "default" }): Prom
 
 export function formatDoctorFailure(error: unknown): string[] {
   const message = error instanceof Error ? error.message : String(error)
-  const lines = [`\nDoctor failed unexpectedly: ${message}`]
+  const lines = [`\n${t("cli.doctor.failedUnexpectedly", { message })}`]
   if (error instanceof Error && error.stack) {
     lines.push(error.stack)
   }
-  lines.push(`Try: OMO_DISABLE_POSTHOG=1 bunx ${PUBLISHED_PACKAGE_NAME} doctor --verbose\n`)
+  lines.push(`${t("cli.doctor.tryVerbose", { package: PUBLISHED_PACKAGE_NAME })}\n`)
   return lines
 }
 

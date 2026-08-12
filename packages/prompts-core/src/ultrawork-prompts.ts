@@ -19,17 +19,25 @@ export const ULTRAWORK_GPT_PROMPT = gptPrompt
 export const ULTRAWORK_PLANNER_PROMPT = plannerPrompt
 export const CODEX_ULTRAWORK_PROMPT = codexPrompt
 
-const ULTRAWORK_DEFAULT_BY_LOCALE: Record<string, string> = {
-  zh: defaultPromptZh,
+function createLocaleGetter(
+  base: string,
+  byLocale: Record<string, string>,
+): (locale?: string) => string {
+  return (locale) => {
+    if (locale !== undefined) {
+      const localized = byLocale[locale]
+      if (localized !== undefined) return localized
+    }
+    return base
+  }
 }
 
-export function getUltraworkDefaultPrompt(locale?: string): string {
-  if (locale !== undefined) {
-    const localized = ULTRAWORK_DEFAULT_BY_LOCALE[locale]
-    if (localized !== undefined) return localized
-  }
-  return ULTRAWORK_DEFAULT_PROMPT
-}
+export const getUltraworkDefaultPrompt = createLocaleGetter(defaultPrompt, { zh: defaultPromptZh })
+export const getUltraworkGptPrompt = createLocaleGetter(gptPrompt, { zh: gptPromptZh })
+export const getUltraworkGeminiPrompt = createLocaleGetter(geminiPrompt, { zh: geminiPromptZh })
+export const getUltraworkGlmPrompt = createLocaleGetter(glmPrompt, { zh: glmPromptZh })
+export const getUltraworkPlannerPrompt = createLocaleGetter(plannerPrompt, { zh: plannerPromptZh })
+export const getCodexUltraworkPrompt = createLocaleGetter(codexPrompt, { zh: codexPromptZh })
 
 export const ultraworkPromptVariants = {
   planner: {

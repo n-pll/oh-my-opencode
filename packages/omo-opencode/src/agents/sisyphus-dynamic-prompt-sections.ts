@@ -12,6 +12,20 @@ import {
   buildParallelDelegationSection,
   buildToolSelectionTable,
 } from "./dynamic-agent-prompt-builder";
+import {
+  buildAgentIdentitySectionZh,
+  buildAntiPatternsSectionZh,
+  buildCategorySkillsDelegationGuideZh,
+  buildDelegationTableZh,
+  buildExploreSectionZh,
+  buildHardBlocksSectionZh,
+  buildKeyTriggersSectionZh,
+  buildLibrarianSectionZh,
+  buildNonClaudePlannerSectionZh,
+  buildOracleSectionZh,
+  buildParallelDelegationSectionZh,
+  buildToolSelectionTableZh,
+} from "./dynamic-agent-prompt-builder";
 import type {
   AvailableAgent,
   AvailableCategory,
@@ -75,4 +89,44 @@ function buildTodoHookNote(useTaskSystem: boolean): string {
   }
 
   return "YOUR TODO CREATION WOULD BE TRACKED BY HOOK([SYSTEM REMINDER - TODO CONTINUATION])";
+}
+
+export function buildSisyphusDynamicPromptSectionsZh(
+  model: string,
+  availableAgents: AvailableAgent[],
+  availableTools: AvailableTool[],
+  availableSkills: AvailableSkill[],
+  availableCategories: AvailableCategory[],
+  useTaskSystem: boolean,
+): SisyphusDynamicPromptSections {
+  return {
+    agentIdentity: buildAgentIdentitySectionZh(
+      "Sisyphus",
+      "来自 OhMyOpenCode、具备编排能力的强大 AI 代理",
+    ),
+    antiPatterns: buildAntiPatternsSectionZh(),
+    categorySkillsGuide: buildCategorySkillsDelegationGuideZh(
+      availableCategories,
+      availableSkills,
+    ),
+    delegationTable: buildDelegationTableZh(availableAgents),
+    exploreSection: buildExploreSectionZh(availableAgents),
+    hardBlocks: buildHardBlocksSectionZh(),
+    keyTriggers: buildKeyTriggersSectionZh(availableAgents, availableSkills),
+    librarianSection: buildLibrarianSectionZh(availableAgents),
+    nonClaudePlannerSection: buildNonClaudePlannerSectionZh(model),
+    oracleSection: buildOracleSectionZh(availableAgents),
+    parallelDelegationSection: buildParallelDelegationSectionZh(model, availableCategories),
+    taskManagementSection: buildTaskManagementSection(useTaskSystem),
+    todoHookNote: buildTodoHookNoteZh(useTaskSystem),
+    toolSelection: buildToolSelectionTableZh(availableAgents, availableTools, availableSkills),
+  };
+}
+
+function buildTodoHookNoteZh(useTaskSystem: boolean): string {
+  if (useTaskSystem) {
+    return "你的任务创建将由 HOOK 跟踪（[SYSTEM REMINDER - TASK CONTINUATION]）";
+  }
+
+  return "你的 TODO 创建将由 HOOK 跟踪（[SYSTEM REMINDER - TODO CONTINUATION]）";
 }

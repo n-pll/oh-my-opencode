@@ -1,4 +1,5 @@
 import type { BuiltinSkill } from "../builtin-skills/types"
+import { selectLocalizedField } from "../builtin-skills/types"
 
 export type OpenCodeSkillMarkdown = {
   readonly name: string
@@ -6,12 +7,13 @@ export type OpenCodeSkillMarkdown = {
   readonly markdown: string
 }
 
-export function createOpenCodeSkillMarkdown(skill: BuiltinSkill): OpenCodeSkillMarkdown {
-  const body = skill.template.trimStart()
+export function createOpenCodeSkillMarkdown(skill: BuiltinSkill, locale?: string): OpenCodeSkillMarkdown {
+  const body = selectLocalizedField(skill.template, skill.templateByLocale, locale).trimStart()
+  const description = selectLocalizedField(skill.description, skill.descriptionByLocale, locale)
   const markdown = [
     "---",
     `name: ${skill.name}`,
-    `description: ${JSON.stringify(skill.description)}`,
+    `description: ${JSON.stringify(description)}`,
     "---",
     "",
     body,
@@ -19,7 +21,7 @@ export function createOpenCodeSkillMarkdown(skill: BuiltinSkill): OpenCodeSkillM
 
   return {
     name: skill.name,
-    description: skill.description,
+    description,
     markdown,
   }
 }

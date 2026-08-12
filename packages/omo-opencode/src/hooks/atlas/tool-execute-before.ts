@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { getWorkForSession, readBoulderState, readCurrentTopLevelTask, resolveBoulderPlanPath, resolveBoulderPlanPathForWork } from "../../features/boulder-state"
 import { HOOK_NAME } from "./hook-name"
-import { ORCHESTRATOR_DELEGATION_REQUIRED, SINGLE_TASK_DIRECTIVE } from "./system-reminder-templates"
+import { getOrchestratorDelegationRequired, getSingleTaskDirective } from "./system-reminder-templates"
 import { isOmoPath } from "./omo-path"
 import type { PendingTaskRef, TrackedTopLevelTaskRef } from "./types"
 import { isWriteOrEditToolName } from "./write-edit-tool-policy"
@@ -113,7 +113,7 @@ export function createToolExecuteBeforeHandler(input: {
       }
 
       if (!isOmoPath(filePath)) {
-        const warning = ORCHESTRATOR_DELEGATION_REQUIRED.replace("$FILE_PATH", filePath)
+        const warning = getOrchestratorDelegationRequired().replace("$FILE_PATH", filePath)
         toolOutput.message = (toolOutput.message || "") + warning
         log(`[${HOOK_NAME}] Injected delegation warning for direct file modification`, {
           sessionID: toolInput.sessionID,
@@ -183,7 +183,7 @@ export function createToolExecuteBeforeHandler(input: {
 
       const prompt = toolOutput.args.prompt as string | undefined
       if (prompt && !prompt.includes(SYSTEM_DIRECTIVE_PREFIX)) {
-        replaceToolArgs(toolOutput, { prompt: `<system-reminder>${SINGLE_TASK_DIRECTIVE}</system-reminder>\n` + prompt })
+        replaceToolArgs(toolOutput, { prompt: `<system-reminder>${getSingleTaskDirective()}</system-reminder>\n` + prompt })
         log(`[${HOOK_NAME}] Injected single-task directive to task`, {
           sessionID: toolInput.sessionID,
         })

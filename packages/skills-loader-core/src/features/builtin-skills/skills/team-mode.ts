@@ -1,10 +1,11 @@
 import type { BuiltinSkill } from "../types"
+import { TEAM_MODE_TEMPLATE_ZH } from "./team-mode-template.zh"
 
-export const teamModeSkill: BuiltinSkill = {
-  name: "team-mode",
-  description:
-    "Team orchestration — create and manage parallel agent teams (OFF by default; enable via team_mode.enabled in config). Loading this skill provides usage documentation; the team_* tools are registered globally when team_mode.enabled=true and access-gated by team role.",
-  template: `# Team Mode
+const TEAM_MODE_DESCRIPTION = "Team orchestration — create and manage parallel agent teams (OFF by default; enable via team_mode.enabled in config). Loading this skill provides usage documentation; the team_* tools are registered globally when team_mode.enabled=true and access-gated by team role."
+
+const TEAM_MODE_DESCRIPTION_ZH = "团队编排 - 创建和管理并行 agent 团队（默认关闭；通过配置中的 team_mode.enabled 启用）。加载此技能提供使用文档；team_* 工具在 team_mode.enabled=true 时全局注册，并按团队角色进行访问控制。"
+
+const TEAM_MODE_TEMPLATE = `# Team Mode
 
 Team mode gives Claude Code Agent Teams parity. It is off by default. Enable it only when you want parallel multi-agent coordination, where each team member is an opencode child session.
 
@@ -200,5 +201,17 @@ Members should:
 
 Team mode is a docs-only skill. The team_* tools are registered globally when \`team_mode.enabled=true\`.
 Use \`~/.omo/teams/{name}/config.json\` plus worktree or tmux visibility to understand how the team is laid out.
-`,
+`
+
+export function createTeamModeSkill(locale?: string): BuiltinSkill {
+  return {
+    name: "team-mode",
+    description: TEAM_MODE_DESCRIPTION,
+    descriptionByLocale: { zh: TEAM_MODE_DESCRIPTION_ZH },
+    template: TEAM_MODE_TEMPLATE,
+    templateByLocale: { zh: TEAM_MODE_TEMPLATE_ZH },
+  }
 }
+
+/** Backward-compatible English-default singleton. */
+export const teamModeSkill: BuiltinSkill = createTeamModeSkill()

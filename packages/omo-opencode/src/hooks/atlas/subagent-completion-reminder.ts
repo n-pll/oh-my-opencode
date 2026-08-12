@@ -2,13 +2,20 @@ import type { PluginInput } from "@opencode-ai/plugin"
 import { classifyFinalWaveVerdict, shouldPauseForFinalWaveApproval } from "./final-wave-approval-gate"
 import { readFinalWavePlanState } from "./final-wave-plan-state"
 import type { SessionState } from "./types"
+import { t, getLocale } from "../../shared/i18n"
 import {
   buildAdvanceDirective,
+  buildAdvanceDirectiveZh,
   buildCompletionGate,
+  buildCompletionGateZh,
   buildFinalWaveApprovalReminder,
+  buildFinalWaveApprovalReminderZh,
   buildMissingVerdictEscalation,
+  buildMissingVerdictEscalationZh,
   buildOrchestratorReminder,
+  buildOrchestratorReminderZh,
   buildRejectedVerdictEscalation,
+  buildRejectedVerdictEscalationZh,
 } from "./verification-reminders"
 
 type CurrentTask = {
@@ -37,6 +44,7 @@ export async function buildSubagentCompletionReminder(input: {
   readonly isAlreadyVerified: boolean
   readonly autoCommit: boolean
 }): Promise<ReminderDecision> {
+  const zh = getLocale() === "zh"
   const shouldPauseForApproval = input.sessionState
     ? shouldPauseForFinalWaveApproval({
         planPath: input.planPath,
@@ -65,9 +73,9 @@ export async function buildSubagentCompletionReminder(input: {
   }
 
   if (isMissingFinalWaveVerdict) {
-    await showFinalWaveToast(input.ctx, "Final review incomplete", "A reviewer returned no clear verdict. Boulder paused - confirm or re-run the review.")
+    await showFinalWaveToast(input.ctx, t("toast.final_review_incomplete_title"), t("toast.final_review_incomplete_message"))
     return {
-      leadReminder: buildMissingVerdictEscalation(
+      leadReminder: (zh ? buildMissingVerdictEscalationZh : buildMissingVerdictEscalation)(
         input.planName,
         input.currentTask?.label ?? "the final-wave task",
         input.preferredSessionId,
@@ -81,9 +89,9 @@ export async function buildSubagentCompletionReminder(input: {
   }
 
   if (isRejectedFinalWaveVerdict) {
-    await showFinalWaveToast(input.ctx, "Final review rejected", "A reviewer returned VERDICT: REJECT. Boulder paused - fix or ask the user how to proceed.")
+    await showFinalWaveToast(input.ctx, t("toast.final_review_rejected_title"), t("toast.final_review_rejected_message"))
     return {
-      leadReminder: buildRejectedVerdictEscalation(
+      leadReminder: (zh ? buildRejectedVerdictEscalationZh : buildRejectedVerdictEscalation)(
         input.planName,
         input.currentTask?.label ?? "the final-wave task",
         input.preferredSessionId,
@@ -98,7 +106,7 @@ export async function buildSubagentCompletionReminder(input: {
 
   if (shouldPauseForApproval) {
     return {
-      leadReminder: buildFinalWaveApprovalReminder(input.planName, input.progress, input.preferredSessionId),
+      leadReminder: (zh ? buildFinalWaveApprovalReminderZh : buildFinalWaveApprovalReminder)(input.planName, input.progress, input.preferredSessionId),
       followupReminder: null,
       isFinalWaveTask,
       isMissingFinalWaveVerdict,
@@ -109,7 +117,7 @@ export async function buildSubagentCompletionReminder(input: {
 
   if (input.isAlreadyVerified) {
     return {
-      leadReminder: buildAdvanceDirective(input.planName),
+      leadReminder: (zh ? buildAdvanceDirectiveZh : buildAdvanceDirective)(input.planName),
       followupReminder: null,
       isFinalWaveTask,
       isMissingFinalWaveVerdict,
@@ -124,8 +132,8 @@ export async function buildSubagentCompletionReminder(input: {
   }
 
   return {
-    leadReminder: buildCompletionGate(input.planName, input.preferredSessionId),
-    followupReminder: buildOrchestratorReminder(input.planName, input.progress, input.preferredSessionId, input.autoCommit, false),
+    leadReminder: (zh ? buildCompletionGateZh : buildCompletionGate)(input.planName, input.preferredSessionId),
+    followupReminder: (zh ? buildOrchestratorReminderZh : buildOrchestratorReminder)(input.planName, input.progress, input.preferredSessionId, input.autoCommit, false),
     isFinalWaveTask,
     isMissingFinalWaveVerdict,
     isRejectedFinalWaveVerdict,

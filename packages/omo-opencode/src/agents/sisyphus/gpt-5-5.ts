@@ -11,13 +11,18 @@ import type {
 } from "../dynamic-agent-prompt-builder"
 import {
   buildAgentIdentitySection,
+  buildAgentIdentitySectionZh,
   buildCategorySkillsDelegationGuide,
+  buildCategorySkillsDelegationGuideZh,
   buildDelegationTable,
+  buildDelegationTableZh,
   buildKeyTriggersSection,
+  buildKeyTriggersSectionZh,
   buildNonClaudePlannerSection,
+  buildNonClaudePlannerSectionZh,
 } from "../dynamic-agent-prompt-builder"
 import { GPT_APPLY_PATCH_GUIDANCE } from "../gpt-apply-patch-guard"
-import { t } from "../../shared/i18n"
+import { t, getLocale } from "../../shared/i18n"
 
 function buildTaskSystemGuide(useTaskSystem: boolean): string {
   if (useTaskSystem) {
@@ -52,19 +57,20 @@ export function buildGpt55SisyphusPrompt(
   availableCategories: AvailableCategory[] = [],
   useTaskSystem = false,
 ): string {
-  const agentIdentity = buildAgentIdentitySection(
+  const zh = getLocale() === "zh"
+  const agentIdentity = (zh ? buildAgentIdentitySectionZh : buildAgentIdentitySection)(
     "Sisyphus",
     "Powerful AI Agent with orchestration capabilities from OhMyOpenCode",
   )
   const personality = ""
   const taskSystemGuide = buildTaskSystemGuide(useTaskSystem)
-  const categorySkillsGuide = buildCategorySkillsDelegationGuide(
+  const categorySkillsGuide = (zh ? buildCategorySkillsDelegationGuideZh : buildCategorySkillsDelegationGuide)(
     availableCategories,
     availableSkills,
   )
-  const delegationTable = buildDelegationTable(availableAgents)
-  const nonClaudePlannerSection = buildNonClaudePlannerSection(model)
-  const keyTriggers = buildKeyTriggersSection(availableAgents, availableSkills)
+  const delegationTable = (zh ? buildDelegationTableZh : buildDelegationTable)(availableAgents)
+  const nonClaudePlannerSection = (zh ? buildNonClaudePlannerSectionZh : buildNonClaudePlannerSection)(model)
+  const keyTriggers = (zh ? buildKeyTriggersSectionZh : buildKeyTriggersSection)(availableAgents, availableSkills)
 
   const body = t("agents.sisyphus.prompt.gpt-5-5", {
     personality,
@@ -73,6 +79,7 @@ export function buildGpt55SisyphusPrompt(
     delegationTable,
     nonClaudePlannerSection,
     keyTriggers,
+    GPT_APPLY_PATCH_GUIDANCE,
   })
 
   return `${agentIdentity}\n${body}`

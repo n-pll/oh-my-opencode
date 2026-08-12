@@ -1,7 +1,8 @@
-import { ULTRAWORK_GLM_PROMPT } from "@oh-my-opencode/prompts-core"
+import { getUltraworkGlmPrompt } from "@oh-my-opencode/prompts-core"
+import { getLocale } from "../../../shared/i18n"
 
-export const ULTRAWORK_GLM_MESSAGE = ULTRAWORK_GLM_PROMPT
+export const ULTRAWORK_GLM_MESSAGE = getUltraworkGlmPrompt()
 
 export function getGlmUltraworkMessage(): string {
-  return ULTRAWORK_GLM_MESSAGE
+  return getUltraworkGlmPrompt(getLocale())
 }

@@ -1,4 +1,5 @@
 import type { BuiltinSkill } from "../types"
+import { PLAYWRIGHT_CLI_TEMPLATE_ZH } from "./playwright-cli-template.zh"
 
 /**
  * Playwright CLI skill - token-efficient CLI alternative to the MCP-based playwright skill.
@@ -8,10 +9,12 @@ import type { BuiltinSkill } from "../types"
  * the same name: "playwright" gives MCP, "playwright-cli" gives this CLI variant.
  * The binary is still called `playwright-cli` (see allowedTools).
  */
-export const playwrightCliSkill: BuiltinSkill = {
-  name: "playwright",
-  description: "MUST USE for any browser-related tasks. Browser automation via playwright-cli - verification, browsing, information gathering, web scraping, testing, screenshots, and all browser interactions.",
-  template: `# Browser Automation with playwright-cli
+
+const PLAYWRIGHT_CLI_DESCRIPTION = "MUST USE for any browser-related tasks. Browser automation via playwright-cli - verification, browsing, information gathering, web scraping, testing, screenshots, and all browser interactions."
+
+const PLAYWRIGHT_CLI_DESCRIPTION_ZH = "任何浏览器相关任务都必须使用。通过 playwright-cli 进行浏览器自动化 - 验证、浏览、信息收集、网页抓取、测试、截图和所有浏览器交互。"
+
+const PLAYWRIGHT_CLI_TEMPLATE = `# Browser Automation with playwright-cli
 
 ## Quick start
 
@@ -170,6 +173,7 @@ playwright-cli install-browser
 \`\`\`
 
 ### Configuration
+
 \`\`\`bash
 # Use specific browser when creating session
 playwright-cli open --browser=chrome
@@ -263,6 +267,18 @@ playwright-cli close
 * **Storage state (cookies, localStorage)** [references/storage-state.md](references/storage-state.md)
 * **Test generation** [references/test-generation.md](references/test-generation.md)
 * **Tracing** [references/tracing.md](references/tracing.md)
-* **Video recording** [references/video-recording.md](references/video-recording.md)`,
-  allowedTools: ["Bash(playwright-cli:*)"],
+* **Video recording** [references/video-recording.md](references/video-recording.md)`
+
+export function createPlaywrightCliSkill(locale?: string): BuiltinSkill {
+  return {
+    name: "playwright",
+    description: PLAYWRIGHT_CLI_DESCRIPTION,
+    descriptionByLocale: { zh: PLAYWRIGHT_CLI_DESCRIPTION_ZH },
+    template: PLAYWRIGHT_CLI_TEMPLATE,
+    templateByLocale: { zh: PLAYWRIGHT_CLI_TEMPLATE_ZH },
+    allowedTools: ["Bash(playwright-cli:*)"],
+  }
 }
+
+/** Backward-compatible English-default singleton. */
+export const playwrightCliSkill: BuiltinSkill = createPlaywrightCliSkill()

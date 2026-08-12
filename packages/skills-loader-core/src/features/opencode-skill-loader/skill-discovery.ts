@@ -1,4 +1,5 @@
 import { createBuiltinSkills } from "../builtin-skills/skills"
+import { builtinToLoadedSkill } from "./merger/builtin-skill-converter"
 import { discoverSkills } from "./loader"
 import type { LoadedSkill } from "./types"
 import type { SkillResolutionOptions } from "./skill-resolution-options"
@@ -28,7 +29,8 @@ export async function getAllSkills(options?: SkillResolutionOptions): Promise<Lo
 	const browserProvider = options?.browserProvider ?? "playwright"
 	const teamModeEnabled = options?.teamModeEnabled ?? false
 	const directory = options?.directory ?? ""
-	const cacheKey = `${directory}:${browserProvider}:${teamModeEnabled ? "team-on" : "team-off"}`
+	const locale = options?.locale
+	const cacheKey = `${directory}:${browserProvider}:${teamModeEnabled ? "team-on" : "team-off"}:${locale ?? "en"}`
 	const hasDisabledSkills = options?.disabledSkills && options.disabledSkills.size > 0
 
 	// Skip cache if disabledSkills is provided (varies between calls)
@@ -43,26 +45,13 @@ export async function getAllSkills(options?: SkillResolutionOptions): Promise<Lo
 			browserProvider,
 			disabledSkills: options?.disabledSkills,
 			teamModeEnabled,
+			locale,
 		}),
 	])
 
-	const builtinSkillsAsLoaded: LoadedSkill[] = builtinSkillDefinitions.map((skill) => ({
-		name: skill.name,
-		definition: {
-			name: skill.name,
-			description: skill.description,
-			template: skill.template,
-			model: skill.model,
-			agent: skill.agent,
-			subtask: skill.subtask,
-		},
-		scope: "builtin" as const,
-		license: skill.license,
-		compatibility: skill.compatibility,
-		metadata: skill.metadata as Record<string, string> | undefined,
-		allowedTools: skill.allowedTools,
-		mcpConfig: skill.mcpConfig,
-	}))
+	const builtinSkillsAsLoaded: LoadedSkill[] = builtinSkillDefinitions.map((skill) =>
+		builtinToLoadedSkill(skill, locale),
+	)
 
 	// Provider-gated skill names that should be filtered based on browserProvider
 	const providerGatedSkillNames = new Set(["agent-browser", "playwright"])

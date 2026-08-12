@@ -11,6 +11,11 @@ import { isDisabledSkillAlias } from "./skill-discovery"
 export interface MergeSkillsOptions {
   configDir?: string
   isConfigEntryAllowed?: (name: string) => boolean
+  /**
+   * Locale code used to resolve built-in skill templates and descriptions to
+   * their locale override. Falls back to English when a translation is missing.
+   */
+  locale?: string
 }
 
 function isDisabledConfigEntry(entry: boolean | SkillDefinition): boolean {
@@ -48,7 +53,7 @@ export function mergeSkills(
   const skillMap = new Map<string, LoadedSkill>()
 
   for (const builtin of builtinSkills) {
-    const loaded = builtinToLoadedSkill(builtin)
+    const loaded = builtinToLoadedSkill(builtin, options.locale)
     skillMap.set(loaded.name, loaded)
   }
 

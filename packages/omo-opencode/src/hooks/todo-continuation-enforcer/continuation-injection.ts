@@ -18,6 +18,7 @@ import {
   type ToolPermission,
 } from "../../features/hook-message-injector"
 import { log } from "../../shared/logger"
+import { getLocale } from "../../shared/i18n"
 import { isSqliteBackend } from "../../shared/opencode-storage-detection"
 import {
   getAgentConfigKey,
@@ -26,10 +27,10 @@ import {
 import { dispatchInternalPrompt, isInternalPromptDispatchAccepted } from "../shared/prompt-async-gate"
 
 import {
-  CONTINUATION_PROMPT,
   CONTINUATION_COOLDOWN_MS,
   DEFAULT_SKIP_AGENTS,
   HOOK_NAME,
+  getContinuationPrompt,
 } from "./constants"
 import { isCompactionGuardActive } from "./compaction-guard"
 import { getMessageDir } from "./message-directory"
@@ -166,11 +167,14 @@ export async function injectContinuation(args: {
 
   const incompleteTodos = todos.filter((todo) => todo.status !== "completed" && todo.status !== "cancelled")
   const todoList = incompleteTodos.map((todo) => `- [${todo.status}] ${todo.content}`).join("\n")
-  const prompt = `${CONTINUATION_PROMPT}
+  const zh = getLocale() === "zh"
+  const statusLabel = zh ? "已完成" : "completed"
+  const remainingLabel = zh ? "剩余" : "remaining"
+  const prompt = `${getContinuationPrompt()}
 
-[Status: ${todos.length - freshIncompleteCount}/${todos.length} completed, ${freshIncompleteCount} remaining]
+[Status: ${todos.length - freshIncompleteCount}/${todos.length} ${statusLabel}, ${freshIncompleteCount} ${remainingLabel}]
 
-Remaining tasks:
+${zh ? "剩余任务" : "Remaining tasks"}:
 ${todoList}`
 
   const hasBackgroundWorkBeforeDispatch = backgroundManager

@@ -1,7 +1,8 @@
-import { ULTRAWORK_GPT_PROMPT } from "@oh-my-opencode/prompts-core"
+import { getUltraworkGptPrompt } from "@oh-my-opencode/prompts-core"
+import { getLocale } from "../../../shared/i18n"
 
-export const ULTRAWORK_GPT_MESSAGE = ULTRAWORK_GPT_PROMPT
+export const ULTRAWORK_GPT_MESSAGE = getUltraworkGptPrompt()
 
 export function getGptUltraworkMessage(): string {
-  return ULTRAWORK_GPT_MESSAGE
+  return getUltraworkGptPrompt(getLocale())
 }

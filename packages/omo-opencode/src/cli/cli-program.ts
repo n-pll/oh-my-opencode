@@ -62,7 +62,7 @@ export function resolveInstallArgs(
   const platform = options.platform ?? defaultPlatform
   if (platform === "senpi" && !isSenpiPlatformEnabled()) {
     throw new Error(
-      `The senpi install platform is not available in this release. Set ${SENPI_PLATFORM_ENV_FLAG}=1 to enable it from a source checkout.`,
+      t("cli.program.install.error.senpiUnavailable", { flag: SENPI_PLATFORM_ENV_FLAG }),
     )
   }
 
@@ -264,11 +264,11 @@ ${t("cli.program.doctor.help.codex")}
 
 program
   .command("config")
-  .description("Manage unified OMO configuration")
+  .description(t("cli.program.config.description"))
   .command("migrate")
-  .description("Migrate legacy OMO configuration into ~/.omo/omo.jsonc")
-  .option("--dry-run", "Print the transform, backup move plan, and conflicts without new migration writes")
-  .option("--json", "Print machine-readable migration output")
+  .description(t("cli.program.config.migrate.description"))
+  .option("--dry-run", t("cli.program.config.migrate.option.dryRun"))
+  .option("--json", t("cli.program.config.migrate.option.json"))
   .action((options: ConfigMigrateCommandOptions) => {
     const exitCode = runConfigMigrate({ dryRun: options.dryRun ?? false, json: options.json ?? false })
     process.exit(exitCode)

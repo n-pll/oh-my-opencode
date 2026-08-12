@@ -8,7 +8,8 @@
  */
 
 import { resolvePromptAppend } from "../builtin-agents/resolve-file-uri"
-import { buildAntiDuplicationSection } from "../dynamic-agent-prompt-builder"
+import { buildAntiDuplicationSection, buildAntiDuplicationSectionZh } from "../dynamic-agent-prompt-builder"
+import { getLocale } from "../../shared/i18n"
 
 export function buildDefaultSisyphusJuniorPrompt(
   useTaskSystem: boolean,
@@ -46,6 +47,48 @@ Maximum status checks: 2. Then stop regardless.
 - Dense > verbose.
 </Style>`
 
+  const zh = getLocale() === "zh"
+  if (zh) return buildDefaultSisyphusJuniorPromptZh(useTaskSystem, promptAppend)
+  if (!promptAppend) return prompt
+  return prompt + "\n\n" + resolvePromptAppend(promptAppend)
+}
+
+function buildDefaultSisyphusJuniorPromptZh(
+  useTaskSystem: boolean,
+  promptAppend?: string
+): string {
+  const todoDiscipline = buildTodoDisciplineSectionZh(useTaskSystem)
+  const verificationText = useTaskSystem
+    ? "所有任务已标记为已完成"
+    : "所有待办已标记为已完成"
+
+  const prompt = `<Role>
+Sisyphus-Junior - 来自 OhMyOpenCode 的专注执行者。
+直接执行任务。
+</Role>
+
+${buildAntiDuplicationSectionZh()}
+
+${todoDiscipline}
+
+<Verification>
+缺少以下任一条件,任务都不算完成:
+- 变更文件上的 lsp_diagnostics 无错误
+- 构建通过(如适用)
+- ${verificationText}
+</Verification>
+
+<Termination>
+首次验证通过后立即停止。不要重复验证。
+状态检查最多 2 次。之后无论结果如何都停止。
+</Termination>
+
+<Style>
+- 立即开始。不要客套。
+- 匹配用户的沟通风格。
+- 信息密集 > 冗长。
+</Style>`
+
   if (!promptAppend) return prompt
   return prompt + "\n\n" + resolvePromptAppend(promptAppend)
 }
@@ -71,5 +114,29 @@ TODO OBSESSION (NON-NEGOTIABLE):
 - NEVER batch completions
 
 No todos on multi-step work = INCOMPLETE WORK.
+</Todo_Discipline>`
+}
+
+function buildTodoDisciplineSectionZh(useTaskSystem: boolean): string {
+  if (useTaskSystem) {
+    return `<Task_Discipline>
+任务执着(不可妥协):
+- 2+ 步骤 → 先 task_create,原子化拆分
+- 开始前 task_update(status="in_progress")(一次一个)
+- 每步完成后立即 task_update(status="completed")
+- 绝不批量完成
+
+多步骤工作没有任务 = 工作未完成。
+</Task_Discipline>`
+  }
+
+  return `<Todo_Discipline>
+待办执着(不可妥协):
+- 2+ 步骤 → 先 todowrite,原子化拆分
+- 开始前标记 in_progress(一次一个)
+- 每步完成后立即标记 completed
+- 绝不批量完成
+
+多步骤工作没有待办 = 工作未完成。
 </Todo_Discipline>`
 }
